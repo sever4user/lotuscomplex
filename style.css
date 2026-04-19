@@ -8,179 +8,93 @@
 }
 
 body {
-    background-color: var(--bg);
+    background: var(--bg);
     color: var(--green);
     font-family: 'Courier New', Courier, monospace;
     font-weight: 900;
+    margin: 0;
     display: flex;
     justify-content: center;
-    margin: 0;
-    overflow-x: hidden;
-    animation: terminal-glow 8s ease-in-out infinite;
+    animation: terminal-glow 8s infinite;
 }
 
-/* ЭФФЕКТЫ ТЕРМИНАЛА */
 .terminal-overlay {
-    position: fixed;
-    top: 0; left: 0; width: 100%; height: 100%;
-    background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 255, 65, 0.03) 50%);
-    background-size: 100% 12px;
-    pointer-events: none;
-    z-index: 100;
+    position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+    background: linear-gradient(rgba(18,16,16,0) 50%, rgba(0,255,65,0.02) 50%);
+    background-size: 100% 10px;
+    pointer-events: none; z-index: 100;
     animation: scanlines 20s linear infinite;
 }
 
-body::after {
-    content: " ";
-    display: block;
-    position: fixed;
-    top: 0; left: 0; bottom: 0; right: 0;
-    background: radial-gradient(circle, rgba(18, 16, 16, 0) 60%, rgba(0, 0, 0, 0.7) 100%);
-    z-index: 2;
-    pointer-events: none;
-}
+.container { width: 90%; max-width: 650px; padding: 40px 20px; z-index: 5; }
 
-.container {
-    width: 90%;
-    max-width: 600px;
-    padding: 60px 20px;
-    position: relative;
-    z-index: 5;
-}
+h1 { color: var(--lotus); text-align: center; letter-spacing: 10px; text-transform: uppercase; margin-bottom: 10px; }
 
-h1 {
-    color: var(--lotus);
-    text-shadow: 0 0 15px var(--lotus);
-    letter-spacing: 15px;
-    text-align: center;
-    text-transform: uppercase;
-    font-size: 2rem;
-    margin-bottom: 30px;
-}
-
-/* МЕНЮ НАВИГАЦИИ */
-.system-nav {
+/* СТИЛЬ СТРОКИ SYSTEM_v.1.0 */
+.system-line {
     display: flex;
     justify-content: center;
-    gap: 15px;
-    margin-bottom: 25px;
+    align-items: center;
+    gap: 10px;
+    font-size: 0.7em;
+    margin-bottom: 20px;
+    opacity: 0.8;
 }
+
+.system-nav { display: flex; gap: 5px; }
 
 .system-nav button {
-    background: none;
-    border: 1px solid transparent;
-    color: var(--green);
-    font-family: inherit;
-    font-size: 0.75em;
-    cursor: pointer;
-    width: auto;
-    height: auto;
-    padding: 8px 15px;
-    text-transform: uppercase;
+    background: none; border: none; color: var(--green);
+    font-family: inherit; cursor: pointer; padding: 5px;
+    font-size: 1em; transition: 0.3s;
 }
 
-.system-nav button:hover {
-    border: 1px solid var(--green);
-    background: rgba(0, 255, 65, 0.1);
-}
+.system-nav button:hover { color: var(--lotus); text-shadow: 0 0 5px var(--lotus); }
 
-.system-status {
-    font-size: 0.7em;
-    text-align: center;
-    margin-bottom: 50px;
-    opacity: 0.6;
-    letter-spacing: 4px;
-}
+.system-status { font-size: 0.6em; text-align: center; margin-bottom: 40px; opacity: 0.5; }
 
-/* СЕКЦИИ КОНТЕНТА */
+/* СЕКЦИИ */
 .content-section { display: none; }
 .content-section.active { display: block; }
 
-/* ПЛЕЕР */
-.track-card {
-    border-bottom: 1px solid var(--line);
-    padding: 25px 0;
-}
-
-.track-name {
-    font-size: 0.85em;
-    margin-bottom: 15px;
-    letter-spacing: 2px;
-    text-transform: uppercase;
-}
+/* ПЛЕЕР (ИСПРАВЛЕНИЕ КНОПОК) */
+.track-card { border-bottom: 1px solid var(--line); padding: 20px 0; }
+.track-name { font-size: 0.8em; margin-bottom: 10px; letter-spacing: 1px; }
 
 .controls-row {
     display: flex;
+    flex-direction: row; /* Принудительно в ряд */
     align-items: center;
     gap: 15px;
+    width: 100%;
 }
 
-.btns { display: flex; gap: 5px; }
+.btns { 
+    display: flex; 
+    flex-direction: row; /* Принудительно в ряд */
+    gap: 5px; 
+    flex-shrink: 0; /* Чтобы кнопки не сжимались */
+}
 
-/* Кнопки внутри плеера */
 .btns button {
-    background: none;
-    border: none;
-    width: var(--control-size);
-    height: var(--control-size);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    padding: 0;
+    background: none; border: none;
+    width: var(--control-size); height: var(--control-size);
+    display: flex; align-items: center; justify-content: center;
+    cursor: pointer; padding: 0;
 }
 
-.icon-play {
-    width: 0; height: 0;
-    border-top: calc(var(--icon-size) / 2) solid transparent;
-    border-bottom: calc(var(--icon-size) / 2) solid transparent;
-    border-left: var(--icon-size) solid var(--green);
-    margin-left: 4px;
-}
-
-.icon-pause {
-    width: var(--icon-size); height: var(--icon-size);
-    display: flex; justify-content: space-between;
-}
-.icon-pause::before, .icon-pause::after {
-    content: ""; width: 4px; height: 100%; background-color: var(--green);
-}
-
-.icon-stop {
-    width: var(--icon-size); height: var(--icon-size);
-    background-color: var(--green);
-}
+/* ИКОНКИ (Зеленые) */
+.icon-play { width: 0; height: 0; border-top: 7px solid transparent; border-bottom: 7px solid transparent; border-left: 12px solid var(--green); margin-left: 4px; }
+.icon-pause { width: 12px; height: 12px; display: flex; justify-content: space-between; }
+.icon-pause::before, .icon-pause::after { content: ""; width: 4px; height: 100%; background: var(--green); }
+.icon-stop { width: 12px; height: 12px; background: var(--green); }
 
 /* ПОЛЗУНОК */
-.seek-container {
-    position: relative;
-    flex-grow: 1;
-    display: flex;
-    align-items: center;
-    height: var(--control-size);
-}
+.seek-container { position: relative; flex-grow: 1; display: flex; align-items: center; }
+.seek-bar { position: absolute; width: 100%; -webkit-appearance: none; background: transparent; z-index: 5; outline: none; margin: 0; }
+.seek-bar::-webkit-slider-thumb { -webkit-appearance: none; width: 10px; height: 10px; background: var(--lotus); border-radius: 50%; cursor: pointer; }
+.seek-line-base { position: absolute; width: 100%; height: 1px; background: var(--line); }
+.seek-line-progress { position: absolute; height: 1px; background: var(--lotus); width: 0%; }
 
-.seek-bar {
-    position: absolute; width: 100%; -webkit-appearance: none;
-    background: transparent; z-index: 5; outline: none;
-}
-
-.seek-bar::-webkit-slider-thumb {
-    -webkit-appearance: none; width: 10px; height: 10px;
-    background: var(--lotus); border-radius: 50%; cursor: pointer;
-}
-
-.seek-line-base {
-    position: absolute; width: 100%; height: 1px; background: var(--line);
-}
-
-.seek-line-progress {
-    position: absolute; height: 1px; background: var(--lotus);
-    opacity: 0.5; width: 0%;
-}
-
-/* АНИМАЦИИ */
 @keyframes scanlines { from { background-position: 0 0; } to { background-position: 0 100%; } }
-@keyframes terminal-glow {
-    0%, 100% { filter: brightness(1); }
-    50% { filter: brightness(1.08); }
-}
+@keyframes terminal-glow { 0%, 100% { filter: brightness(1); } 50% { filter: brightness(1.05); } }
