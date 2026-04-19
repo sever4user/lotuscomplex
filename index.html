@@ -13,14 +13,30 @@
         <p>Listen only</p>
 
         <div class="track-list">
-            <div class="track-card">
-                <span class="track-name">Track 01</span>
-                <audio id="audio1" src="audio/track1.mp3" controlsList="nodownload" oncontextmenu="return false;"></audio>
-                <button onclick="playTrack('audio1')">PLAY</button>
-                <button onclick="pauseTrack('audio1')">STOP</button>
-            </div>
-            
-            </div>
+    <div class="track-card">
+        <div class="track-info">
+            <span class="track-name">PROJECT SEVER - CORE</span>
+            <input type="range" class="seek-bar" id="seek1" value="0" step="0.1">
+        </div>
+        <audio id="audio1" src="audio/track1.mp3" controlsList="nodownload"></audio>
+        <div class="btns">
+            <button onclick="playTrack('audio1', 'seek1')">PLAY</button>
+            <button onclick="pauseTrack('audio1')">STOP</button>
+        </div>
+    </div>
+
+    <div class="track-card">
+        <div class="track-info">
+            <span class="track-name">CONCRETE DREAMS</span>
+            <input type="range" class="seek-bar" id="seek2" value="0" step="0.1">
+        </div>
+        <audio id="audio2" src="audio/track2.mp3" controlsList="nodownload"></audio>
+        <div class="btns">
+            <button onclick="playTrack('audio2', 'seek2')">PLAY</button>
+            <button onclick="pauseTrack('audio2')">STOP</button>
+        </div>
+    </div>
+</div>
     </div>
 
     <script src="script.js"></script>
