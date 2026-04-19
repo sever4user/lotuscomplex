@@ -14,12 +14,34 @@ body {
     display: flex;
     justify-content: center;
     margin: 0;
+    overflow-x: hidden;
+    /* Мягкая пульсация всего интерфейса */
+    animation: terminal-glow 4s ease-in-out infinite;
+}
+
+/* ДВИЖУЩИЕСЯ ПОЛОСЫ ТЕРМИНАЛА */
+.terminal-overlay {
+    position: fixed;
+    top: 0; left: 0; width: 100%; height: 100%;
+    background: repeating-linear-gradient(
+        0deg,
+        rgba(0, 0, 0, 0) 0px,
+        rgba(0, 0, 0, 0) 1px,
+        rgba(0, 255, 65, 0.03) 1px,
+        rgba(0, 255, 65, 0.03) 2px
+    );
+    background-size: 100% 4px;
+    pointer-events: none;
+    z-index: 100;
+    animation: scanlines 10s linear infinite;
 }
 
 .container {
     width: 90%;
     max-width: 600px;
     padding: 60px 20px;
+    position: relative;
+    z-index: 1;
 }
 
 h1 {
@@ -28,6 +50,15 @@ h1 {
     letter-spacing: 12px;
     text-align: center;
     text-transform: uppercase;
+}
+
+.system-status {
+    font-size: 0.65em;
+    text-align: center;
+    margin-bottom: 50px;
+    opacity: 0.5;
+    text-transform: uppercase;
+    letter-spacing: 2px;
 }
 
 .track-card {
@@ -66,46 +97,41 @@ button {
     padding: 0;
 }
 
-/* ИКОНКА PLAY (Зеленый треугольник) */
+/* ИКОНКИ С ЦВЕТОМ */
 .icon-play {
-    width: 0;
-    height: 0;
+    width: 0; height: 0;
     border-top: calc(var(--icon-size) / 2) solid transparent;
     border-bottom: calc(var(--icon-size) / 2) solid transparent;
-    border-left: var(--icon-size) solid var(--green); /* ЦВЕТ ТУТ */
+    border-left: var(--icon-size) solid var(--green);
     margin-left: 4px;
-    pointer-events: none;
 }
 
-/* ИКОНКА PAUSE (Две зеленые линии) */
 .icon-pause {
     width: var(--icon-size);
     height: var(--icon-size);
     display: flex;
     justify-content: space-between;
-    pointer-events: none;
 }
 .icon-pause::before, .icon-pause::after {
     content: "";
     width: 4px;
     height: 100%;
-    background-color: var(--green); /* ЦВЕТ ТУТ */
+    background-color: var(--green);
 }
 
-/* ИКОНКА STOP (Зеленый квадрат) */
 .icon-stop {
     width: var(--icon-size);
     height: var(--icon-size);
-    background-color: var(--green); /* ЦВЕТ ТУТ */
-    pointer-events: none;
+    background-color: var(--green);
 }
 
-/* Эффект при наведении на кнопку (меняем всё на розовый) */
+/* ХОВЕР ЭФФЕКТЫ */
 button:hover .icon-play { border-left-color: var(--lotus); }
 button:hover .icon-pause::before, 
 button:hover .icon-pause::after { background-color: var(--lotus); }
 button:hover .icon-stop { background-color: var(--lotus); }
 
+/* ПОЛЗУНОК */
 .seek-container {
     position: relative;
     flex-grow: 1;
@@ -130,6 +156,7 @@ button:hover .icon-stop { background-color: var(--lotus); }
     background: var(--lotus);
     border-radius: 50%;
     cursor: pointer;
+    box-shadow: 0 0 8px var(--lotus);
 }
 
 .seek-line-base {
@@ -145,4 +172,18 @@ button:hover .icon-stop { background-color: var(--lotus); }
     background: var(--lotus);
     opacity: 0.5;
     width: 0%;
+}
+
+/* АНИМАЦИИ */
+
+/* 1. Движение полос вниз */
+@keyframes scanlines {
+    from { background-position: 0 0; }
+    to { background-position: 0 100%; }
+}
+
+/* 2. Общая пульсация яркости (эффект старого ЭЛТ монитора) */
+@keyframes terminal-glow {
+    0%, 100% { opacity: 1; filter: brightness(1); }
+    50% { opacity: 0.95; filter: brightness(1.1); }
 }
