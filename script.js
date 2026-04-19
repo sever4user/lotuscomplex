@@ -1,4 +1,5 @@
-// СПИСОК ТРЕКОВ
+// 1. СПИСОК ТРЕКОВ
+// Просто добавляй сюда новые строки, когда появятся новые файлы в папке audio
 const tracks = [
     { name: "PROJECT SEVER - CORE", file: "track1.mp3" },
     { name: "CONCRETE DREAMS", file: "track2.mp3" }
@@ -6,7 +7,7 @@ const tracks = [
 
 const playlist = document.getElementById('playlist');
 
-// Функция создания плееров (обновленная структура HTML внутри)
+// 2. ГЕНЕРАЦИЯ ПЛЕЕРОВ НА СТРАНИЦЕ
 tracks.forEach((track, index) => {
     const id = index + 1;
     const card = document.createElement('div');
@@ -15,11 +16,17 @@ tracks.forEach((track, index) => {
         <div class="track-name">${track.name}</div>
         <div class="controls-row">
             <div class="btns">
-                <button id="toggle${id}" onclick="toggleAudio(${id})">▶</button>
-                <button onclick="stopAudio(${id})">■</button>
+                <button id="btn-toggle${id}" onclick="toggleAudio(${id})">
+                    <div class="icon-play" id="icon${id}"></div>
+                </button>
+                <button onclick="stopAudio(${id})">
+                    <div class="icon-stop"></div>
+                </button>
             </div>
             <div class="seek-container">
-                <div class="seek-line-base"></div> <div id="progress${id}" class="seek-line-progress"></div> <input type="range" class="seek-bar" id="seek${id}" value="0" step="0.1">
+                <div class="seek-line-base"></div>
+                <div id="progress${id}" class="seek-line-progress"></div>
+                <input type="range" class="seek-bar" id="seek${id}" value="0" step="0.1">
             </div>
             <audio id="audio${id}" src="audio/${track.file}"></audio>
         </div>
@@ -27,56 +34,63 @@ tracks.forEach((track, index) => {
     playlist.appendChild(card);
 });
 
+// 3. ЛОГИКА ИГРЫ / ПАУЗЫ
 function toggleAudio(id) {
     const audio = document.getElementById(`audio${id}`);
-    const btn = document.getElementById(`toggle${id}`);
+    const icon = document.getElementById(`icon${id}`);
     const seek = document.getElementById(`seek${id}`);
-    const progress = document.getElementById(`progress${id}`); // Находим линию прогресса
+    const progress = document.getElementById(`progress${id}`);
 
     if (audio.paused) {
-        // Остановить другие
+        // Остановка всех остальных треков
         document.querySelectorAll('audio').forEach((a, idx) => {
+            const otherId = idx + 1;
             if (a.id !== `audio${id}`) {
                 a.pause();
-                document.getElementById(`toggle${idx + 1}`).innerText = "▶";
-                // Сбрасываем линии прогресса других треков
-                const otherProgress = document.getElementById(`progress${idx+1}`);
-                if (otherProgress) otherProgress.style.width = '0%';
+                // Возвращаем иконку Play всем остальным
+                const otherIcon = document.getElementById(`icon${otherId}`);
+                if (otherIcon) otherIcon.className = "icon-play";
             }
         });
 
         audio.play();
-        btn.innerText = "Ⅱ";
+        icon.className = "icon-pause"; // Меняем вид на Паузу
     } else {
         audio.pause();
-        btn.innerText = "▶";
+        icon.className = "icon-play"; // Меняем вид на Плей
     }
 
+    // Обновление ползунка и линии при проигрывании
     audio.ontimeupdate = () => {
         if (audio.duration) {
             seek.max = audio.duration;
             seek.value = audio.currentTime;
-            
-            // ОБНОВЛЕНИЕ ЛИНИИ ПРОГРЕССА В %
             const pct = (audio.currentTime / audio.duration) * 100;
             progress.style.width = pct + '%';
         }
     };
 
-    seek.oninput = () => { audio.currentTime = seek.value; };
+    // Перемотка пальцем/мышкой
+    seek.oninput = () => {
+        audio.currentTime = seek.value;
+    };
 }
 
+// 4. ЛОГИКА СТОПА
 function stopAudio(id) {
     const audio = document.getElementById(`audio${id}`);
-    const btn = document.getElementById(`toggle${id}`);
+    const icon = document.getElementById(`icon${id}`);
     const progress = document.getElementById(`progress${id}`);
-    
+    const seek = document.getElementById(`seek${id}`);
+
     audio.pause();
     audio.currentTime = 0;
-    btn.innerText = "▶";
     
-    // СБРОС ЛИНИИ ПРОГРЕССА
+    // Сбрасываем визуал
+    icon.className = "icon-play";
     progress.style.width = '0%';
+    seek.value = 0;
 }
 
+// Защита: отключаем контекстное меню
 document.addEventListener('contextmenu', e => e.preventDefault());
