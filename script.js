@@ -1,30 +1,25 @@
-let currentInterval;
-
 function playTrack(audioId, seekId) {
     const player = document.getElementById(audioId);
     const seekBar = document.getElementById(seekId);
 
-    // Останавливаем все остальные треки
+    // Останавливаем все остальные треки перед запуском нового
     document.querySelectorAll('audio').forEach(audio => {
         if (audio.id !== audioId) {
             audio.pause();
-            audio.currentTime = 0;
         }
     });
-    clearInterval(currentInterval);
 
     player.play();
 
-    // Синхронизация ползунка со звуком
-    player.onloadedmetadata = () => {
-        seekBar.max = player.duration;
+    // Каждую секунду обновляем положение ползунка
+    player.ontimeupdate = () => {
+        if (player.duration) {
+            seekBar.max = player.duration;
+            seekBar.value = player.currentTime;
+        }
     };
 
-    currentInterval = setInterval(() => {
-        seekBar.value = player.currentTime;
-    }, 500);
-
-    // Перемотка при ручном перемещении ползунка
+    // Когда пользователь тянет ползунок — перематываем аудио
     seekBar.oninput = () => {
         player.currentTime = seekBar.value;
     };
@@ -33,8 +28,7 @@ function playTrack(audioId, seekId) {
 function pauseTrack(audioId) {
     const player = document.getElementById(audioId);
     player.pause();
-    clearInterval(currentInterval);
 }
 
-// Запрет контекстного меню
+// Защита: запрет правой кнопки мыши
 document.addEventListener('contextmenu', e => e.preventDefault());
