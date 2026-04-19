@@ -10,30 +10,23 @@
 body {
     background-color: var(--bg);
     color: var(--green);
-    /* Брутальный моноширинный шрифт */
     font-family: 'Courier New', Courier, monospace;
     font-weight: 900;
     display: flex;
     justify-content: center;
     margin: 0;
     overflow-x: hidden;
-    /* Очень медленная пульсация */
     animation: terminal-glow 8s ease-in-out infinite;
 }
 
-/* ПЛАВНЫЕ И РЕДКИЕ ЛИНИИ */
+/* ЭФФЕКТЫ ТЕРМИНАЛА */
 .terminal-overlay {
     position: fixed;
     top: 0; left: 0; width: 100%; height: 100%;
-    /* Сделали их намного прозрачнее (0.03) */
-    background: linear-gradient(
-        rgba(18, 16, 16, 0) 50%, 
-        rgba(0, 255, 65, 0.03) 50%
-    );
+    background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 255, 65, 0.03) 50%);
     background-size: 100% 12px;
     pointer-events: none;
     z-index: 100;
-    /* Медленное движение (20 секунд на цикл) */
     animation: scanlines 20s linear infinite;
 }
 
@@ -52,16 +45,43 @@ body::after {
     max-width: 600px;
     padding: 60px 20px;
     position: relative;
-    z-index: 1;
+    z-index: 5;
 }
 
 h1 {
     color: var(--lotus);
     text-shadow: 0 0 15px var(--lotus);
-    letter-spacing: 15px; /* Больше разнос букв для брутальности */
+    letter-spacing: 15px;
     text-align: center;
     text-transform: uppercase;
     font-size: 2rem;
+    margin-bottom: 30px;
+}
+
+/* МЕНЮ НАВИГАЦИИ */
+.system-nav {
+    display: flex;
+    justify-content: center;
+    gap: 15px;
+    margin-bottom: 25px;
+}
+
+.system-nav button {
+    background: none;
+    border: 1px solid transparent;
+    color: var(--green);
+    font-family: inherit;
+    font-size: 0.75em;
+    cursor: pointer;
+    width: auto;
+    height: auto;
+    padding: 8px 15px;
+    text-transform: uppercase;
+}
+
+.system-nav button:hover {
+    border: 1px solid var(--green);
+    background: rgba(0, 255, 65, 0.1);
 }
 
 .system-status {
@@ -69,22 +89,23 @@ h1 {
     text-align: center;
     margin-bottom: 50px;
     opacity: 0.6;
-    text-transform: uppercase;
     letter-spacing: 4px;
 }
 
+/* СЕКЦИИ КОНТЕНТА */
+.content-section { display: none; }
+.content-section.active { display: block; }
+
+/* ПЛЕЕР */
 .track-card {
     border-bottom: 1px solid var(--line);
     padding: 25px 0;
-    display: flex;
-    flex-direction: column;
 }
 
 .track-name {
     font-size: 0.85em;
     margin-bottom: 15px;
     letter-spacing: 2px;
-    text-shadow: 0 0 3px var(--green);
     text-transform: uppercase;
 }
 
@@ -94,10 +115,12 @@ h1 {
     gap: 15px;
 }
 
-button {
+.btns { display: flex; gap: 5px; }
+
+/* Кнопки внутри плеера */
+.btns button {
     background: none;
     border: none;
-    cursor: pointer;
     width: var(--control-size);
     height: var(--control-size);
     display: flex;
@@ -106,7 +129,6 @@ button {
     padding: 0;
 }
 
-/* ИКОНКИ */
 .icon-play {
     width: 0; height: 0;
     border-top: calc(var(--icon-size) / 2) solid transparent;
@@ -116,28 +138,17 @@ button {
 }
 
 .icon-pause {
-    width: var(--icon-size);
-    height: var(--icon-size);
-    display: flex;
-    justify-content: space-between;
+    width: var(--icon-size); height: var(--icon-size);
+    display: flex; justify-content: space-between;
 }
 .icon-pause::before, .icon-pause::after {
-    content: "";
-    width: 4px;
-    height: 100%;
-    background-color: var(--green);
+    content: ""; width: 4px; height: 100%; background-color: var(--green);
 }
 
 .icon-stop {
-    width: var(--icon-size);
-    height: var(--icon-size);
+    width: var(--icon-size); height: var(--icon-size);
     background-color: var(--green);
 }
-
-button:hover .icon-play { border-left-color: var(--lotus); filter: drop-shadow(0 0 5px var(--lotus)); }
-button:hover .icon-pause::before, 
-button:hover .icon-pause::after { background-color: var(--lotus); filter: drop-shadow(0 0 5px var(--lotus)); }
-button:hover .icon-stop { background-color: var(--lotus); filter: drop-shadow(0 0 5px var(--lotus)); }
 
 /* ПОЛЗУНОК */
 .seek-container {
@@ -149,45 +160,27 @@ button:hover .icon-stop { background-color: var(--lotus); filter: drop-shadow(0 
 }
 
 .seek-bar {
-    position: absolute;
-    width: 100%;
-    -webkit-appearance: none;
-    background: transparent;
-    z-index: 5;
-    outline: none;
+    position: absolute; width: 100%; -webkit-appearance: none;
+    background: transparent; z-index: 5; outline: none;
 }
 
 .seek-bar::-webkit-slider-thumb {
-    -webkit-appearance: none;
-    width: 10px;
-    height: 10px;
-    background: var(--lotus);
-    border-radius: 50%;
-    cursor: pointer;
+    -webkit-appearance: none; width: 10px; height: 10px;
+    background: var(--lotus); border-radius: 50%; cursor: pointer;
 }
 
 .seek-line-base {
-    position: absolute;
-    width: 100%;
-    height: 1px;
-    background: var(--line);
+    position: absolute; width: 100%; height: 1px; background: var(--line);
 }
 
 .seek-line-progress {
-    position: absolute;
-    height: 1px;
-    background: var(--lotus);
-    opacity: 0.5;
-    width: 0%;
+    position: absolute; height: 1px; background: var(--lotus);
+    opacity: 0.5; width: 0%;
 }
 
 /* АНИМАЦИИ */
-@keyframes scanlines {
-    from { background-position: 0 0; }
-    to { background-position: 0 100%; }
-}
-
+@keyframes scanlines { from { background-position: 0 0; } to { background-position: 0 100%; } }
 @keyframes terminal-glow {
-    0%, 100% { filter: brightness(1) contrast(1); }
-    50% { filter: brightness(1.08) contrast(1.05); }
+    0%, 100% { filter: brightness(1); }
+    50% { filter: brightness(1.08); }
 }
