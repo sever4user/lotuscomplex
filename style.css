@@ -7,22 +7,52 @@
     --icon-size: 14px;
 }
 
+html {
+    background-color: var(--bg); /* Чтобы не было белых вспышек */
+    height: 100%;
+}
+
 body {
-    background: var(--bg);
+    background-color: var(--bg);
     color: var(--green);
     font-family: 'Courier New', Courier, monospace;
     font-weight: 900;
     margin: 0;
     display: flex;
     justify-content: center;
-    animation: terminal-glow 8s infinite;
+    
+    /* КЛЮЧЕВОЕ ИСПРАВЛЕНИЕ: */
+    min-height: 100vh; /* Минимальная высота — 100% видимого окна */
+    width: 100%;
+    
+    overflow-x: hidden;
+    animation: terminal-glow 8s ease-in-out infinite;
+    position: relative;
+}
+
+body::after {
+    content: " ";
+    display: block;
+    position: fixed;
+    top: 0; left: 0; bottom: 0; right: 0;
+    background: radial-gradient(circle, rgba(18, 16, 16, 0) 60%, rgba(0, 0, 0, 0.8) 100%);
+    z-index: 2;
+    pointer-events: none;
 }
 
 .terminal-overlay {
-    position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-    background: linear-gradient(rgba(18,16,16,0) 50%, rgba(0,255,65,0.02) 50%);
+    position: fixed; /* Фиксируем, чтобы при скролле полосы не уезжали */
+    top: 0; 
+    left: 0; 
+    width: 100vw; 
+    height: 100vh;
+    background: linear-gradient(
+        rgba(18, 16, 16, 0) 50%, 
+        rgba(0, 255, 65, 0.02) 50%
+    );
     background-size: 100% 10px;
-    pointer-events: none; z-index: 100;
+    pointer-events: none; 
+    z-index: 100;
     animation: scanlines 20s linear infinite;
 }
 
