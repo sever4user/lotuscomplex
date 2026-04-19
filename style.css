@@ -1,0 +1,49 @@
+body {
+    background-color: #0a0a0a;
+    color: #e0e0e0;
+    font-family: 'Courier New', Courier, monospace;
+    display: flex;
+    justify-content: center;
+    padding-top: 50px;
+}
+
+.container {
+    text-align: center;
+    width: 90%;
+    max-width: 600px;
+}
+
+h1 {
+    letter-spacing: 5px;
+    border-bottom: 1px solid #333;
+    padding-bottom: 10px;
+}
+
+.track-card {
+    background: #151515;
+    margin: 15px 0;
+    padding: 20px;
+    border: 1px solid #222;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+button {
+    background: none;
+    border: 1px solid #444;
+    color: #aaa;
+    padding: 5px 15px;
+    cursor: pointer;
+    margin-left: 5px;
+}
+
+button:hover {
+    background: #e0e0e0;
+    color: #000;
+}
+
+/* Прячем стандартный плеер, чтобы его не скачали */
+audio {
+    display: none;
+}
