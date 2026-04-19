@@ -3,8 +3,8 @@
     --lotus: #FFB7D5;
     --bg: #0d0d0d;
     --line: #222;
-    /* Единый размер для кнопок и розового ползунка */
-    --control-size: 20px; 
+    --control-size: 30px; /* Размер области кнопки */
+    --icon-size: 14px;    /* Размер самой иконки внутри */
 }
 
 body {
@@ -14,16 +14,6 @@ body {
     display: flex;
     justify-content: center;
     margin: 0;
-    overflow-x: hidden;
-}
-
-/* Эффект сканирующих линий терминала */
-.terminal-overlay {
-    position: fixed;
-    top: 0; left: 0; width: 100%; height: 100%;
-    background: repeating-linear-gradient(0deg, rgba(0,0,0,0.03), rgba(0,0,0,0.03) 2px, transparent 1px, transparent 2px);
-    pointer-events: none;
-    z-index: 10;
 }
 
 .container {
@@ -37,21 +27,9 @@ h1 {
     text-shadow: 0 0 15px rgba(255, 183, 213, 0.4);
     letter-spacing: 12px;
     text-align: center;
-    font-size: 1.8rem;
-    margin-top: 0;
     text-transform: uppercase;
 }
 
-.system-status {
-    font-size: 0.65em;
-    text-align: center;
-    margin-bottom: 50px;
-    opacity: 0.5;
-    text-transform: uppercase;
-    letter-spacing: 2px;
-}
-
-/* Карточки треков */
 .track-card {
     border-bottom: 1px solid var(--line);
     padding: 20px 0;
@@ -62,103 +40,111 @@ h1 {
 .track-name {
     font-size: 0.8em;
     margin-bottom: 15px;
-    opacity: 0.9;
     letter-spacing: 1px;
 }
 
 .controls-row {
     display: flex;
     align-items: center;
-    gap: 15px;
+    gap: 10px;
 }
 
 .btns {
     display: flex;
-    gap: 10px;
+    gap: 5px;
 }
 
-/* Кнопки Плей и Стоп - строгие квадраты */
+/* ОБЩИЙ СТИЛЬ КНОПОК */
 button {
     background: none;
     border: none;
-    color: var(--green);
     cursor: pointer;
-    
     width: var(--control-size);
-    height: var(--control-size);
-    
-    /* Центрирование символов ▶ и ■ */
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    
-    padding: 0;
-    font-size: 1.2em;
-    line-height: 1;
-    transition: 0.2s;
-}
-
-button:hover {
-    color: var(--lotus);
-    transform: scale(1.1);
-}
-
-/* Контейнер ползунка */
-.seek-container {
-    position: relative;
-    flex-grow: 1;
     height: var(--control-size);
     display: flex;
     align-items: center;
+    justify-content: center;
+    padding: 0;
+    transition: 0.2s;
 }
 
-/* Прозрачный невидимый ползунок (оставляем только точку) */
+/* ИКОНКА PLAY (Треугольник из линий) */
+.icon-play {
+    width: 0;
+    height: 0;
+    border-top: calc(var(--icon-size) / 2) solid transparent;
+    border-bottom: calc(var(--icon-size) / 2) solid transparent;
+    border-left: var(--icon-size) solid var(--green);
+    margin-left: 4px;
+}
+
+/* ИКОНКА PAUSE (Две линии) */
+.icon-pause {
+    width: var(--icon-size);
+    height: var(--icon-size);
+    display: flex;
+    justify-content: space-between;
+}
+.icon-pause::before, .icon-pause::after {
+    content: "";
+    width: 4px;
+    height: 100%;
+    background: var(--green);
+}
+
+/* ИКОНКА STOP (Квадрат) */
+.icon-stop {
+    width: var(--icon-size);
+    height: var(--icon-size);
+    background: var(--green);
+}
+
+button:hover div, 
+button:hover::before, 
+button:hover::after {
+    background-color: var(--lotus); /* Меняем цвет иконок при наведении */
+    border-left-color: var(--lotus);
+}
+
+/* ПОЛЗУНОК */
+.seek-container {
+    position: relative;
+    flex-grow: 1;
+    display: flex;
+    align-items: center;
+    height: var(--control-size);
+}
+
 .seek-bar {
     position: absolute;
     width: 100%;
-    height: 100%;
-    margin: 0;
     -webkit-appearance: none;
     background: transparent;
-    outline: none;
     z-index: 5;
+    outline: none;
 }
 
-/* Розовая точка ползунка - размер совпадает с кнопками */
+/* Маленькая аккуратная точка ползунка */
 .seek-bar::-webkit-slider-thumb {
     -webkit-appearance: none;
-    width: var(--control-size);
-    height: var(--control-size);
+    width: 10px;
+    height: 10px;
     background: var(--lotus);
-    border-radius: 50%;
-    cursor: pointer;
-    box-shadow: 0 0 15px rgba(255, 183, 213, 0.6);
-}
-
-.seek-bar::-moz-range-thumb {
-    width: var(--control-size);
-    height: var(--control-size);
-    background: var(--lotus);
-    border: none;
     border-radius: 50%;
     cursor: pointer;
 }
 
-/* Базовая серая линия */
 .seek-line-base {
     position: absolute;
     width: 100%;
     height: 1px;
     background: var(--line);
-    z-index: 1;
 }
 
-/* Тянущаяся линия прогресса */
 .seek-line-progress {
     position: absolute;
     height: 1px;
     background: var(--lotus);
-    opacity: 0.4;
+    opacity: 0.5;
     width: 0%;
-    z-index: 2;
 }
