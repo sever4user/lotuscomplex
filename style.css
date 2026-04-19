@@ -2,7 +2,8 @@
     --green: #00FF41;
     --lotus: #FFB7D5;
     --bg: #0d0d0d;
-    --line: #222; /* Тонкая серая линия */
+    --line: #222; /* Базовая тонкая линия */
+    --control-size: 28px; /* Единый размер для кнопок и точки */
 }
 
 body {
@@ -12,34 +13,45 @@ body {
     display: flex;
     justify-content: center;
     margin: 0;
+    overflow-x: hidden;
+}
+
+/* Эффект мерцания терминала (по желанию, для атмосферы) */
+.terminal-overlay {
+    position: fixed;
+    top: 0; left: 0; width: 100%; height: 100%;
+    background: repeating-linear-gradient(0deg, rgba(0,0,0,0.05), rgba(0,0,0,0.05) 1px, transparent 1px, transparent 2px);
+    pointer-events: none;
+    z-index: 10;
 }
 
 .container {
     width: 90%;
     max-width: 600px;
-    padding: 40px 20px;
+    padding: 60px 20px;
 }
 
 h1 {
     color: var(--lotus);
     text-shadow: 0 0 15px rgba(255, 183, 213, 0.4);
-    letter-spacing: 10px;
+    letter-spacing: 12px;
     text-align: center;
-    font-size: 1.5rem;
+    font-size: 1.8rem;
+    margin-top: 0;
 }
 
 .system-status {
     font-size: 0.65em;
     text-align: center;
-    margin-bottom: 40px;
+    margin-bottom: 50px;
     opacity: 0.5;
     text-transform: uppercase;
 }
 
-/* Тонкие карточки без фона */
+/* Тонкие карточки */
 .track-card {
     border-bottom: 1px solid var(--line);
-    padding: 10px 0;
+    padding: 15px 0;
     margin-bottom: 5px;
     display: flex;
     flex-direction: column;
@@ -47,19 +59,20 @@ h1 {
 
 .track-name {
     font-size: 0.8em;
-    margin-bottom: 8px;
+    margin-bottom: 12px;
     opacity: 0.9;
+    letter-spacing: 1px;
 }
 
 .controls-row {
     display: flex;
     align-items: center;
-    gap: 12px;
+    gap: 15px;
 }
 
 .btns {
     display: flex;
-    gap: 10px;
+    gap: 12px;
 }
 
 button {
@@ -67,9 +80,14 @@ button {
     border: none;
     color: var(--green);
     cursor: pointer;
-    font-size: 1.1em;
+    font-size: 1.3em;
     padding: 0;
-    width: 30px;
+    /* Одинаковый размер для всех кнопок */
+    width: var(--control-size);
+    height: var(--control-size);
+    display: flex;
+    align-items: center;
+    justify-content: center;
     transition: 0.2s;
 }
 
@@ -77,20 +95,54 @@ button:hover {
     color: var(--lotus);
 }
 
-.seek-bar {
+/* КОНТЕЙНЕР ДЛЯ ПОЛЗУНКА И ЛИНИИ ПРОГРЕССА */
+.seek-container {
+    position: relative;
     flex-grow: 1;
-    -webkit-appearance: none;
-    background: #1a1a1a;
-    height: 1px; /* Максимально тонкая линия */
-    outline: none;
+    height: var(--control-size); /* Чтобы точка была по центру кнопок */
+    display: flex;
+    align-items: center;
 }
 
-/* Тонкий ползунок-точка */
+/* Сам ползунок (мы его скрываем визуально, оставляя только точку) */
+.seek-bar {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    margin: 0;
+    -webkit-appearance: none;
+    background: transparent; /* Скрываем стандартную линию */
+    outline: none;
+    z-index: 5; /* Поверх всего */
+}
+
+/* Увеличенная точка ползунка */
 .seek-bar::-webkit-slider-thumb {
     -webkit-appearance: none;
-    width: 6px;
-    height: 6px;
+    width: var(--control-size); /* Размер как у кнопок */
+    height: var(--control-size);
     background: var(--lotus);
     border-radius: 50%;
     cursor: pointer;
+    margin-top: -1px; /* Визуальная центровка */
+    box-shadow: 0 0 10px rgba(255, 183, 213, 0.4);
+}
+
+/* БАЗОВАЯ ЛИНИЯ ТРЕКА (серая) */
+.seek-line-base {
+    position: absolute;
+    width: 100%;
+    height: 1px;
+    background: var(--line);
+    z-index: 1;
+}
+
+/* ЛИНИЯ ПРОГРЕССА (розовая, полупрозрачная), которая тянется */
+.seek-line-progress {
+    position: absolute;
+    height: 1px;
+    background: var(--lotus);
+    opacity: 0.3; /* Полупрозрачность */
+    width: 0%; /* Будет меняться скриптом */
+    z-index: 2;
 }
