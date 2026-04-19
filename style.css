@@ -1,87 +1,98 @@
+:root {
+    --concrete: #2c2c2c;
+    --green: #00FF41;
+    --lotus: #FFB7D5;
+    --bg: #0d0d0d;
+}
+
 body {
-    background-color: #0a0a0a;
-    color: #e0e0e0;
-    font-family: 'Courier New', Courier, monospace;
+    background-color: var(--bg);
+    color: var(--green);
+    font-family: 'Courier New', monospace;
     display: flex;
     justify-content: center;
-    padding-top: 50px;
+    margin: 0;
 }
 
 .container {
-    text-align: center;
     width: 90%;
-    max-width: 600px;
+    max-width: 700px;
+    padding: 40px 20px;
 }
 
 h1 {
-    letter-spacing: 5px;
-    border-bottom: 1px solid #333;
-    padding-bottom: 10px;
+    color: var(--lotus);
+    text-shadow: 0 0 10px var(--lotus);
+    letter-spacing: 8px;
+    text-align: center;
+}
+
+.system-status {
+    font-size: 0.7em;
+    text-align: center;
+    margin-bottom: 30px;
+    opacity: 0.7;
 }
 
 .track-card {
-    background: #151515;
-    margin: 15px 0;
-    padding: 20px;
-    border: 1px solid #222;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-}
-
-button {
-    background: none;
+    background: var(--concrete);
     border: 1px solid #444;
-    color: #aaa;
-    padding: 5px 15px;
-    cursor: pointer;
-    margin-left: 5px;
-}
-
-button:hover {
-    background: #e0e0e0;
-    color: #000;
-}
-
-/* Прячем стандартный плеер, чтобы его не скачали */
-audio {
-    display: none;
-}
-
-.track-info {
+    padding: 15px;
+    margin-bottom: 10px;
     display: flex;
     flex-direction: column;
-    align-items: flex-start;
-    flex-grow: 1;
-    margin-right: 20px;
-}
-
-.seek-bar {
-    -webkit-appearance: none; /* Убираем стандартный вид */
-    width: 100%;
-    height: 2px;
-    background: #333;
-    outline: none;
-    margin-top: 10px;
-}
-
-/* Стиль самого "кружочка" для разных браузеров */
-.seek-bar::-webkit-slider-thumb {
-    -webkit-appearance: none;
-    width: 10px;
-    height: 10px;
-    background: #e0e0e0;
-    cursor: pointer;
-}
-
-.seek-bar::-moz-range-thumb {
-    width: 10px;
-    height: 10px;
-    background: #e0e0e0;
-    cursor: pointer;
 }
 
 .track-name {
     font-size: 0.9em;
-    text-transform: uppercase;
+    margin-bottom: 10px;
+}
+
+.controls-row {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+}
+
+.btns {
+    display: flex;
+    gap: 8px;
+}
+
+button {
+    background: none;
+    border: 1px solid var(--green);
+    color: var(--green);
+    cursor: pointer;
+    font-size: 1.2em;
+    padding: 5px 10px;
+    transition: 0.2s;
+}
+
+button:hover {
+    background: var(--green);
+    color: #000;
+}
+
+/* Стили для стоп-кнопки (Лотос) */
+.btn-stop:hover {
+    background: var(--lotus);
+    border-color: var(--lotus);
+    color: #000;
+}
+
+.seek-bar {
+    flex-grow: 1;
+    -webkit-appearance: none;
+    background: #1a1a1a;
+    height: 3px;
+    outline: none;
+}
+
+.seek-bar::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    width: 12px;
+    height: 12px;
+    background: var(--lotus); /* Кнопка перемотки как лепесток */
+    cursor: pointer;
 }
