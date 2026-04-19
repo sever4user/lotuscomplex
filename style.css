@@ -2,8 +2,9 @@
     --green: #00FF41;
     --lotus: #FFB7D5;
     --bg: #0d0d0d;
-    --line: #222; /* Базовая тонкая линия */
-    --control-size: 28px; /* Единый размер для кнопок и точки */
+    --line: #222;
+    /* Единый размер для кнопок и розового ползунка */
+    --control-size: 28px; 
 }
 
 body {
@@ -16,11 +17,11 @@ body {
     overflow-x: hidden;
 }
 
-/* Эффект мерцания терминала (по желанию, для атмосферы) */
+/* Эффект сканирующих линий терминала */
 .terminal-overlay {
     position: fixed;
     top: 0; left: 0; width: 100%; height: 100%;
-    background: repeating-linear-gradient(0deg, rgba(0,0,0,0.05), rgba(0,0,0,0.05) 1px, transparent 1px, transparent 2px);
+    background: repeating-linear-gradient(0deg, rgba(0,0,0,0.03), rgba(0,0,0,0.03) 1px, transparent 1px, transparent 2px);
     pointer-events: none;
     z-index: 10;
 }
@@ -38,6 +39,7 @@ h1 {
     text-align: center;
     font-size: 1.8rem;
     margin-top: 0;
+    text-transform: uppercase;
 }
 
 .system-status {
@@ -46,20 +48,20 @@ h1 {
     margin-bottom: 50px;
     opacity: 0.5;
     text-transform: uppercase;
+    letter-spacing: 2px;
 }
 
-/* Тонкие карточки */
+/* Карточки треков */
 .track-card {
     border-bottom: 1px solid var(--line);
-    padding: 15px 0;
-    margin-bottom: 5px;
+    padding: 20px 0;
     display: flex;
     flex-direction: column;
 }
 
 .track-name {
     font-size: 0.8em;
-    margin-bottom: 12px;
+    margin-bottom: 15px;
     opacity: 0.9;
     letter-spacing: 1px;
 }
@@ -72,26 +74,24 @@ h1 {
 
 .btns {
     display: flex;
-    gap: 12px;
+    gap: 10px;
 }
 
-/* Единый стиль для всех кнопок-команд */
+/* Кнопки Плей и Стоп - строгие квадраты */
 button {
     background: none;
     border: none;
     color: var(--green);
     cursor: pointer;
     
-    /* Делаем кнопки строго квадратными */
     width: var(--control-size);
     height: var(--control-size);
     
-    /* Центрируем символ внутри кнопки */
+    /* Центрирование символов ▶ и ■ */
     display: inline-flex;
     align-items: center;
     justify-content: center;
     
-    /* Убираем лишние отступы и выравниваем шрифт */
     padding: 0;
     font-size: 1.2em;
     line-height: 1;
@@ -100,43 +100,51 @@ button {
 
 button:hover {
     color: var(--lotus);
+    transform: scale(1.1);
 }
 
-/* КОНТЕЙНЕР ДЛЯ ПОЛЗУНКА */
+/* Контейнер ползунка */
 .seek-container {
     position: relative;
     flex-grow: 1;
-    height: var(--control-size); 
+    height: var(--control-size);
     display: flex;
     align-items: center;
-    margin-left: 10px; /* Небольшой отступ от кнопок */
 }
 
-/* Увеличенная точка ползунка (Thumb) */
+/* Прозрачный невидимый ползунок (оставляем только точку) */
+.seek-bar {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    margin: 0;
+    -webkit-appearance: none;
+    background: transparent;
+    outline: none;
+    z-index: 5;
+}
+
+/* Розовая точка ползунка - размер совпадает с кнопками */
 .seek-bar::-webkit-slider-thumb {
     -webkit-appearance: none;
-    width: 20px; /* Сделаем чуть меньше control-size, чтобы не было слишком массивно */
-    height: 20px;
+    width: var(--control-size);
+    height: var(--control-size);
     background: var(--lotus);
     border-radius: 50%;
     cursor: pointer;
-    box-shadow: 0 0 10px rgba(255, 183, 213, 0.4);
-    position: relative;
-    z-index: 10;
+    box-shadow: 0 0 15px rgba(255, 183, 213, 0.6);
 }
 
-/* Для Firefox */
 .seek-bar::-moz-range-thumb {
-    width: 20px;
-    height: 20px;
+    width: var(--control-size);
+    height: var(--control-size);
     background: var(--lotus);
     border: none;
     border-radius: 50%;
     cursor: pointer;
-    box-shadow: 0 0 10px rgba(255, 183, 213, 0.4);
 }
 
-/* БАЗОВАЯ ЛИНИЯ ТРЕКА (серая) */
+/* Базовая серая линия */
 .seek-line-base {
     position: absolute;
     width: 100%;
@@ -145,12 +153,12 @@ button:hover {
     z-index: 1;
 }
 
-/* ЛИНИЯ ПРОГРЕССА (розовая, полупрозрачная), которая тянется */
+/* Тянущаяся линия прогресса */
 .seek-line-progress {
     position: absolute;
     height: 1px;
     background: var(--lotus);
-    opacity: 0.3; /* Полупрозрачность */
-    width: 0%; /* Будет меняться скриптом */
+    opacity: 0.4;
+    width: 0%;
     z-index: 2;
 }
