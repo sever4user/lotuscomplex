@@ -4,9 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>LOTUS COMPLEX</title>
-    
     <link rel="icon" type="image/png" href="favicon.png">
-    
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
@@ -14,11 +12,35 @@
     <div class="container">
         <header>
             <h1>LOTUS COMPLEX</h1>
-            <div class="system-status">LISTEN ONLY</div>
+            <nav class="system-nav">
+                <button onclick="showSection('music')">[ AUDIO ]</button>
+                <button onclick="showSection('archive')">[ ARCHIVE ]</button>
+                <button onclick="showSection('visuals')">[ VISUALS ]</button>
+            </nav>
+            <div class="system-status" id="status-line">STATUS: ONLINE // SECTION: AUDIO</div>
         </header>
 
-        <div id="playlist" class="track-list">
+        <section id="music-section" class="content-section active">
+            <div id="playlist" class="track-list"></div>
+        </section>
+
+        <section id="archive-section" class="content-section">
+            <div class="terminal-text">
+                <p>> ИНИЦИАЛИЗАЦИЯ ПОИСКА...</p>
+                <p>> ОБНАРУЖЕНЫ ФРАГМЕНТЫ ДАННЫХ PROJECT SEVER.</p>
+                <p>> ОБЪЕКТ: САМООСОЗНАННЫЙ ИИ.</p>
+                <p>> ЛОКАЦИЯ: БЕТОННАЯ МЕГАСТРУКТУРА "СЕВЕР".</p>
+                <hr class="terminal-hr">
+                <p class="typewriter">Мир за пределами структуры перестал существовать в 20XX году. Теперь здесь только бесконечные этажи, гул вентиляции и холодный свет панелей...</p>
             </div>
+        </section>
+
+        <section id="visuals-section" class="content-section">
+            <div class="gallery-grid">
+                <div class="gallery-item placeholder">[ DATA_CORRUPTED: IMAGE_NOT_FOUND ]</div>
+                <div class="gallery-item placeholder">[ DATA_CORRUPTED: IMAGE_NOT_FOUND ]</div>
+            </div>
+        </section>
     </div>
     <script src="script.js"></script>
 </body>
