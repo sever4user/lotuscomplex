@@ -1,20 +1,40 @@
-function playTrack(id) {
-    // Останавливаем все другие треки, если они играют
-    const allAudios = document.querySelectorAll('audio');
-    allAudios.forEach(track => {
-        track.pause();
-        track.currentTime = 0;
+let currentInterval;
+
+function playTrack(audioId, seekId) {
+    const player = document.getElementById(audioId);
+    const seekBar = document.getElementById(seekId);
+
+    // Останавливаем все остальные треки
+    document.querySelectorAll('audio').forEach(audio => {
+        if (audio.id !== audioId) {
+            audio.pause();
+            audio.currentTime = 0;
+        }
     });
+    clearInterval(currentInterval);
 
-    // Запускаем нужный
-    const player = document.getElementById(id);
     player.play();
+
+    // Синхронизация ползунка со звуком
+    player.onloadedmetadata = () => {
+        seekBar.max = player.duration;
+    };
+
+    currentInterval = setInterval(() => {
+        seekBar.value = player.currentTime;
+    }, 500);
+
+    // Перемотка при ручном перемещении ползунка
+    seekBar.oninput = () => {
+        player.currentTime = seekBar.value;
+    };
 }
 
-function pauseTrack(id) {
-    const player = document.getElementById(id);
+function pauseTrack(audioId) {
+    const player = document.getElementById(audioId);
     player.pause();
+    clearInterval(currentInterval);
 }
 
-// Запрещаем правую кнопку мыши, чтобы сложнее было найти ссылку на файл
-document.addEventListener('contextmenu', event => event.preventDefault());
+// Запрет контекстного меню
+document.addEventListener('contextmenu', e => e.preventDefault());
