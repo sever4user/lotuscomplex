@@ -3,8 +3,8 @@
     --lotus: #FFB7D5;
     --bg: #0d0d0d;
     --line: #222;
-    --control-size: 30px; /* Размер области кнопки */
-    --icon-size: 14px;    /* Размер самой иконки внутри */
+    --control-size: 30px;
+    --icon-size: 14px;
 }
 
 body {
@@ -54,7 +54,6 @@ h1 {
     gap: 5px;
 }
 
-/* ОБЩИЙ СТИЛЬ КНОПОК */
 button {
     background: none;
     border: none;
@@ -65,48 +64,48 @@ button {
     align-items: center;
     justify-content: center;
     padding: 0;
-    transition: 0.2s;
 }
 
-/* ИКОНКА PLAY (Треугольник из линий) */
+/* ИКОНКА PLAY (Зеленый треугольник) */
 .icon-play {
     width: 0;
     height: 0;
     border-top: calc(var(--icon-size) / 2) solid transparent;
     border-bottom: calc(var(--icon-size) / 2) solid transparent;
-    border-left: var(--icon-size) solid var(--green);
+    border-left: var(--icon-size) solid var(--green); /* ЦВЕТ ТУТ */
     margin-left: 4px;
+    pointer-events: none;
 }
 
-/* ИКОНКА PAUSE (Две линии) */
+/* ИКОНКА PAUSE (Две зеленые линии) */
 .icon-pause {
     width: var(--icon-size);
     height: var(--icon-size);
     display: flex;
     justify-content: space-between;
+    pointer-events: none;
 }
 .icon-pause::before, .icon-pause::after {
     content: "";
     width: 4px;
     height: 100%;
-    background: var(--green);
+    background-color: var(--green); /* ЦВЕТ ТУТ */
 }
 
-/* ИКОНКА STOP (Квадрат) */
+/* ИКОНКА STOP (Зеленый квадрат) */
 .icon-stop {
     width: var(--icon-size);
     height: var(--icon-size);
-    background: var(--green);
+    background-color: var(--green); /* ЦВЕТ ТУТ */
+    pointer-events: none;
 }
 
-button:hover div, 
-button:hover::before, 
-button:hover::after {
-    background-color: var(--lotus); /* Меняем цвет иконок при наведении */
-    border-left-color: var(--lotus);
-}
+/* Эффект при наведении на кнопку (меняем всё на розовый) */
+button:hover .icon-play { border-left-color: var(--lotus); }
+button:hover .icon-pause::before, 
+button:hover .icon-pause::after { background-color: var(--lotus); }
+button:hover .icon-stop { background-color: var(--lotus); }
 
-/* ПОЛЗУНОК */
 .seek-container {
     position: relative;
     flex-grow: 1;
@@ -124,7 +123,6 @@ button:hover::after {
     outline: none;
 }
 
-/* Маленькая аккуратная точка ползунка */
 .seek-bar::-webkit-slider-thumb {
     -webkit-appearance: none;
     width: 10px;
