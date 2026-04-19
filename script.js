@@ -5,7 +5,22 @@ const tracks = [
 
 const playlist = document.getElementById('playlist');
 
-// ГЕНЕРАЦИЯ ПЛЕЕРОВ
+// Функция переключения разделов
+function showSection(sectionId) {
+    // Скрываем все
+    document.querySelectorAll('.content-section').forEach(section => {
+        section.classList.remove('active');
+    });
+    // Показываем нужную
+    const target = document.getElementById(`${sectionId}-section`);
+    if (target) {
+        target.classList.add('active');
+    }
+    // Обновляем статус
+    document.getElementById('status-line').innerText = `STATUS: ONLINE // SECTION: ${sectionId.toUpperCase()}`;
+}
+
+// Генерация плеера
 tracks.forEach((track, index) => {
     const id = index + 1;
     const card = document.createElement('div');
@@ -28,25 +43,19 @@ tracks.forEach((track, index) => {
     playlist.appendChild(card);
 });
 
-// ПЕРЕКЛЮЧЕНИЕ СЕКЦИЙ
-function showSection(sectionName) {
-    document.querySelectorAll('.content-section').forEach(s => s.classList.remove('active'));
-    document.getElementById(`${sectionName}-section`).classList.add('active');
-    document.getElementById('status-line').innerText = `STATUS: ONLINE // SECTION: ${sectionName.toUpperCase()}`;
-}
-
-// ПЛЕЕР ЛОГИКА
+// Логика аудио (Play/Pause)
 function toggleAudio(id) {
     const audio = document.getElementById(`audio${id}`);
     const icon = document.getElementById(`icon${id}`);
     const seek = document.getElementById(`seek${id}`);
-    const progress = document.getElementById(`progress${id}`);
+    const prog = document.getElementById(`progress${id}`);
 
     if (audio.paused) {
+        // Остановить другие
         document.querySelectorAll('audio').forEach((a, idx) => {
             if (a.id !== `audio${id}`) {
                 a.pause();
-                const otherIcon = document.getElementById(`icon${idx + 1}`);
+                const otherIcon = document.getElementById(`icon${idx+1}`);
                 if (otherIcon) otherIcon.className = "icon-play";
             }
         });
@@ -58,11 +67,9 @@ function toggleAudio(id) {
     }
 
     audio.ontimeupdate = () => {
-        if (audio.duration) {
-            seek.max = audio.duration;
-            seek.value = audio.currentTime;
-            progress.style.width = (audio.currentTime / audio.duration) * 100 + '%';
-        }
+        seek.max = audio.duration;
+        seek.value = audio.currentTime;
+        prog.style.width = (audio.currentTime / audio.duration) * 100 + "%";
     };
     seek.oninput = () => audio.currentTime = seek.value;
 }
@@ -72,5 +79,5 @@ function stopAudio(id) {
     audio.pause();
     audio.currentTime = 0;
     document.getElementById(`icon${id}`).className = "icon-play";
-    document.getElementById(`progress${id}`).style.width = '0%';
+    document.getElementById(`progress${id}`).style.width = "0%";
 }
