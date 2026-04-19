@@ -1,5 +1,3 @@
-// 1. СПИСОК ТРЕКОВ
-// Просто добавляй сюда новые строки, когда появятся новые файлы в папке audio
 const tracks = [
     { name: "PROJECT SEVER - CORE", file: "track1.mp3" },
     { name: "CONCRETE DREAMS", file: "track2.mp3" }
@@ -7,7 +5,7 @@ const tracks = [
 
 const playlist = document.getElementById('playlist');
 
-// 2. ГЕНЕРАЦИЯ ПЛЕЕРОВ НА СТРАНИЦЕ
+// ГЕНЕРАЦИЯ ПЛЕЕРОВ
 tracks.forEach((track, index) => {
     const id = index + 1;
     const card = document.createElement('div');
@@ -16,12 +14,8 @@ tracks.forEach((track, index) => {
         <div class="track-name">${track.name}</div>
         <div class="controls-row">
             <div class="btns">
-                <button id="btn-toggle${id}" onclick="toggleAudio(${id})">
-                    <div class="icon-play" id="icon${id}"></div>
-                </button>
-                <button onclick="stopAudio(${id})">
-                    <div class="icon-stop"></div>
-                </button>
+                <button onclick="toggleAudio(${id})"><div class="icon-play" id="icon${id}"></div></button>
+                <button onclick="stopAudio(${id})"><div class="icon-stop"></div></button>
             </div>
             <div class="seek-container">
                 <div class="seek-line-base"></div>
@@ -34,7 +28,14 @@ tracks.forEach((track, index) => {
     playlist.appendChild(card);
 });
 
-// 3. ЛОГИКА ИГРЫ / ПАУЗЫ
+// ПЕРЕКЛЮЧЕНИЕ СЕКЦИЙ
+function showSection(sectionName) {
+    document.querySelectorAll('.content-section').forEach(s => s.classList.remove('active'));
+    document.getElementById(`${sectionName}-section`).classList.add('active');
+    document.getElementById('status-line').innerText = `STATUS: ONLINE // SECTION: ${sectionName.toUpperCase()}`;
+}
+
+// ПЛЕЕР ЛОГИКА
 function toggleAudio(id) {
     const audio = document.getElementById(`audio${id}`);
     const icon = document.getElementById(`icon${id}`);
@@ -42,55 +43,34 @@ function toggleAudio(id) {
     const progress = document.getElementById(`progress${id}`);
 
     if (audio.paused) {
-        // Остановка всех остальных треков
         document.querySelectorAll('audio').forEach((a, idx) => {
-            const otherId = idx + 1;
             if (a.id !== `audio${id}`) {
                 a.pause();
-                // Возвращаем иконку Play всем остальным
-                const otherIcon = document.getElementById(`icon${otherId}`);
+                const otherIcon = document.getElementById(`icon${idx + 1}`);
                 if (otherIcon) otherIcon.className = "icon-play";
             }
         });
-
         audio.play();
-        icon.className = "icon-pause"; // Меняем вид на Паузу
+        icon.className = "icon-pause";
     } else {
         audio.pause();
-        icon.className = "icon-play"; // Меняем вид на Плей
+        icon.className = "icon-play";
     }
 
-    // Обновление ползунка и линии при проигрывании
     audio.ontimeupdate = () => {
         if (audio.duration) {
             seek.max = audio.duration;
             seek.value = audio.currentTime;
-            const pct = (audio.currentTime / audio.duration) * 100;
-            progress.style.width = pct + '%';
+            progress.style.width = (audio.currentTime / audio.duration) * 100 + '%';
         }
     };
-
-    // Перемотка пальцем/мышкой
-    seek.oninput = () => {
-        audio.currentTime = seek.value;
-    };
+    seek.oninput = () => audio.currentTime = seek.value;
 }
 
-// 4. ЛОГИКА СТОПА
 function stopAudio(id) {
     const audio = document.getElementById(`audio${id}`);
-    const icon = document.getElementById(`icon${id}`);
-    const progress = document.getElementById(`progress${id}`);
-    const seek = document.getElementById(`seek${id}`);
-
     audio.pause();
     audio.currentTime = 0;
-    
-    // Сбрасываем визуал
-    icon.className = "icon-play";
-    progress.style.width = '0%';
-    seek.value = 0;
+    document.getElementById(`icon${id}`).className = "icon-play";
+    document.getElementById(`progress${id}`).style.width = '0%';
 }
-
-// Защита: отключаем контекстное меню
-document.addEventListener('contextmenu', e => e.preventDefault());
