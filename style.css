@@ -57,11 +57,28 @@ audio {
 }
 
 .seek-bar {
+    -webkit-appearance: none; /* Убираем стандартный вид */
     width: 100%;
-    height: 4px;
-    cursor: pointer;
-    accent-color: #e0e0e0; /* Цвет ползунка */
+    height: 2px;
+    background: #333;
+    outline: none;
     margin-top: 10px;
+}
+
+/* Стиль самого "кружочка" для разных браузеров */
+.seek-bar::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    width: 10px;
+    height: 10px;
+    background: #e0e0e0;
+    cursor: pointer;
+}
+
+.seek-bar::-moz-range-thumb {
+    width: 10px;
+    height: 10px;
+    background: #e0e0e0;
+    cursor: pointer;
 }
 
 .track-name {
