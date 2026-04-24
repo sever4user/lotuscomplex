@@ -82,55 +82,39 @@ async function loadAudio() {
     } catch (e) { console.error(e); }
 }
 
+// ... (начало скрипта пропустим, оставь как было до loadVisuals)
+
 async function loadVisuals() {
     const gallery = document.querySelector('.gallery-grid');
     const overlay = document.getElementById('overlay-bg');
     const url = `https://api.github.com/repos/${GH_USER}/${GH_REPO}/contents/visuals`;
+    
     try {
         const res = await fetch(url);
         const files = await res.json();
         const images = files.filter(f => /\.(png|jpg|jpeg|webp)$/i.test(f.name));
+        
         gallery.innerHTML = '';
         images.forEach(f => {
             const item = document.createElement('div');
             item.className = 'gallery-item';
             item.innerHTML = `<img src="${f.download_url}">`;
+            
             item.onclick = function() {
                 this.classList.toggle('zoomed');
+                // Если развернуто — прячем прокрутку страницы
+                document.body.style.overflow = this.classList.contains('zoomed') ? 'hidden' : 'auto';
                 overlay.style.display = this.classList.contains('zoomed') ? 'block' : 'none';
             };
             gallery.appendChild(item);
         });
+
+        // Закрытие по клику на фон
         overlay.onclick = () => {
             document.querySelectorAll('.gallery-item').forEach(el => el.classList.remove('zoomed'));
             overlay.style.display = 'none';
+            document.body.style.overflow = 'auto';
         };
     } catch (e) { console.error(e); }
 }
-
-function toggleAudio(id) {
-    const audio = document.getElementById(`audio${id}`);
-    const icon = document.getElementById(`icon${id}`);
-    const seek = document.getElementById(`seek${id}`);
-    const prog = document.getElementById(`progress${id}`);
-    if (audio.paused) {
-        audio.play(); icon.className = "icon-pause";
-    } else {
-        audio.pause(); icon.className = "icon-play";
-    }
-    audio.ontimeupdate = () => {
-        seek.value = audio.currentTime;
-        seek.max = audio.duration;
-        prog.style.width = (audio.currentTime / audio.duration) * 100 + "%";
-    };
-    seek.oninput = () => audio.currentTime = seek.value;
-}
-
-function stopAudio(id) {
-    const audio = document.getElementById(`audio${id}`);
-    audio.pause(); audio.currentTime = 0;
-    document.getElementById(`icon${id}`).className = "icon-play";
-    document.getElementById(`progress${id}`).style.width = "0%";
-}
-
-window.onload = () => { loadAudio(); loadVisuals(); showSection('logs'); };
+// ...
