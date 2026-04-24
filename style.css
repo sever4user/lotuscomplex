@@ -3,11 +3,14 @@
     --lotus: #FFB7D5;
     --bg: #0d0d0d;
     --line: #222;
-    --control-size: 30px;
+    --control-size: 32px;
     --icon-size: 14px;
 }
 
-html { background-color: var(--bg); height: 100%; }
+html { 
+    background-color: var(--bg); 
+    height: 100%;
+}
 
 body {
     background-color: var(--bg);
@@ -19,28 +22,29 @@ body {
     justify-content: center;
     min-height: 100vh;
     width: 100%;
-    overflow-x: hidden;
     position: relative;
     animation: terminal-glow 8s ease-in-out infinite;
 }
 
+/* ИСПРАВЛЕННЫЕ СКАН-ЛИНИИ */
 .terminal-overlay {
     position: fixed;
-    top: 0; left: 0; width: 100vw; height: 100vh;
-    background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 255, 65, 0.02) 50%);
-    background-size: 100% 12px;
+    top: 0; left: 0; 
+    right: 0; bottom: 0; /* Растяжка во все стороны */
+    width: 100%; height: 100%;
+    background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 255, 65, 0.03) 50%);
+    background-size: 100% 8px;
     pointer-events: none; 
-    z-index: 1;
-    animation: scanlines 20s linear infinite;
+    z-index: 100; /* Теперь поверх всего, но очень прозрачно */
+    animation: scanlines 10s linear infinite;
 }
 
 body::after {
-    content: " ";
-    display: block;
+    content: "";
     position: fixed;
-    top: 0; left: 0; bottom: 0; right: 0;
-    background: radial-gradient(circle, rgba(18, 16, 16, 0) 60%, rgba(0, 0, 0, 0.8) 100%);
-    z-index: 2;
+    top: 0; left: 0; right: 0; bottom: 0;
+    background: radial-gradient(circle, rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.7) 100%);
+    z-index: 101;
     pointer-events: none;
 }
 
@@ -58,28 +62,21 @@ h1 {
     letter-spacing: 15px;
     text-align: center;
     text-transform: uppercase;
-    font-size: 2rem;
+    font-size: 1.8rem;
     margin-bottom: 20px;
 }
 
 .system-line {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    gap: 10px;
-    font-size: 0.7em;
-    margin-bottom: 20px;
-    opacity: 0.8;
+    display: flex; justify-content: center; align-items: center;
+    gap: 10px; font-size: 0.7em; margin-bottom: 20px; opacity: 0.8;
 }
 
 .system-nav { display: flex; gap: 5px; }
-
 .system-nav button {
     background: none; border: none; color: var(--green);
     font-family: inherit; cursor: pointer; padding: 5px;
     font-size: 1em; transition: 0.3s; text-transform: uppercase;
 }
-
 .system-nav button:hover { color: var(--lotus); text-shadow: 0 0 5px var(--lotus); }
 
 .system-status {
@@ -90,52 +87,67 @@ h1 {
 .content-section { display: none; }
 .content-section.active { display: block; }
 
-/* ПЛЕЕР */
+/* ПЛЕЕР С РАМКАМИ */
 .track-card { border-bottom: 1px solid var(--line); padding: 25px 0; }
-.track-name { font-size: 0.85em; margin-bottom: 15px; letter-spacing: 2px; text-transform: uppercase; }
-.controls-row { display: flex; flex-direction: row; align-items: center; gap: 15px; }
-.btns { display: flex; flex-direction: row; gap: 8px; flex-shrink: 0; }
+.track-name { font-size: 0.8em; margin-bottom: 15px; letter-spacing: 2px; }
+.controls-row { display: flex; align-items: center; gap: 15px; }
+
+.btns { display: flex; gap: 10px; }
 .btns button {
-    background: none; border: none; cursor: pointer;
+    background: none; 
+    border: 1px solid var(--green); /* Рамочка */
+    cursor: pointer;
     width: var(--control-size); height: var(--control-size);
-    display: flex; align-items: center; justify-content: center; padding: 0;
+    display: flex; align-items: center; justify-content: center;
+    padding: 0;
+    transition: 0.2s;
+}
+
+/* Эффект при наведении на кнопку плеера */
+.btns button:hover {
+    border-color: var(--lotus);
+    background: rgba(255, 183, 213, 0.1);
 }
 
 .icon-play {
     width: 0; height: 0;
-    border-top: calc(var(--icon-size) / 2) solid transparent;
-    border-bottom: calc(var(--icon-size) / 2) solid transparent;
-    border-left: var(--icon-size) solid var(--green);
-    margin-left: 4px;
+    border-top: 6px solid transparent;
+    border-bottom: 6px solid transparent;
+    border-left: 10px solid var(--green);
+    margin-left: 3px;
 }
 
 .icon-pause {
-    width: var(--icon-size); height: var(--icon-size);
+    width: 10px; height: 10px;
     display: flex; justify-content: space-between;
 }
 .icon-pause::before, .icon-pause::after {
-    content: ""; width: 4px; height: 100%; background-color: var(--green);
+    content: ""; width: 3px; height: 100%; background: var(--green);
 }
 
-.icon-stop { width: var(--icon-size); height: var(--icon-size); background-color: var(--green); }
+.icon-stop { width: 10px; height: 10px; background: var(--green); }
 
-button:hover div, button:hover::before, button:hover::after {
-    background-color: var(--lotus); border-left-color: var(--lotus);
-}
+/* Меняем цвет иконок при ховере кнопки */
+.btns button:hover .icon-play { border-left-color: var(--lotus); }
+.btns button:hover .icon-pause::before, .btns button:hover .icon-pause::after,
+.btns button:hover .icon-stop { background-color: var(--lotus); }
 
+/* ПОЛЗУНОК */
 .seek-container { position: relative; flex-grow: 1; display: flex; align-items: center; }
-.seek-bar { position: absolute; width: 100%; -webkit-appearance: none; background: transparent; z-index: 15; outline: none; margin: 0; }
-.seek-bar::-webkit-slider-thumb { -webkit-appearance: none; width: 10px; height: 10px; background: var(--lotus); border-radius: 50%; cursor: pointer; }
+.seek-bar { position: absolute; width: 100%; -webkit-appearance: none; background: transparent; z-index: 15; outline: none; }
+.seek-bar::-webkit-slider-thumb { -webkit-appearance: none; width: 8px; height: 8px; background: var(--lotus); border-radius: 50%; cursor: pointer; }
 .seek-line-base { position: absolute; width: 100%; height: 1px; background: var(--line); }
 .seek-line-progress { position: absolute; height: 1px; background: var(--lotus); opacity: 0.6; width: 0%; }
 
+/* ГАЛЕРЕЯ */
 .gallery-grid { display: grid; grid-template-columns: 1fr; gap: 30px; }
-.gallery-item img { width: 100%; border: 1px solid var(--line); transition: 0.3s; }
-.gallery-item img:hover { border-color: var(--lotus); box-shadow: 0 0 20px rgba(255, 183, 213, 0.1); }
+.gallery-item img { width: 100%; border: 1px solid var(--line); filter: grayscale(0.5); transition: 0.5s; }
+.gallery-item img:hover { filter: grayscale(0); border-color: var(--lotus); }
 
-.terminal-text { line-height: 1.6; font-size: 0.9em; white-space: pre-wrap; }
-.cursor { display: inline-block; width: 8px; height: 15px; background: var(--green); margin-left: 5px; animation: blink 0.8s infinite; vertical-align: middle; }
+/* ТЕКСТ */
+.terminal-text { line-height: 1.6; font-size: 0.85em; white-space: pre-wrap; }
+.cursor { display: inline-block; width: 8px; height: 14px; background: var(--green); margin-left: 5px; animation: blink 0.8s infinite; vertical-align: middle; }
 
 @keyframes blink { 0%, 100% { opacity: 1; } 50% { opacity: 0; } }
 @keyframes scanlines { from { background-position: 0 0; } to { background-position: 0 100%; } }
-@keyframes terminal-glow { 0%, 100% { filter: brightness(1) contrast(1); } 50% { filter: brightness(1.05) contrast(1.02); } }
+@keyframes terminal-glow { 0%, 100% { opacity: 1; } 50% { opacity: 0.95; } }
