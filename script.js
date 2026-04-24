@@ -1,49 +1,83 @@
-const tracks = [
-    { name: "PROJECT SEVER - CORE", file: "track1.mp3" },
-    { name: "CONCRETE DREAMS", file: "track2.mp3" }
-];
-
-const playlist = document.getElementById('playlist');
+// --- НАСТРОЙКИ ВАШЕГО РЕПОЗИТОРИЯ ---
+const GH_USER = 'sever4user'; 
+const GH_REPO = 'lotuscomplex';
+// -------------------------------------
 
 // Функция переключения разделов
 function showSection(sectionId) {
-    // Скрываем все
-    document.querySelectorAll('.content-section').forEach(section => {
-        section.classList.remove('active');
-    });
-    // Показываем нужную
+    document.querySelectorAll('.content-section').forEach(s => s.classList.remove('active'));
     const target = document.getElementById(`${sectionId}-section`);
-    if (target) {
-        target.classList.add('active');
-    }
-    // Обновляем статус
+    if (target) target.classList.add('active');
     document.getElementById('status-line').innerText = `STATUS: ONLINE // SECTION: ${sectionId.toUpperCase()}`;
 }
 
-// Генерация плеера
-tracks.forEach((track, index) => {
-    const id = index + 1;
-    const card = document.createElement('div');
-    card.className = 'track-card';
-    card.innerHTML = `
-        <div class="track-name">${track.name}</div>
-        <div class="controls-row">
-            <div class="btns">
-                <button onclick="toggleAudio(${id})"><div class="icon-play" id="icon${id}"></div></button>
-                <button onclick="stopAudio(${id})"><div class="icon-stop"></div></button>
-            </div>
-            <div class="seek-container">
-                <div class="seek-line-base"></div>
-                <div id="progress${id}" class="seek-line-progress"></div>
-                <input type="range" class="seek-bar" id="seek${id}" value="0" step="0.1">
-            </div>
-            <audio id="audio${id}" src="audio/${track.file}"></audio>
-        </div>
-    `;
-    playlist.appendChild(card);
-});
+// 1. АВТОМАТИЗАЦИЯ АУДИО
+async function loadAudio() {
+    const playlist = document.getElementById('playlist');
+    const url = `https://api.github.com/repos/${GH_USER}/${GH_REPO}/contents/audio`;
 
-// Логика аудио (Play/Pause)
+    try {
+        const response = await fetch(url);
+        const files = await response.json();
+        
+        // Фильтруем только mp3 файлы
+        const audioFiles = files.filter(file => file.name.endsWith('.mp3'));
+
+        audioFiles.forEach((file, index) => {
+            const id = index + 1;
+            const trackName = file.name.replace('.mp3', '').replace(/_/g, ' ');
+            
+            const card = document.createElement('div');
+            card.className = 'track-card';
+            card.innerHTML = `
+                <div class="track-name">${trackName}</div>
+                <div class="controls-row">
+                    <div class="btns">
+                        <button onclick="toggleAudio(${id})"><div class="icon-play" id="icon${id}"></div></button>
+                        <button onclick="stopAudio(${id})"><div class="icon-stop"></div></button>
+                    </div>
+                    <div class="seek-container">
+                        <div class="seek-line-base"></div>
+                        <div id="progress${id}" class="seek-line-progress"></div>
+                        <input type="range" class="seek-bar" id="seek${id}" value="0" step="0.1">
+                    </div>
+                    <audio id="audio${id}" src="${file.download_url}"></audio>
+                </div>
+            `;
+            playlist.appendChild(card);
+        });
+    } catch (e) {
+        console.error("Error loading audio:", e);
+        document.getElementById('playlist').innerHTML = "<p>> ERROR: AUDIO_STORAGE_UNREACHABLE</p>";
+    }
+}
+
+// 2. АВТОМАТИЗАЦИЯ ВИЗУАЛА
+async function loadVisuals() {
+    const gallery = document.querySelector('.gallery-grid');
+    const url = `https://api.github.com/repos/${GH_USER}/${GH_REPO}/contents/visuals`;
+
+    try {
+        const response = await fetch(url);
+        const files = await response.json();
+        
+        // Фильтруем картинки
+        const images = files.filter(file => /\.(png|jpg|jpeg|gif|webp)$/i.test(file.name));
+
+        if (images.length > 0) gallery.innerHTML = ''; // Убираем заглушки
+
+        images.forEach(file => {
+            const item = document.createElement('div');
+            item.className = 'gallery-item';
+            item.innerHTML = `<img src="${file.download_url}" style="width:100%; border: 1px solid var(--line);">`;
+            gallery.appendChild(item);
+        });
+    } catch (e) {
+        console.error("Error loading visuals:", e);
+    }
+}
+
+// Логика плеера (без изменений, просто адаптирована под новые ID)
 function toggleAudio(id) {
     const audio = document.getElementById(`audio${id}`);
     const icon = document.getElementById(`icon${id}`);
@@ -51,7 +85,6 @@ function toggleAudio(id) {
     const prog = document.getElementById(`progress${id}`);
 
     if (audio.paused) {
-        // Остановить другие
         document.querySelectorAll('audio').forEach((a, idx) => {
             if (a.id !== `audio${id}`) {
                 a.pause();
@@ -76,8 +109,13 @@ function toggleAudio(id) {
 
 function stopAudio(id) {
     const audio = document.getElementById(`audio${id}`);
-    audio.pause();
-    audio.currentTime = 0;
+    audio.pause(); audio.currentTime = 0;
     document.getElementById(`icon${id}`).className = "icon-play";
     document.getElementById(`progress${id}`).style.width = "0%";
 }
+
+// ЗАПУСК ПРИ ЗАГРУЗКЕ
+window.onload = () => {
+    loadAudio();
+    loadVisuals();
+};
