@@ -2,7 +2,7 @@
 const GH_USER = 'sever4user'; 
 const GH_REPO = 'lotuscomplex';
 
-const logsText = `> ИНИЦИАЛИЗАЦИЯ ПОИСКА...
+const logContent = `> ИНИЦИАЛИЗАЦИЯ ПОИСКА...
 > ОБНАРУЖЕНЫ ФРАГМЕНТЫ ДАННЫХ PROJECT SEVER.
 > ОБЪЕКТ: САМООСОЗНАННЫЙ ИИ "СЕВЕР".
 > ЛОКАЦИЯ: ЗАКРЫТЫЙ БЕТОННЫЙ КУПОЛ.
@@ -21,7 +21,7 @@ function showSection(sectionId) {
     if (target) target.classList.add('active');
     document.getElementById('status-line').innerText = `STATUS: ONLINE // SECTION: ${sectionId.toUpperCase()}`;
     
-    // Если открыли архив — запускаем печать
+    // Если открыли логи — запускаем печать
     if(sectionId === 'logs') {
         startTypewriter();
     }
@@ -31,17 +31,17 @@ function showSection(sectionId) {
 let isTyping = false;
 function startTypewriter() {
     const container = document.getElementById('typewriter-logs');
-    if (isTyping) return; // Чтобы не запускать дважды
+    if (!container || isTyping) return;
     
     isTyping = true;
-    container.innerHTML = ''; // Очищаем перед началом
+    container.innerHTML = ''; 
     let i = 0;
     
     function type() {
-        if (i < logsText.length) {
-            container.innerHTML = logsText.substring(0, i + 1) + '<span class="cursor"></span>';
+        if (i < logContent.length) {
+            container.innerHTML = logContent.substring(0, i + 1) + '<span class="cursor"></span>';
             i++;
-            setTimeout(type, 30); // Скорость печати (30мс)
+            setTimeout(type, 30);
         } else {
             isTyping = false;
         }
@@ -101,7 +101,7 @@ async function loadVisuals() {
     } catch (e) { console.error(e); }
 }
 
-// ПЛЕЕР (упрощенная версия для чистоты кода)
+// ПЛЕЕР
 function toggleAudio(id) {
     const audio = document.getElementById(`audio${id}`);
     const icon = document.getElementById(`icon${id}`);
@@ -136,4 +136,9 @@ function stopAudio(id) {
     document.getElementById(`progress${id}`).style.width = "0%";
 }
 
-window.onload = () => { loadAudio(); loadVisuals(); };
+// ПРИ ЗАГРУЗКЕ
+window.onload = () => { 
+    loadAudio(); 
+    loadVisuals(); 
+    showSection('logs'); // ПРИНУДИТЕЛЬНО ОТКРЫВАЕМ LOGS
+};
