@@ -7,10 +7,7 @@
     --icon-size: 14px;
 }
 
-html {
-    background-color: var(--bg); /* Чтобы не было белых вспышек */
-    height: 100%;
-}
+html { background-color: var(--bg); height: 100%; }
 
 body {
     background-color: var(--bg);
@@ -20,14 +17,21 @@ body {
     margin: 0;
     display: flex;
     justify-content: center;
-    
-    /* КЛЮЧЕВОЕ ИСПРАВЛЕНИЕ: */
-    min-height: 100vh; /* Минимальная высота — 100% видимого окна */
+    min-height: 100vh;
     width: 100%;
-    
     overflow-x: hidden;
-    animation: terminal-glow 8s ease-in-out infinite;
     position: relative;
+    animation: terminal-glow 8s ease-in-out infinite;
+}
+
+.terminal-overlay {
+    position: fixed;
+    top: 0; left: 0; width: 100vw; height: 100vh;
+    background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 255, 65, 0.02) 50%);
+    background-size: 100% 12px;
+    pointer-events: none; 
+    z-index: 1;
+    animation: scanlines 20s linear infinite;
 }
 
 body::after {
@@ -40,27 +44,24 @@ body::after {
     pointer-events: none;
 }
 
-.terminal-overlay {
-    position: fixed; /* Фиксируем, чтобы при скролле полосы не уезжали */
-    top: 0; 
-    left: 0; 
-    width: 100vw; 
-    height: 100vh;
-    background: linear-gradient(
-        rgba(18, 16, 16, 0) 50%, 
-        rgba(0, 255, 65, 0.02) 50%
-    );
-    background-size: 100% 10px;
-    pointer-events: none; 
-    z-index: 100;
-    animation: scanlines 20s linear infinite;
+.container {
+    width: 90%;
+    max-width: 650px;
+    padding: 60px 20px;
+    position: relative;
+    z-index: 10;
 }
 
-.container { width: 90%; max-width: 650px; padding: 40px 20px; z-index: 5; }
+h1 {
+    color: var(--lotus);
+    text-shadow: 0 0 15px var(--lotus);
+    letter-spacing: 15px;
+    text-align: center;
+    text-transform: uppercase;
+    font-size: 2rem;
+    margin-bottom: 20px;
+}
 
-h1 { color: var(--lotus); text-align: center; letter-spacing: 10px; text-transform: uppercase; margin-bottom: 10px; }
-
-/* СТИЛЬ СТРОКИ SYSTEM_v.1.0 */
 .system-line {
     display: flex;
     justify-content: center;
@@ -76,55 +77,68 @@ h1 { color: var(--lotus); text-align: center; letter-spacing: 10px; text-transfo
 .system-nav button {
     background: none; border: none; color: var(--green);
     font-family: inherit; cursor: pointer; padding: 5px;
-    font-size: 1em; transition: 0.3s;
+    font-size: 1em; transition: 0.3s; text-transform: uppercase;
 }
 
 .system-nav button:hover { color: var(--lotus); text-shadow: 0 0 5px var(--lotus); }
 
-.system-status { font-size: 0.6em; text-align: center; margin-bottom: 40px; opacity: 0.5; }
+.system-status {
+    font-size: 0.6em; text-align: center; margin-bottom: 50px;
+    opacity: 0.5; letter-spacing: 4px;
+}
 
-/* СЕКЦИИ */
 .content-section { display: none; }
 .content-section.active { display: block; }
 
-/* ПЛЕЕР (ИСПРАВЛЕНИЕ КНОПОК) */
-.track-card { border-bottom: 1px solid var(--line); padding: 20px 0; }
-.track-name { font-size: 0.8em; margin-bottom: 10px; letter-spacing: 1px; }
-
-.controls-row {
-    display: flex;
-    flex-direction: row; /* Принудительно в ряд */
-    align-items: center;
-    gap: 15px;
-    width: 100%;
-}
-
-.btns { 
-    display: flex; 
-    flex-direction: row; /* Принудительно в ряд */
-    gap: 5px; 
-    flex-shrink: 0; /* Чтобы кнопки не сжимались */
-}
-
+/* ПЛЕЕР */
+.track-card { border-bottom: 1px solid var(--line); padding: 25px 0; }
+.track-name { font-size: 0.85em; margin-bottom: 15px; letter-spacing: 2px; text-transform: uppercase; }
+.controls-row { display: flex; flex-direction: row; align-items: center; gap: 15px; }
+.btns { display: flex; flex-direction: row; gap: 8px; flex-shrink: 0; }
 .btns button {
-    background: none; border: none;
+    background: none; border: none; cursor: pointer;
     width: var(--control-size); height: var(--control-size);
-    display: flex; align-items: center; justify-content: center;
-    cursor: pointer; padding: 0;
+    display: flex; align-items: center; justify-content: center; padding: 0;
 }
 
-/* ИКОНКИ (Зеленые) */
-.icon-play { width: 0; height: 0; border-top: 7px solid transparent; border-bottom: 7px solid transparent; border-left: 12px solid var(--green); margin-left: 4px; }
-.icon-pause { width: 12px; height: 12px; display: flex; justify-content: space-between; }
-.icon-pause::before, .icon-pause::after { content: ""; width: 4px; height: 100%; background: var(--green); }
-.icon-stop { width: 12px; height: 12px; background: var(--green); }
+.icon-play {
+    width: 0; height: 0;
+    border-top: calc(var(--icon-size) / 2) solid transparent;
+    border-bottom: calc(var(--icon-size) / 2) solid transparent;
+    border-left: var(--icon-size) solid var(--green);
+    margin-left: 4px;
+}
+
+.icon-pause {
+    width: var(--icon-size); height: var(--icon-size);
+    display: flex; justify-content: space-between;
+}
+.icon-pause::before, .icon-pause::after {
+    content: ""; width: 4px; height: 100%; background-color: var(--green);
+}
+
+.icon-stop { width: var(--icon-size); height: var(--icon-size); background-color: var(--green); }
+
+button:hover div, button:hover::before, button:hover::after {
+    background-color: var(--lotus); border-left-color: var(--lotus);
+}
 
 /* ПОЛЗУНОК */
 .seek-container { position: relative; flex-grow: 1; display: flex; align-items: center; }
-.seek-bar { position: absolute; width: 100%; -webkit-appearance: none; background: transparent; z-index: 5; outline: none; margin: 0; }
+.seek-bar { position: absolute; width: 100%; -webkit-appearance: none; background: transparent; z-index: 15; outline: none; margin: 0; }
 .seek-bar::-webkit-slider-thumb { -webkit-appearance: none; width: 10px; height: 10px; background: var(--lotus); border-radius: 50%; cursor: pointer; }
 .seek-line-base { position: absolute; width: 100%; height: 1px; background: var(--line); }
-.seek-line-progress { position: absolute; height: 1px; background: var(--lotus); width: 0%; }
+.seek-line-progress { position: absolute; height: 1px; background: var(--lotus); opacity: 0.6; width: 0%; }
 
+/* ГАЛЕРЕЯ */
+.gallery-grid { display: grid; grid-template-columns: 1fr; gap: 30px; }
+.gallery-item img { width: 100%; border: 1px solid var(--line); transition: 0.3s; }
+.gallery-item img:hover { border-color: var(--lotus); box-shadow: 0 0 20px rgba(255, 183, 213, 0.1); }
+
+/* ТЕКСТ АРХИВА + КУРСОР */
+.terminal-text { line-height: 1.6; font-size: 0.9em; white-space: pre-wrap; }
+.cursor { display: inline-block; width: 8px; height: 15px; background: var(--green); margin-left: 5px; animation: blink 0.8s infinite; }
+
+@keyframes blink { 0%, 100% { opacity: 1; } 50% { opacity: 0; } }
 @keyframes scanlines { from { background-position: 0 0; } to { background-position: 0 100%; } }
-@keyframes terminal-glow { 0%, 100% { filter: brightness(1); } 50% { filter: brightness(1.05); } }
+@keyframes terminal-glow { 0%, 100% { filter: brightness(1) contrast(1); } 50% { filter: brightness(1.05) contrast(1.02); } }
