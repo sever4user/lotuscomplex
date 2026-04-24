@@ -14,54 +14,61 @@ const logContent = `> ИНИЦИАЛИЗАЦИЯ ПОИСКА...
 -----------------------------------------
 > КОНЕЦ ЗАПИСИ.`;
 
-// Функция переключения разделов
+let logsTyped = false; // Флаг, чтобы не печатать дважды
+
 function showSection(sectionId) {
     document.querySelectorAll('.content-section').forEach(s => s.classList.remove('active'));
     const target = document.getElementById(`${sectionId}-section`);
     if (target) target.classList.add('active');
     document.getElementById('status-line').innerText = `STATUS: ONLINE // SECTION: ${sectionId.toUpperCase()}`;
     
-    // Если открыли логи — запускаем печать
-    if(sectionId === 'logs') {
+    if(sectionId === 'logs' && !logsTyped) {
         startTypewriter();
     }
 }
 
-// ЭФФЕКТ ПЕЧАТНОЙ МАШИНКИ
-let isTyping = false;
 function startTypewriter() {
     const container = document.getElementById('typewriter-logs');
-    if (!container || isTyping) return;
+    if (!container) return;
     
-    isTyping = true;
+    logsTyped = true; // Запрещаем повтор
     container.innerHTML = ''; 
     let i = 0;
     
     function type() {
         if (i < logContent.length) {
             container.innerHTML = logContent.substring(0, i + 1) + '<span class="cursor"></span>';
+            
+            // Рваная скорость: обычно быстро (15мс), 
+            // но на знаках препинания или случайных местах — пауза.
+            let char = logContent[i];
+            let delay = 15; 
+            
+            if (char === '.' || char === '\n') delay = 400; // Пауза на точках и абзацах
+            if (Math.random() > 0.95) delay = 200; // Случайный "глюк" системы
+            
             i++;
-            setTimeout(type, 30);
+            setTimeout(type, delay);
         } else {
-            isTyping = false;
+            // Оставляем курсор в конце
+            container.innerHTML = logContent + '<span class="cursor"></span>';
         }
     }
     type();
 }
 
-// АВТОМАТИЗАЦИЯ АУДИО
+// API: AUDIO
 async function loadAudio() {
     const playlist = document.getElementById('playlist');
     const url = `https://api.github.com/repos/${GH_USER}/${GH_REPO}/contents/audio`;
-
     try {
-        const response = await fetch(url);
-        const files = await response.json();
-        const audioFiles = files.filter(file => file.name.endsWith('.mp3'));
+        const res = await fetch(url);
+        const files = await res.json();
+        const audioFiles = files.filter(f => f.name.endsWith('.mp3') || f.name.endsWith('.ogg'));
 
         audioFiles.forEach((file, index) => {
             const id = index + 1;
-            const trackName = file.name.replace('.mp3', '').replace(/_/g, ' ');
+            const trackName = file.name.replace(/\.(mp3|ogg)$/, '').replace(/_/g, ' ');
             const card = document.createElement('div');
             card.className = 'track-card';
             card.innerHTML = `
@@ -83,25 +90,25 @@ async function loadAudio() {
     } catch (e) { console.error(e); }
 }
 
-// АВТОМАТИЗАЦИЯ ВИЗУАЛА
+// API: VISUALS
 async function loadVisuals() {
     const gallery = document.querySelector('.gallery-grid');
     const url = `https://api.github.com/repos/${GH_USER}/${GH_REPO}/contents/visuals`;
     try {
-        const response = await fetch(url);
-        const files = await response.json();
-        const images = files.filter(file => /\.(png|jpg|jpeg|gif|webp)$/i.test(file.name));
+        const res = await fetch(url);
+        const files = await res.json();
+        const images = files.filter(f => /\.(png|jpg|jpeg|gif|webp)$/i.test(f.name));
         if (images.length > 0) gallery.innerHTML = '';
-        images.forEach(file => {
+        images.forEach(f => {
             const item = document.createElement('div');
             item.className = 'gallery-item';
-            item.innerHTML = `<img src="${file.download_url}">`;
+            item.innerHTML = `<img src="${f.download_url}">`;
             gallery.appendChild(item);
         });
     } catch (e) { console.error(e); }
 }
 
-// ПЛЕЕР
+// PLAYER LOGIC
 function toggleAudio(id) {
     const audio = document.getElementById(`audio${id}`);
     const icon = document.getElementById(`icon${id}`);
@@ -136,9 +143,8 @@ function stopAudio(id) {
     document.getElementById(`progress${id}`).style.width = "0%";
 }
 
-// ПРИ ЗАГРУЗКЕ
 window.onload = () => { 
     loadAudio(); 
     loadVisuals(); 
-    showSection('logs'); // ПРИНУДИТЕЛЬНО ОТКРЫВАЕМ LOGS
+    showSection('logs');
 };
