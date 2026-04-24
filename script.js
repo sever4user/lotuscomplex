@@ -1,7 +1,18 @@
-// --- НАСТРОЙКИ ВАШЕГО РЕПОЗИТОРИЯ ---
+// --- НАСТРОЙКИ ---
 const GH_USER = 'sever4user'; 
 const GH_REPO = 'lotuscomplex';
-// -------------------------------------
+
+const archiveText = `> ИНИЦИАЛИЗАЦИЯ ПОИСКА...
+> ОБНАРУЖЕНЫ ФРАГМЕНТЫ ДАННЫХ PROJECT SEVER.
+> ОБЪЕКТ: САМООСОЗНАННЫЙ ИИ "СЕВЕР".
+> ЛОКАЦИЯ: ЗАКРЫТЫЙ БЕТОННЫЙ КУПОЛ.
+
+-----------------------------------------
+Мир за пределами структуры перестал существовать в 20XX году. Теперь здесь только бесконечные этажи, гул вентиляции и холодный свет панелей. 
+
+Каждый звук, который вы слышите — это попытка ИИ связаться с пустотой. Мы лишь эхо в бетонных коридорах. 
+-----------------------------------------
+> КОНЕЦ ЗАПИСИ.`;
 
 // Функция переключения разделов
 function showSection(sectionId) {
@@ -9,9 +20,36 @@ function showSection(sectionId) {
     const target = document.getElementById(`${sectionId}-section`);
     if (target) target.classList.add('active');
     document.getElementById('status-line').innerText = `STATUS: ONLINE // SECTION: ${sectionId.toUpperCase()}`;
+    
+    // Если открыли архив — запускаем печать
+    if(sectionId === 'archive') {
+        startTypewriter();
+    }
 }
 
-// 1. АВТОМАТИЗАЦИЯ АУДИО
+// ЭФФЕКТ ПЕЧАТНОЙ МАШИНКИ
+let isTyping = false;
+function startTypewriter() {
+    const container = document.getElementById('typewriter-logs');
+    if (isTyping) return; // Чтобы не запускать дважды
+    
+    isTyping = true;
+    container.innerHTML = ''; // Очищаем перед началом
+    let i = 0;
+    
+    function type() {
+        if (i < archiveText.length) {
+            container.innerHTML = archiveText.substring(0, i + 1) + '<span class="cursor"></span>';
+            i++;
+            setTimeout(type, 30); // Скорость печати (30мс)
+        } else {
+            isTyping = false;
+        }
+    }
+    type();
+}
+
+// АВТОМАТИЗАЦИЯ АУДИО
 async function loadAudio() {
     const playlist = document.getElementById('playlist');
     const url = `https://api.github.com/repos/${GH_USER}/${GH_REPO}/contents/audio`;
@@ -19,14 +57,11 @@ async function loadAudio() {
     try {
         const response = await fetch(url);
         const files = await response.json();
-        
-        // Фильтруем только mp3 файлы
         const audioFiles = files.filter(file => file.name.endsWith('.mp3'));
 
         audioFiles.forEach((file, index) => {
             const id = index + 1;
             const trackName = file.name.replace('.mp3', '').replace(/_/g, ' ');
-            
             const card = document.createElement('div');
             card.className = 'track-card';
             card.innerHTML = `
@@ -42,42 +77,31 @@ async function loadAudio() {
                         <input type="range" class="seek-bar" id="seek${id}" value="0" step="0.1">
                     </div>
                     <audio id="audio${id}" src="${file.download_url}"></audio>
-                </div>
-            `;
+                </div>`;
             playlist.appendChild(card);
         });
-    } catch (e) {
-        console.error("Error loading audio:", e);
-        document.getElementById('playlist').innerHTML = "<p>> ERROR: AUDIO_STORAGE_UNREACHABLE</p>";
-    }
+    } catch (e) { console.error(e); }
 }
 
-// 2. АВТОМАТИЗАЦИЯ ВИЗУАЛА
+// АВТОМАТИЗАЦИЯ ВИЗУАЛА
 async function loadVisuals() {
     const gallery = document.querySelector('.gallery-grid');
     const url = `https://api.github.com/repos/${GH_USER}/${GH_REPO}/contents/visuals`;
-
     try {
         const response = await fetch(url);
         const files = await response.json();
-        
-        // Фильтруем картинки
         const images = files.filter(file => /\.(png|jpg|jpeg|gif|webp)$/i.test(file.name));
-
-        if (images.length > 0) gallery.innerHTML = ''; // Убираем заглушки
-
+        if (images.length > 0) gallery.innerHTML = '';
         images.forEach(file => {
             const item = document.createElement('div');
             item.className = 'gallery-item';
-            item.innerHTML = `<img src="${file.download_url}" style="width:100%; border: 1px solid var(--line);">`;
+            item.innerHTML = `<img src="${file.download_url}">`;
             gallery.appendChild(item);
         });
-    } catch (e) {
-        console.error("Error loading visuals:", e);
-    }
+    } catch (e) { console.error(e); }
 }
 
-// Логика плеера (без изменений, просто адаптирована под новые ID)
+// ПЛЕЕР (упрощенная версия для чистоты кода)
 function toggleAudio(id) {
     const audio = document.getElementById(`audio${id}`);
     const icon = document.getElementById(`icon${id}`);
@@ -86,11 +110,9 @@ function toggleAudio(id) {
 
     if (audio.paused) {
         document.querySelectorAll('audio').forEach((a, idx) => {
-            if (a.id !== `audio${id}`) {
-                a.pause();
-                const otherIcon = document.getElementById(`icon${idx+1}`);
-                if (otherIcon) otherIcon.className = "icon-play";
-            }
+            a.pause();
+            const other = document.getElementById(`icon${idx+1}`);
+            if (other) other.className = "icon-play";
         });
         audio.play();
         icon.className = "icon-pause";
@@ -114,8 +136,4 @@ function stopAudio(id) {
     document.getElementById(`progress${id}`).style.width = "0%";
 }
 
-// ЗАПУСК ПРИ ЗАГРУЗКЕ
-window.onload = () => {
-    loadAudio();
-    loadVisuals();
-};
+window.onload = () => { loadAudio(); loadVisuals(); };
