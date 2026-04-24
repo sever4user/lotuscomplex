@@ -2,7 +2,7 @@
 const GH_USER = 'sever4user'; 
 const GH_REPO = 'lotuscomplex';
 
-const archiveText = `> ИНИЦИАЛИЗАЦИЯ ПОИСКА...
+const logsText = `> ИНИЦИАЛИЗАЦИЯ ПОИСКА...
 > ОБНАРУЖЕНЫ ФРАГМЕНТЫ ДАННЫХ PROJECT SEVER.
 > ОБЪЕКТ: САМООСОЗНАННЫЙ ИИ "СЕВЕР".
 > ЛОКАЦИЯ: ЗАКРЫТЫЙ БЕТОННЫЙ КУПОЛ.
@@ -22,7 +22,7 @@ function showSection(sectionId) {
     document.getElementById('status-line').innerText = `STATUS: ONLINE // SECTION: ${sectionId.toUpperCase()}`;
     
     // Если открыли архив — запускаем печать
-    if(sectionId === 'archive') {
+    if(sectionId === 'logs') {
         startTypewriter();
     }
 }
@@ -38,8 +38,8 @@ function startTypewriter() {
     let i = 0;
     
     function type() {
-        if (i < archiveText.length) {
-            container.innerHTML = archiveText.substring(0, i + 1) + '<span class="cursor"></span>';
+        if (i < logsText.length) {
+            container.innerHTML = logsText.substring(0, i + 1) + '<span class="cursor"></span>';
             i++;
             setTimeout(type, 30); // Скорость печати (30мс)
         } else {
