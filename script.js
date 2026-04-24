@@ -14,7 +14,7 @@ const logContent = `> ИНИЦИАЛИЗАЦИЯ ПОИСКА...
 -----------------------------------------
 > КОНЕЦ ЗАПИСИ.`;
 
-let logsTyped = false; // Флаг, чтобы не печатать дважды
+let logsStatus = "idle"; // idle, typing, finished
 
 function showSection(sectionId) {
     document.querySelectorAll('.content-section').forEach(s => s.classList.remove('active'));
@@ -22,8 +22,14 @@ function showSection(sectionId) {
     if (target) target.classList.add('active');
     document.getElementById('status-line').innerText = `STATUS: ONLINE // SECTION: ${sectionId.toUpperCase()}`;
     
-    if(sectionId === 'logs' && !logsTyped) {
-        startTypewriter();
+    // Печатаем только если статус "idle"
+    if(sectionId === 'logs') {
+        if (logsStatus === "idle") {
+            startTypewriter();
+        } else if (logsStatus === "finished") {
+            // Если уже напечатано, просто убеждаемся, что текст на месте
+            document.getElementById('typewriter-logs').innerHTML = logContent + '<span class="cursor"></span>';
+        }
     }
 }
 
@@ -31,26 +37,29 @@ function startTypewriter() {
     const container = document.getElementById('typewriter-logs');
     if (!container) return;
     
-    logsTyped = true; // Запрещаем повтор
+    logsStatus = "typing";
     container.innerHTML = ''; 
     let i = 0;
     
     function type() {
         if (i < logContent.length) {
-            container.innerHTML = logContent.substring(0, i + 1) + '<span class="cursor"></span>';
+            // Печатаем "пачками" для эффекта рывков
+            let numChars = Math.random() > 0.8 ? Math.floor(Math.random() * 3) + 1 : 1;
+            container.innerHTML = logContent.substring(0, i + numChars) + '<span class="cursor"></span>';
+            i += numChars;
             
-            // Рваная скорость: обычно быстро (15мс), 
-            // но на знаках препинания или случайных местах — пауза.
-            let char = logContent[i];
-            let delay = 15; 
+            // Расчет задержки для "рваного" ритма
+            let delay = Math.floor(Math.random() * 30) + 10; // Базовая скорость (очень быстро)
             
-            if (char === '.' || char === '\n') delay = 400; // Пауза на точках и абзацах
-            if (Math.random() > 0.95) delay = 200; // Случайный "глюк" системы
+            let lastChar = logContent[i-1];
+            if (lastChar === '.') delay = 600; 
+            if (lastChar === ',') delay = 300;
+            if (lastChar === '\n') delay = 500;
+            if (Math.random() > 0.96) delay = 800; // Случайная "запинка" системы
             
-            i++;
             setTimeout(type, delay);
         } else {
-            // Оставляем курсор в конце
+            logsStatus = "finished";
             container.innerHTML = logContent + '<span class="cursor"></span>';
         }
     }
@@ -108,7 +117,6 @@ async function loadVisuals() {
     } catch (e) { console.error(e); }
 }
 
-// PLAYER LOGIC
 function toggleAudio(id) {
     const audio = document.getElementById(`audio${id}`);
     const icon = document.getElementById(`icon${id}`);
