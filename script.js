@@ -1,6 +1,6 @@
-// --- НАСТРОЙКИ ---
-const GH_USER = 'sever4user'; 
-const GH_REPO = 'lotuscomplex';
+// --- КОНФИГУРАЦИЯ ---
+const GH_USER = 'ТВОЙ_НИК'; 
+const GH_REPO = 'ТВОЙ_РЕПОЗИТОРИЙ';
 
 const logContent = `> ИНИЦИАЛИЗАЦИЯ ПОИСКА...
 > ОБНАРУЖЕНЫ ФРАГМЕНТЫ ДАННЫХ PROJECT SEVER.
@@ -24,68 +24,49 @@ MAIL: contact@sever.com
 
 STATUS: WAITING_FOR_RESPONSE...`;
 
-let typedSections = {
-    logs: false,
-    contacts: false
-};
+let typedSections = { logs: false, contacts: false };
 
 // --- ПЕРЕКЛЮЧЕНИЕ СЕКЦИЙ ---
 function showSection(sectionId) {
-    // Скрываем все секции
     document.querySelectorAll('.content-section').forEach(s => s.classList.remove('active'));
-    
-    // Показываем нужную
     const target = document.getElementById(`${sectionId}-section`);
     if (target) target.classList.add('active');
 
-    // Обновляем статусную строку
     document.getElementById('status-line').innerText = `STATUS: ONLINE // SECTION: ${sectionId.toUpperCase()}`;
 
-    // Запуск печати для Логов
     if(sectionId === 'logs' && !typedSections.logs) {
         startTypewriter('typewriter-logs', logContent);
         typedSections.logs = true;
     }
-    
-    // Запуск печати для Контактов
     if(sectionId === 'contacts' && !typedSections.contacts) {
         startTypewriter('contact-data', contactContent);
         typedSections.contacts = true;
     }
 }
 
-// --- УНИВЕРСАЛЬНЫЙ ЭФФЕКТ ПЕЧАТИ ---
+// --- ЭФФЕКТ ПЕЧАТИ ---
 function startTypewriter(elementId, text) {
     const container = document.getElementById(elementId);
     if (!container) return;
-    
     let i = 0;
-    container.innerHTML = ""; // Очищаем перед стартом
+    container.textContent = "";
 
     function type() {
         if (i < text.length) {
-            // Используем substring, чтобы корректно обрабатывать перенос строки \n
             container.textContent = text.substring(0, i + 1);
-            
-            // Добавляем мигающий курсор в конец
             const cursor = document.createElement('span');
             cursor.className = 'cursor';
             container.appendChild(cursor);
-            
             i++;
-            
-            // Динамическая задержка для реалистичности
-            let delay = 20;
-            if (text[i-1] === '.') delay = 400;
-            if (text[i-1] === '\n') delay = 200;
-            
+            let delay = (text[i-1] === '.' || text[i-1] === ':') ? 400 : 20;
+            if (text[i-1] === '\n') delay = 150;
             setTimeout(type, delay);
         }
     }
     type();
 }
 
-// --- ЗАГРУЗКА МУЗЫКИ ---
+// --- МУЗЫКАЛЬНЫЙ ПЛЕЕР ---
 async function loadAudio() {
     const playlist = document.getElementById('playlist');
     const url = `https://api.github.com/repos/${GH_USER}/${GH_REPO}/contents/audio`;
@@ -109,13 +90,56 @@ async function loadAudio() {
                     <div class="seek-container">
                         <div class="seek-line-base"></div>
                         <div id="progress${id}" class="seek-line-progress"></div>
-                        <input type="range" class="seek-bar" id="seek${id}" value="0" step="0.1">
+                        <input type="range" class="seek-bar" id="seek${id}" value="0" step="0.1" min="0">
                     </div>
-                    <audio id="audio${id}" src="${file.download_url}"></audio>
+                    <audio id="audio${id}" src="${file.download_url}" preload="metadata"></audio>
                 </div>`;
             playlist.appendChild(card);
+            
+            // Привязка событий после создания
+            const audio = document.getElementById(`audio${id}`);
+            const seek = document.getElementById(`seek${id}`);
+            const prog = document.getElementById(`progress${id}`);
+
+            audio.ontimeupdate = () => {
+                if (!isNaN(audio.duration)) {
+                    seek.max = audio.duration;
+                    seek.value = audio.currentTime;
+                    prog.style.width = (audio.currentTime / audio.duration) * 100 + "%";
+                }
+            };
+
+            seek.oninput = () => {
+                audio.currentTime = seek.value;
+                prog.style.width = (seek.value / audio.duration) * 100 + "%";
+            };
         });
-    } catch (e) { console.error("Music load error:", e); }
+    } catch (e) { console.error("Audio Load Error:", e); }
+}
+
+function toggleAudio(id) {
+    const audio = document.getElementById(`audio${id}`);
+    const icon = document.getElementById(`icon${id}`);
+
+    if (audio.paused) {
+        // Остановить все остальные
+        document.querySelectorAll('audio').forEach(a => a.pause());
+        document.querySelectorAll('[id^="icon"]').forEach(i => i.className = 'icon-play');
+        
+        audio.play();
+        icon.className = "icon-pause";
+    } else {
+        audio.pause();
+        icon.className = "icon-play";
+    }
+}
+
+function stopAudio(id) {
+    const audio = document.getElementById(`audio${id}`);
+    audio.pause();
+    audio.currentTime = 0;
+    document.getElementById(`icon${id}`).className = "icon-play";
+    document.getElementById(`progress${id}`).style.width = "0%";
 }
 
 // --- ГАЛЕРЕЯ ---
@@ -148,45 +172,11 @@ async function loadVisuals() {
             overlay.style.display = 'none';
             document.body.style.overflow = 'auto';
         };
-    } catch (e) { console.error("Visuals load error:", e); }
+    } catch (e) { console.error("Visuals Load Error:", e); }
 }
 
-// --- УПРАВЛЕНИЕ ЗВУКОМ ---
-function toggleAudio(id) {
-    const audio = document.getElementById(`audio${id}`);
-    const icon = document.getElementById(`icon${id}`);
-    const seek = document.getElementById(`seek${id}`);
-    const prog = document.getElementById(`progress${id}`);
-
-    if (audio.paused) {
-        document.querySelectorAll('audio').forEach(a => a.pause());
-        document.querySelectorAll('.icon-pause').forEach(i => i.className = 'icon-play');
-        audio.play();
-        icon.className = "icon-pause";
-    } else {
-        audio.pause();
-        icon.className = "icon-play";
-    }
-
-    audio.ontimeupdate = () => {
-        seek.max = audio.duration;
-        seek.value = audio.currentTime;
-        prog.style.width = (audio.currentTime / audio.duration) * 100 + "%";
-    };
-    seek.oninput = () => { audio.currentTime = seek.value; };
-}
-
-function stopAudio(id) {
-    const audio = document.getElementById(`audio${id}`);
-    audio.pause();
-    audio.currentTime = 0;
-    document.getElementById(`icon${id}`).className = "icon-play";
-    document.getElementById(`progress${id}`).style.width = "0%";
-}
-
-// СТАРТ ПРИ ЗАГРУЗКЕ
 window.onload = () => {
     loadAudio();
     loadVisuals();
-    showSection('logs'); // Изначально открываем логи
+    showSection('logs');
 };
