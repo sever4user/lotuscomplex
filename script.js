@@ -34,10 +34,12 @@ function showSection(sectionId) {
 
     document.getElementById('status-line').innerText = `STATUS: ONLINE // SECTION: ${sectionId.toUpperCase()}`;
 
+    // Печать для Логов
     if(sectionId === 'logs' && !typedSections.logs) {
         startTypewriter('typewriter-logs', logContent);
         typedSections.logs = true;
     }
+    // Печать для Контактов
     if(sectionId === 'contacts' && !typedSections.contacts) {
         startTypewriter('contact-data', contactContent);
         typedSections.contacts = true;
@@ -58,7 +60,8 @@ function startTypewriter(elementId, text) {
             cursor.className = 'cursor';
             container.appendChild(cursor);
             i++;
-            let delay = (text[i-1] === '.' || text[i-1] === ':') ? 400 : 20;
+            // Задержки для атмосферности
+            let delay = (text[i-1] === '.' || text[i-1] === ':') ? 400 : 25;
             if (text[i-1] === '\n') delay = 150;
             setTimeout(type, delay);
         }
@@ -96,22 +99,25 @@ async function loadAudio() {
                 </div>`;
             playlist.appendChild(card);
             
-            // Привязка событий после создания
             const audio = document.getElementById(`audio${id}`);
             const seek = document.getElementById(`seek${id}`);
             const prog = document.getElementById(`progress${id}`);
 
+            // Обновление прогресса при проигрывании
             audio.ontimeupdate = () => {
                 if (!isNaN(audio.duration)) {
                     seek.max = audio.duration;
                     seek.value = audio.currentTime;
-                    prog.style.width = (audio.currentTime / audio.duration) * 100 + "%";
+                    const percent = (audio.currentTime / audio.duration) * 100;
+                    prog.style.width = percent + "%";
                 }
             };
 
+            // Перемотка
             seek.oninput = () => {
                 audio.currentTime = seek.value;
-                prog.style.width = (seek.value / audio.duration) * 100 + "%";
+                const percent = (seek.value / audio.duration) * 100;
+                prog.style.width = percent + "%";
             };
         });
     } catch (e) { console.error("Audio Load Error:", e); }
@@ -122,7 +128,7 @@ function toggleAudio(id) {
     const icon = document.getElementById(`icon${id}`);
 
     if (audio.paused) {
-        // Остановить все остальные
+        // Ставим на паузу все остальные треки
         document.querySelectorAll('audio').forEach(a => a.pause());
         document.querySelectorAll('[id^="icon"]').forEach(i => i.className = 'icon-play');
         
@@ -175,6 +181,7 @@ async function loadVisuals() {
     } catch (e) { console.error("Visuals Load Error:", e); }
 }
 
+// Инициализация системы
 window.onload = () => {
     loadAudio();
     loadVisuals();
