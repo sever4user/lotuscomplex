@@ -14,16 +14,15 @@ body, html {
     overflow-x: hidden;
 }
 
-/* --- НАСТРОЙКА ПОЛОС СКАНЕРА --- */
+/* --- ТЕРМИНАЛЬНЫЙ ЭФФЕКТ (СКАН-ЛИНИИ) --- */
 .terminal-overlay {
     position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-    /* Прозрачность: меняй 0.04 в конце rgba */
+    /* Настройка: 0.04 - прозрачность, 4px - толщина полос */
     background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 255, 65, 0.04) 50%);
-    /* Толщина: меняй 4px */
     background-size: 100% 4px;
     pointer-events: none; 
-    z-index: 2000; /* Полосы ниже увеличенной картинки */
-    /* Скорость: меняй 12s */
+    z-index: 1000; /* Линии НИЖЕ открытой картинки */
+    /* Настройка: 12s - скорость движения */
     animation: scanline 12s linear infinite;
 }
 @keyframes scanline {
@@ -46,7 +45,7 @@ h1 {
     text-shadow: 0 0 15px var(--lotus), 0 0 5px var(--lotus); 
     letter-spacing: 6px; 
     text-transform: uppercase;
-    margin-bottom: 5px;
+    margin: 0;
 }
 
 .system-ver { font-size: 0.75rem; color: var(--green); margin-bottom: 40px; opacity: 0.8; }
@@ -76,7 +75,7 @@ h1 {
     font-size: 0.95rem;
 }
 
-/* --- ПЛЕЕР --- */
+/* --- МУЗЫКАЛЬНЫЙ ПЛЕЕР --- */
 .track-card { border-bottom: 1px solid var(--line); padding: 25px 0; width: 100%; }
 .track-name { color: var(--lotus); margin-bottom: 12px; font-size: 0.85rem; }
 .controls-row { display: flex; align-items: center; gap: 20px; height: 40px; }
@@ -88,25 +87,23 @@ h1 {
     display: flex; align-items: center; justify-content: center;
 }
 
-/* Иконки кнопок */
+/* Иконки плеера */
 .icon-play { 
     border-left: 10px solid var(--green); 
     border-top: 6px solid transparent; 
     border-bottom: 6px solid transparent; 
     margin-left: 3px; 
 }
-.icon-pause { 
-    display: flex; gap: 4px; 
-}
+.icon-pause { display: flex; gap: 4px; }
 .icon-pause::before, .icon-pause::after { 
     content: ""; width: 3px; height: 14px; background: var(--green); 
 }
 .icon-stop { width: 12px; height: 12px; background: var(--green); }
 
-/* Ползунок музыки */
+/* Прогресс-бар */
 .seek-container { flex-grow: 1; position: relative; display: flex; align-items: center; }
 .seek-line-base { position: absolute; width: 100%; height: 2px; background: var(--line); }
-.seek-line-progress { position: absolute; height: 2px; background: var(--lotus); width: 0%; z-index: 2; }
+.seek-line-progress { position: absolute; height: 2px; background: var(--lotus); width: 0%; z-index: 2; pointer-events: none; }
 .seek-bar { 
     width: 100%; cursor: pointer; -webkit-appearance: none; 
     background: transparent; position: relative; z-index: 3; margin: 0; 
@@ -118,25 +115,39 @@ h1 {
 
 /* --- ГАЛЕРЕЯ --- */
 .gallery-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 20px; }
-.gallery-item { border: 1px solid var(--line); height: 180px; overflow: hidden; background: #000; transition: 0.3s; }
-.gallery-item img { width: 100%; height: 100%; object-fit: cover; filter: grayscale(1) brightness(0.6); }
-.gallery-item:hover { border-color: var(--lotus); }
+.gallery-item { border: 1px solid var(--line); height: 180px; overflow: hidden; background: #000; transition: 0.3s; cursor: pointer; }
 
-/* ЭФФЕКТ УВЕЛИЧЕНИЯ (ZOOM) */
+/* Миниатюры в сетке */
+.gallery-item img { 
+    width: 100%; height: 100%; object-fit: cover; 
+    filter: grayscale(1) brightness(0.5); 
+    transition: 0.3s; 
+}
+.gallery-item:hover img { filter: grayscale(0.5) brightness(0.7); }
+
+/* --- УВЕЛИЧЕННАЯ КАРТИНКА (ZOOM) --- */
 #overlay-bg {
     position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-    background: rgba(0,0,0,0.95); display: none; z-index: 3000; /* ВЫШЕ полос сканера */
-}
-.gallery-item.zoomed {
-    position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%);
-    width: auto; max-width: 95vw; height: auto; max-height: 95vh;
-    z-index: 3001; border: none; background: none;
-}
-.gallery-item.zoomed img { 
-    object-fit: contain; width: 100%; height: 100%; 
-    filter: none !important; /* Картинка становится цветной и яркой */
+    background: rgba(0,0,0,0.95); display: none; 
+    z-index: 5000; /* Выше полос сканера */
 }
 
-/* КУРСОР ТЕКСТА */
+.gallery-item.zoomed {
+    position: fixed; top: 50%; left: 50%; 
+    transform: translate(-50%, -50%);
+    width: auto; max-width: 95vw; 
+    height: auto; max-height: 95vh;
+    z-index: 6000; /* Самый высокий слой */
+    border: none; background: none;
+}
+
+.gallery-item.zoomed img { 
+    object-fit: contain; width: 100%; height: 100%; 
+    /* Принудительный сброс темноты и серости */
+    filter: grayscale(0) brightness(1) !important; 
+    box-shadow: 0 0 40px rgba(0,0,0,1);
+}
+
+/* КУРСОР ПЕЧАТИ */
 .cursor { display: inline-block; width: 10px; height: 18px; background: var(--green); vertical-align: middle; animation: blink 0.8s infinite; }
 @keyframes blink { 0%, 100% { opacity: 1; } 50% { opacity: 0; } }
