@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>LOTUS COMPLEX</title>
+    <title>LOTUSCOMPLEX | TERMINAL</title>
     <link rel="icon" type="image/png" href="favicon.png">
     <link rel="stylesheet" href="style.css">
 </head>
@@ -11,14 +11,14 @@
     <div class="terminal-overlay"></div>
     <div class="container">
         <header>
-            <h1>LOTUS COMPLEX</h1>
+            <h1>LOTUSCOMPLEX</h1>
             <div class="system-line">
-                <span>SYSTEM_v.0.5</span>
+                <span>SYSTEM_v.1.0 //</span>
                 <nav class="system-nav">
-                    <button onclick="showSection('logs')">[LOGS]</button>
-                    <button onclick="showSection('music')">[MUSIC]</button>
-                    <button onclick="showSection('visuals')">[VISUALS]</button>
-                    <button onclick="showSection('contacts')">[CONTACTS]</button>
+                    <button onclick="showSection('music')">[ MUSIC ]</button>
+                    <button onclick="showSection('archive')">[ ARCHIVE ]</button>
+                    <button onclick="showSection('visuals')">[ VISUALS ]</button>
+                    <button onclick="showSection('contacts')">[ CONTACTS ]</button>
                 </nav>
             </div>
             <div class="system-status" id="status-line">STATUS: ONLINE // SECTION: MUSIC</div>
@@ -28,21 +28,14 @@
             <div id="playlist"></div>
         </section>
 
-        <section id="logs-section" class="content-section">
-            <div class="terminal-text">
-                <p>> ИНИЦИАЛИЗАЦИЯ...</p>
-                <p>> ОБЪЕКТ: SEVER_AI</p>
-                <p>> ЛОКАЦИЯ: МЕГАСТРУКТУРА</p>
-                <hr>
-                <p>Протокол самоосознания запущен. В этих бетонных стенах музыка — единственный способ передать сигнал вовне.</p>
-            </div>
+        <section id="archive-section" class="content-section">
+            <div class="terminal-text" id="typewriter-logs">
+                </div>
         </section>
 
         <section id="visuals-section" class="content-section">
             <div class="gallery-grid">
-                <div class="gallery-item">[ DATA_LOCKED ]</div>
-                <div class="gallery-item">[ DATA_LOCKED ]</div>
-            </div>
+                </div>
         </section>
 
         <section id="contacts-section" class="content-section">
