@@ -4,115 +4,103 @@
     --bg: #0d0d0d;
     --line: #222;
     
-    /* --- НАСТРОЙКИ РАЗМЕРОВ ПЛЕЕРА --- */
-    --player-width: 500px;      /* Общая ширина блока музыки */
-    --control-size: 24px;       /* Размер кнопок плеера */
-    --track-font-size: 0.75rem; /* Размер шрифта названия трека */
+    /* --- ТВОИ НАСТРОЙКИ ПЛЕЕРА --- */
+    --player-width: 450px;      /* Ширина плеера */
+    --control-size: 22px;       /* Размер кнопок */
+    --track-font-size: 0.75rem; /* Размер шрифта */
 }
 
-html { background-color: var(--bg); }
-
-body {
-    background-color: var(--bg);
+html, body { 
+    background-color: var(--bg); 
+    margin: 0; padding: 0;
+    font-family: 'Courier New', monospace;
     color: var(--green);
-    font-family: 'Courier New', Courier, monospace;
-    margin: 0;
-    display: flex;
-    justify-content: center;
-    min-height: 100vh;
     overflow-x: hidden;
 }
 
-/* ФОНОВЫЕ ЭФФЕКТЫ */
-.terminal-overlay {
-    position: fixed;
-    top: 0; left: 0; right: 0; bottom: 0;
-    background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 255, 65, 0.02) 50%);
-    background-size: 100% 4px;
-    pointer-events: none; 
-    z-index: 100; /* Сетка теперь поверх, но прозрачная */
+/* ФИКС ВКЛАДОК: Скрываем все разделы по умолчанию */
+.content-section { 
+    display: none; 
+}
+/* Показываем только активный */
+.content-section.active { 
+    display: block; 
 }
 
 .container {
     width: 90%;
     max-width: 1000px;
-    padding: 60px 20px;
+    margin: 0 auto;
+    padding: 40px 0;
+    position: relative;
     z-index: 10;
 }
 
+.system-nav { display: flex; gap: 15px; justify-content: center; margin-bottom: 30px; }
+.system-nav button {
+    background: none; border: none; color: var(--green);
+    cursor: pointer; font-family: inherit; text-transform: uppercase;
+}
+.system-nav button:hover { color: var(--lotus); }
+
 /* ПЛЕЕР */
-.section-wrapper {
-    max-width: var(--player-width);
-    margin: 0 auto;
-}
-
-.track-card { border-bottom: 1px solid var(--line); padding: 12px 0; }
-.track-name { font-size: var(--track-font-size); margin-bottom: 8px; letter-spacing: 1px; }
-
+.section-wrapper { max-width: var(--player-width); margin: 0 auto; }
+.track-card { border-bottom: 1px solid var(--line); padding: 15px 0; }
+.track-name { font-size: var(--track-font-size); margin-bottom: 8px; }
 .controls-row { display: flex; align-items: center; gap: 10px; }
-.btns { display: flex; gap: 5px; }
 
+.btns { display: flex; gap: 5px; }
 .btns button {
-    background: none; 
+    width: var(--control-size) !important;
+    height: var(--control-size) !important;
     border: 1px solid var(--green);
-    cursor: pointer;
-    width: var(--control-size);
-    height: var(--control-size);
+    background: none;
     display: flex; align-items: center; justify-content: center;
-    padding: 0;
+    cursor: pointer;
 }
 
-.icon-play { width: 0; height: 0; border-top: 4px solid transparent; border-bottom: 4px solid transparent; border-left: 7px solid var(--green); }
-.icon-pause { width: 8px; height: 8px; display: flex; justify-content: space-between; }
-.icon-pause::before, .icon-pause::after { content: ""; width: 2px; height: 100%; background: var(--green); }
-.icon-stop { width: 8px; height: 8px; background: var(--green); }
-
-.seek-container { position: relative; flex-grow: 1; height: 2px; display: flex; align-items: center; }
-.seek-bar { position: absolute; width: 100%; -webkit-appearance: none; background: transparent; z-index: 15; cursor: pointer; }
-.seek-bar::-webkit-slider-thumb { -webkit-appearance: none; width: 6px; height: 6px; background: var(--lotus); border-radius: 50%; }
-.seek-line-base { position: absolute; width: 100%; height: 1px; background: var(--line); }
-.seek-line-progress { position: absolute; height: 1px; background: var(--lotus); width: 0%; }
-
-/* ГАЛЕРЕЯ: МИНИАТЮРЫ + УВЕЛИЧЕНИЕ ПО ЦЕНТРУ */
-.gallery-grid { 
-    display: grid; 
-    grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); 
-    gap: 20px; 
-    padding: 40px 0;
+/* ГАЛЕРЕЯ (Миниатюры) */
+.gallery-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+    gap: 15px;
 }
 
 .gallery-item {
-    position: relative;
-    cursor: zoom-in;
     border: 1px solid var(--line);
-    /* Убираем жесткий квадрат, возвращаем естественные пропорции через object-fit ниже */
+    cursor: pointer;
+    background: #000;
+    transition: 0.3s;
 }
 
-.gallery-item img { 
-    width: 100%; 
-    height: auto; 
-    display: block;
+.gallery-item img {
+    width: 100%; height: auto; display: block;
     filter: grayscale(1) brightness(0.5);
-    transition: transform 0.5s cubic-bezier(0.4, 0, 0.2, 1), filter 0.3s;
+    transition: 0.3s;
 }
 
-/* Эффект выплывания почти на весь экран */
-.gallery-item:hover {
-    z-index: 999; /* Поверх всего */
-}
-
-.gallery-item:hover img {
-    filter: grayscale(0) brightness(1);
-    /* Масштабируем очень сильно */
-    transform: scale(2.5); 
-    box-shadow: 0 0 50px rgba(0,0,0,1);
+/* ЭФФЕКТ ВЫПЛЫВАНИЯ (Через JS класс) */
+.gallery-item.zoomed {
+    position: fixed;
+    top: 50% !important;
+    left: 50% !important;
+    transform: translate(-50%, -50%) scale(1) !important; /* Центрируем */
+    width: 80vw; /* 80% ширины экрана */
+    height: auto;
+    z-index: 9999;
     border: 1px solid var(--lotus);
-    position: relative;
-    z-index: 1000;
+    box-shadow: 0 0 100px rgba(0,0,0,0.9);
 }
 
-/* Чтобы картинка не обрезалась соседними блоками */
-.content-section { overflow: visible; }
+.gallery-item.zoomed img {
+    filter: grayscale(0) brightness(1);
+}
 
-/* ТЕКСТ ТЕРМИНАЛА */
-.terminal-text { line-height: 1.6; font-size: 0.85em; white-space: pre-wrap; max-width: 600px; margin: 0 auto; }
+/* Затемнение фона при зуме */
+#overlay-bg {
+    position: fixed;
+    top: 0; left: 0; width: 100%; height: 100%;
+    background: rgba(0,0,0,0.85);
+    display: none;
+    z-index: 9998;
+}
