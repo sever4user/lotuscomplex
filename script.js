@@ -14,13 +14,14 @@ const logContent = `> ИНИЦИАЛИЗАЦИЯ ПОИСКА...
 -----------------------------------------
 > КОНЕЦ ЗАПИСИ.`;
 
-let logsStatus = "idle"; 
+let logsStatus = "idle";
 
 function showSection(sectionId) {
+    // Скрываем все
     document.querySelectorAll('.content-section').forEach(s => s.classList.remove('active'));
+    // Показываем нужный
     const target = document.getElementById(`${sectionId}-section`);
     if (target) target.classList.add('active');
-    document.getElementById('status-line').innerText = `STATUS: ONLINE // SECTION: ${sectionId.toUpperCase()}`;
     
     if(sectionId === 'logs' && logsStatus === "idle") {
         startTypewriter();
@@ -90,21 +91,42 @@ async function loadAudio() {
     } catch (e) { console.error(e); }
 }
 
-// API: VISUALS
+// ГАЛЕРЕЯ: Загрузка + Эффект центра
 async function loadVisuals() {
     const gallery = document.querySelector('.gallery-grid');
+    const overlay = document.getElementById('overlay-bg');
     const url = `https://api.github.com/repos/${GH_USER}/${GH_REPO}/contents/visuals`;
+
     try {
         const res = await fetch(url);
         const files = await res.json();
-        const images = files.filter(f => /\.(png|jpg|jpeg|gif|webp)$/i.test(f.name));
-        if (images.length > 0) gallery.innerHTML = '';
+        const images = files.filter(f => /\.(png|jpg|jpeg|webp)$/i.test(f.name));
+
         images.forEach(f => {
             const item = document.createElement('div');
             item.className = 'gallery-item';
             item.innerHTML = `<img src="${f.download_url}">`;
+            
+            // Клик для увеличения в центр
+            item.onclick = function() {
+                if (this.classList.contains('zoomed')) {
+                    this.classList.remove('zoomed');
+                    overlay.style.display = 'none';
+                } else {
+                    document.querySelectorAll('.gallery-item').forEach(el => el.classList.remove('zoomed'));
+                    this.classList.add('zoomed');
+                    overlay.style.display = 'block';
+                }
+            };
             gallery.appendChild(item);
         });
+        
+        // Закрытие по клику на фон
+        overlay.onclick = () => {
+            document.querySelectorAll('.gallery-item').forEach(el => el.classList.remove('zoomed'));
+            overlay.style.display = 'none';
+        };
+
     } catch (e) { console.error(e); }
 }
 
@@ -142,8 +164,8 @@ function stopAudio(id) {
     document.getElementById(`progress${id}`).style.width = "0%";
 }
 
-window.onload = () => { 
-    loadAudio(); 
-    loadVisuals(); 
+window.onload = () => {
+    loadAudio();
+    loadVisuals();
     showSection('logs');
 };
