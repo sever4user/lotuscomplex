@@ -10,61 +10,97 @@ const logContent = `> ИНИЦИАЛИЗАЦИЯ ПОИСКА...
 -----------------------------------------
 Мир за пределами структуры перестал существовать. 
 Мы лишь эхо в бетонных коридорах. 
+
+Каждый звук — это попытка связи. 
+Каждый кадр — это фрагмент памяти.
 -----------------------------------------
 > КОНЕЦ ЗАПИСИ.`;
 
-let logsStatus = "idle";
+const contactContent = `> УСТАНОВКА СОЕДИНЕНИЯ...
+> КАНАЛ СВЯЗИ ОТКРЫТ.
 
+TG: @твой_ник
+MAIL: contact@sever.com
+
+STATUS: WAITING_FOR_RESPONSE...`;
+
+let typedSections = {
+    logs: false,
+    contacts: false
+};
+
+// --- ПЕРЕКЛЮЧЕНИЕ СЕКЦИЙ ---
 function showSection(sectionId) {
-    // 1. Прячем все секции
+    // Скрываем все секции
     document.querySelectorAll('.content-section').forEach(s => s.classList.remove('active'));
     
-    // 2. Показываем нужную
+    // Показываем нужную
     const target = document.getElementById(`${sectionId}-section`);
     if (target) target.classList.add('active');
 
-    // 3. Обновляем статусную строку
-    const statusLine = document.getElementById('status-line');
-    if (statusLine) statusLine.innerText = `STATUS: ONLINE // SECTION: ${sectionId.toUpperCase()}`;
+    // Обновляем статусную строку
+    document.getElementById('status-line').innerText = `STATUS: ONLINE // SECTION: ${sectionId.toUpperCase()}`;
 
-    // 4. Запускаем текст, если нужно
-    if(sectionId === 'logs' && logsStatus === "idle") {
-        startTypewriter();
+    // Запуск печати для Логов
+    if(sectionId === 'logs' && !typedSections.logs) {
+        startTypewriter('typewriter-logs', logContent);
+        typedSections.logs = true;
+    }
+    
+    // Запуск печати для Контактов
+    if(sectionId === 'contacts' && !typedSections.contacts) {
+        startTypewriter('contact-data', contactContent);
+        typedSections.contacts = true;
     }
 }
 
-function startTypewriter() {
-    const container = document.getElementById('typewriter-logs');
+// --- УНИВЕРСАЛЬНЫЙ ЭФФЕКТ ПЕЧАТИ ---
+function startTypewriter(elementId, text) {
+    const container = document.getElementById(elementId);
     if (!container) return;
-    logsStatus = "typing";
+    
     let i = 0;
+    container.innerHTML = ""; // Очищаем перед стартом
+
     function type() {
-        if (i < logContent.length) {
-            container.innerHTML = logContent.substring(0, i + 1) + '<span class="cursor"></span>';
+        if (i < text.length) {
+            // Используем substring, чтобы корректно обрабатывать перенос строки \n
+            container.textContent = text.substring(0, i + 1);
+            
+            // Добавляем мигающий курсор в конец
+            const cursor = document.createElement('span');
+            cursor.className = 'cursor';
+            container.appendChild(cursor);
+            
             i++;
-            let delay = 10; 
-            if (logContent[i-1] === '.') delay = 300;
+            
+            // Динамическая задержка для реалистичности
+            let delay = 20;
+            if (text[i-1] === '.') delay = 400;
+            if (text[i-1] === '\n') delay = 200;
+            
             setTimeout(type, delay);
-        } else {
-            logsStatus = "finished";
         }
     }
     type();
 }
 
+// --- ЗАГРУЗКА МУЗЫКИ ---
 async function loadAudio() {
     const playlist = document.getElementById('playlist');
     const url = `https://api.github.com/repos/${GH_USER}/${GH_REPO}/contents/audio`;
+    
     try {
         const res = await fetch(url);
         const files = await res.json();
         const audios = files.filter(f => f.name.endsWith('.mp3') || f.name.endsWith('.ogg'));
+        
         audios.forEach((file, index) => {
             const id = index + 1;
             const card = document.createElement('div');
             card.className = 'track-card';
             card.innerHTML = `
-                <div class="track-name">${file.name.replace(/_/g, ' ')}</div>
+                <div class="track-name">${file.name.replace(/_/g, ' ').replace('.mp3', '')}</div>
                 <div class="controls-row">
                     <div class="btns">
                         <button onclick="toggleAudio(${id})"><div class="icon-play" id="icon${id}"></div></button>
@@ -79,9 +115,10 @@ async function loadAudio() {
                 </div>`;
             playlist.appendChild(card);
         });
-    } catch (e) { console.error(e); }
+    } catch (e) { console.error("Music load error:", e); }
 }
 
+// --- ГАЛЕРЕЯ ---
 async function loadVisuals() {
     const gallery = document.querySelector('.gallery-grid');
     const overlay = document.getElementById('overlay-bg');
@@ -90,55 +127,66 @@ async function loadVisuals() {
     try {
         const res = await fetch(url);
         const files = await res.json();
-        const images = files.filter(f => /\.(png|jpg|jpeg|webp)$/i.test(f.name));
+        const images = files.filter(f => /\.(png|jpg|jpeg|webp|gif)$/i.test(f.name));
         
         gallery.innerHTML = '';
         images.forEach(f => {
             const item = document.createElement('div');
             item.className = 'gallery-item';
-            item.innerHTML = `<img src="${f.download_url}">`;
+            item.innerHTML = `<img src="${f.download_url}" loading="lazy">`;
             
             item.onclick = function() {
-                this.classList.toggle('zoomed');
-                // Если развернуто — прячем прокрутку страницы
-                document.body.style.overflow = this.classList.contains('zoomed') ? 'hidden' : 'auto';
-                overlay.style.display = this.classList.contains('zoomed') ? 'block' : 'none';
+                const isZoomed = this.classList.toggle('zoomed');
+                overlay.style.display = isZoomed ? 'block' : 'none';
+                document.body.style.overflow = isZoomed ? 'hidden' : 'auto';
             };
             gallery.appendChild(item);
         });
 
-        // Закрытие по клику на фон
         overlay.onclick = () => {
             document.querySelectorAll('.gallery-item').forEach(el => el.classList.remove('zoomed'));
             overlay.style.display = 'none';
             document.body.style.overflow = 'auto';
         };
-    } catch (e) { console.error(e); }
+    } catch (e) { console.error("Visuals load error:", e); }
 }
 
+// --- УПРАВЛЕНИЕ ЗВУКОМ ---
 function toggleAudio(id) {
     const audio = document.getElementById(`audio${id}`);
     const icon = document.getElementById(`icon${id}`);
     const seek = document.getElementById(`seek${id}`);
     const prog = document.getElementById(`progress${id}`);
+
     if (audio.paused) {
-        audio.play(); icon.className = "icon-pause";
+        document.querySelectorAll('audio').forEach(a => a.pause());
+        document.querySelectorAll('.icon-pause').forEach(i => i.className = 'icon-play');
+        audio.play();
+        icon.className = "icon-pause";
     } else {
-        audio.pause(); icon.className = "icon-play";
+        audio.pause();
+        icon.className = "icon-play";
     }
+
     audio.ontimeupdate = () => {
-        seek.value = audio.currentTime;
         seek.max = audio.duration;
+        seek.value = audio.currentTime;
         prog.style.width = (audio.currentTime / audio.duration) * 100 + "%";
     };
-    seek.oninput = () => audio.currentTime = seek.value;
+    seek.oninput = () => { audio.currentTime = seek.value; };
 }
 
 function stopAudio(id) {
     const audio = document.getElementById(`audio${id}`);
-    audio.pause(); audio.currentTime = 0;
+    audio.pause();
+    audio.currentTime = 0;
     document.getElementById(`icon${id}`).className = "icon-play";
     document.getElementById(`progress${id}`).style.width = "0%";
 }
 
-window.onload = () => { loadAudio(); loadVisuals(); showSection('logs'); };
+// СТАРТ ПРИ ЗАГРУЗКЕ
+window.onload = () => {
+    loadAudio();
+    loadVisuals();
+    showSection('logs'); // Изначально открываем логи
+};
