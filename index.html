@@ -3,48 +3,45 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>LOTUSCOMPLEX | TERMINAL</title>
-    <link rel="icon" type="image/png" href="favicon.png">
+    <title>LOTUSCOMPLEX // SYSTEM</title>
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
+
     <div class="terminal-overlay"></div>
+
     <div class="container">
         <header>
             <h1>LOTUSCOMPLEX</h1>
-            <div class="system-line">
-                <span>SYSTEM_v.1.0 //</span>
-                <nav class="system-nav">
-                    <button onclick="showSection('logs')">[ LOGS ]</button>
-                    <button onclick="showSection('music')">[ MUSIC ]</button>
-                    <button onclick="showSection('visuals')">[ VISUALS ]</button>
-                    <button onclick="showSection('contacts')">[ CONTACTS ]</button>
-                </nav>
-            </div>
-            <div class="system-status" id="status-line">STATUS: ONLINE // SECTION: LOGS</div>
+            <div class="system-ver">SYSTEM_v.1.0 // PROJECT SEVER</div>
         </header>
 
-        <section id="logs-section" class="content-section active">
-            <div class="terminal-text" id="typewriter-logs"></div>
-        </section>
+        <nav class="system-nav">
+            <button onclick="showSection('logs')">[ LOGS ]</button>
+            <button onclick="showSection('music')">[ MUSIC ]</button>
+            <button onclick="showSection('visuals')">[ VISUALS ]</button>
+        </nav>
 
-        <section id="music-section" class="content-section">
-            <div id="playlist"></div>
-        </section>
+        <div id="status-line" class="system-status">STATUS: ONLINE // SECTION: LOGS</div>
 
-        <section id="visuals-section" class="content-section">
-            <div class="gallery-grid"></div>
-        </section>
+        <main>
+            <section id="logs-section" class="content-section active">
+                <div id="typewriter-logs" class="terminal-text"></div>
+            </section>
 
-        <section id="contacts-section" class="content-section">
-            <div class="terminal-text">
-                <p>> СВЯЗЬ С ОПЕРАТОРОМ:</p>
-                <p>TG: @YOUR_NICKNAME</p>
-                <p>MAIL: SEVER.PROJECT@NODE.SYS</p>
-            </div>
-        </section>
+            <section id="music-section" class="content-section">
+                <div id="playlist"></div>
+            </section>
+
+            <section id="visuals-section" class="content-section">
+                <div class="gallery-grid">
+                    </div>
+            </section>
+        </main>
     </div>
+
     <div id="overlay-bg"></div>
+
     <script src="script.js"></script>
 </body>
 </html>
