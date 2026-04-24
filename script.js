@@ -14,7 +14,7 @@ const logContent = `> ИНИЦИАЛИЗАЦИЯ ПОИСКА...
 -----------------------------------------
 > КОНЕЦ ЗАПИСИ.`;
 
-let logsStatus = "idle"; // idle, typing, finished
+let logsStatus = "idle"; 
 
 function showSection(sectionId) {
     document.querySelectorAll('.content-section').forEach(s => s.classList.remove('active'));
@@ -22,14 +22,8 @@ function showSection(sectionId) {
     if (target) target.classList.add('active');
     document.getElementById('status-line').innerText = `STATUS: ONLINE // SECTION: ${sectionId.toUpperCase()}`;
     
-    // Печатаем только если статус "idle"
-    if(sectionId === 'logs') {
-        if (logsStatus === "idle") {
-            startTypewriter();
-        } else if (logsStatus === "finished") {
-            // Если уже напечатано, просто убеждаемся, что текст на месте
-            document.getElementById('typewriter-logs').innerHTML = logContent + '<span class="cursor"></span>';
-        }
+    if(sectionId === 'logs' && logsStatus === "idle") {
+        startTypewriter();
     }
 }
 
@@ -43,19 +37,19 @@ function startTypewriter() {
     
     function type() {
         if (i < logContent.length) {
-            // Печатаем "пачками" для эффекта рывков
-            let numChars = Math.random() > 0.8 ? Math.floor(Math.random() * 3) + 1 : 1;
-            container.innerHTML = logContent.substring(0, i + numChars) + '<span class="cursor"></span>';
-            i += numChars;
+            // Ускоренная печать: пачки от 2 до 5 символов
+            let burst = Math.floor(Math.random() * 4) + 2; 
+            container.innerHTML = logContent.substring(0, i + burst) + '<span class="cursor"></span>';
+            i += burst;
             
-            // Расчет задержки для "рваного" ритма
-            let delay = Math.floor(Math.random() * 30) + 10; // Базовая скорость (очень быстро)
+            // Базовая задержка стала еще меньше (5-15мс)
+            let delay = Math.floor(Math.random() * 10) + 5; 
             
             let lastChar = logContent[i-1];
-            if (lastChar === '.') delay = 600; 
-            if (lastChar === ',') delay = 300;
-            if (lastChar === '\n') delay = 500;
-            if (Math.random() > 0.96) delay = 800; // Случайная "запинка" системы
+            if (lastChar === '.') delay = 350; 
+            if (lastChar === '\n') delay = 400;
+            // Случайные микро-запинки для эффекта чтения диска
+            if (Math.random() > 0.97) delay = 600; 
             
             setTimeout(type, delay);
         } else {
