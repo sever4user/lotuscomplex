@@ -1,6 +1,6 @@
 // --- КОНФИГУРАЦИЯ ---
-const GH_USER = 'ТВОЙ_НИК'; 
-const GH_REPO = 'ТВОЙ_РЕПОЗИТОРИЙ';
+const GH_USER = 'sever4user'; 
+const GH_REPO = 'lotuscomplex';
 
 const logContent = `> ИНИЦИАЛИЗАЦИЯ ПОИСКА...
 > ОБНАРУЖЕНЫ ФРАГМЕНТЫ ДАННЫХ PROJECT SEVER.
