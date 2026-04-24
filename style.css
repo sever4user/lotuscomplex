@@ -3,14 +3,11 @@
     --lotus: #FFB7D5;
     --bg: #0d0d0d;
     --line: #222;
-    --control-size: 32px;
-    --icon-size: 14px;
+    --control-size: 26px; /* Уменьшили кнопки */
+    --icon-size: 10px;    /* Уменьшили иконки */
 }
 
-html { 
-    background-color: var(--bg); 
-    height: 100%;
-}
+html { background-color: var(--bg); height: 100%; }
 
 body {
     background-color: var(--bg);
@@ -26,25 +23,24 @@ body {
     animation: terminal-glow 8s ease-in-out infinite;
 }
 
-/* ИСПРАВЛЕННЫЕ СКАН-ЛИНИИ */
+/* СКАН-ЛИНИИ: Опускаем на задний план */
 .terminal-overlay {
     position: fixed;
-    top: 0; left: 0; 
-    right: 0; bottom: 0; /* Растяжка во все стороны */
+    top: 0; left: 0; right: 0; bottom: 0;
     width: 100%; height: 100%;
-    background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 255, 65, 0.03) 50%);
-    background-size: 100% 8px;
+    background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 255, 65, 0.02) 50%);
+    background-size: 100% 6px;
     pointer-events: none; 
-    z-index: 100; /* Теперь поверх всего, но очень прозрачно */
-    animation: scanlines 10s linear infinite;
+    z-index: 1; /* Самый низкий приоритет среди эффектов */
+    animation: scanlines 12s linear infinite;
 }
 
 body::after {
     content: "";
     position: fixed;
     top: 0; left: 0; right: 0; bottom: 0;
-    background: radial-gradient(circle, rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.7) 100%);
-    z-index: 101;
+    background: radial-gradient(circle, rgba(18, 16, 16, 0) 60%, rgba(0, 0, 0, 0.8) 100%);
+    z-index: 2;
     pointer-events: none;
 }
 
@@ -53,7 +49,7 @@ body::after {
     max-width: 650px;
     padding: 60px 20px;
     position: relative;
-    z-index: 10;
+    z-index: 10; /* Контент всегда выше линий */
 }
 
 h1 {
@@ -62,7 +58,7 @@ h1 {
     letter-spacing: 15px;
     text-align: center;
     text-transform: uppercase;
-    font-size: 1.8rem;
+    font-size: 1.6rem;
     margin-bottom: 20px;
 }
 
@@ -87,15 +83,15 @@ h1 {
 .content-section { display: none; }
 .content-section.active { display: block; }
 
-/* ПЛЕЕР С РАМКАМИ */
-.track-card { border-bottom: 1px solid var(--line); padding: 25px 0; }
-.track-name { font-size: 0.8em; margin-bottom: 15px; letter-spacing: 2px; }
-.controls-row { display: flex; align-items: center; gap: 15px; }
+/* ПЛЕЕР */
+.track-card { border-bottom: 1px solid var(--line); padding: 20px 0; }
+.track-name { font-size: 0.75em; margin-bottom: 12px; letter-spacing: 2px; }
+.controls-row { display: flex; align-items: center; gap: 12px; }
 
-.btns { display: flex; gap: 10px; }
+.btns { display: flex; gap: 6px; }
 .btns button {
     background: none; 
-    border: 1px solid var(--green); /* Рамочка */
+    border: 0.5px solid var(--green); /* Тонкая рамка */
     cursor: pointer;
     width: var(--control-size); height: var(--control-size);
     display: flex; align-items: center; justify-content: center;
@@ -103,31 +99,29 @@ h1 {
     transition: 0.2s;
 }
 
-/* Эффект при наведении на кнопку плеера */
 .btns button:hover {
     border-color: var(--lotus);
-    background: rgba(255, 183, 213, 0.1);
+    background: rgba(255, 183, 213, 0.05);
 }
 
 .icon-play {
     width: 0; height: 0;
-    border-top: 6px solid transparent;
-    border-bottom: 6px solid transparent;
-    border-left: 10px solid var(--green);
-    margin-left: 3px;
+    border-top: 5px solid transparent;
+    border-bottom: 5px solid transparent;
+    border-left: 8px solid var(--green);
+    margin-left: 2px;
 }
 
 .icon-pause {
-    width: 10px; height: 10px;
+    width: 8px; height: 8px;
     display: flex; justify-content: space-between;
 }
 .icon-pause::before, .icon-pause::after {
-    content: ""; width: 3px; height: 100%; background: var(--green);
+    content: ""; width: 2.5px; height: 100%; background: var(--green);
 }
 
-.icon-stop { width: 10px; height: 10px; background: var(--green); }
+.icon-stop { width: 8px; height: 8px; background: var(--green); }
 
-/* Меняем цвет иконок при ховере кнопки */
 .btns button:hover .icon-play { border-left-color: var(--lotus); }
 .btns button:hover .icon-pause::before, .btns button:hover .icon-pause::after,
 .btns button:hover .icon-stop { background-color: var(--lotus); }
@@ -135,19 +129,46 @@ h1 {
 /* ПОЛЗУНОК */
 .seek-container { position: relative; flex-grow: 1; display: flex; align-items: center; }
 .seek-bar { position: absolute; width: 100%; -webkit-appearance: none; background: transparent; z-index: 15; outline: none; }
-.seek-bar::-webkit-slider-thumb { -webkit-appearance: none; width: 8px; height: 8px; background: var(--lotus); border-radius: 50%; cursor: pointer; }
+.seek-bar::-webkit-slider-thumb { -webkit-appearance: none; width: 6px; height: 6px; background: var(--lotus); border-radius: 50%; cursor: pointer; }
 .seek-line-base { position: absolute; width: 100%; height: 1px; background: var(--line); }
 .seek-line-progress { position: absolute; height: 1px; background: var(--lotus); opacity: 0.6; width: 0%; }
 
-/* ГАЛЕРЕЯ */
-.gallery-grid { display: grid; grid-template-columns: 1fr; gap: 30px; }
-.gallery-item img { width: 100%; border: 1px solid var(--line); filter: grayscale(0.5); transition: 0.5s; }
-.gallery-item img:hover { filter: grayscale(0); border-color: var(--lotus); }
+/* ГАЛЕРЕЯ VISUALS */
+.gallery-grid { 
+    display: grid; 
+    grid-template-columns: 1fr; 
+    gap: 40px; 
+    padding-top: 20px;
+}
+
+.gallery-item {
+    overflow: hidden; /* Чтобы картинка не вылезала за границы при увеличении */
+    border: 1px solid var(--line);
+    transition: border-color 0.4s;
+    background: #000;
+}
+
+.gallery-item img { 
+    width: 100%; 
+    display: block;
+    filter: grayscale(0.3) brightness(0.8); 
+    transition: transform 0.6s cubic-bezier(0.25, 1, 0.5, 1), filter 0.4s; 
+}
+
+.gallery-item:hover {
+    border-color: var(--lotus);
+    box-shadow: 0 0 20px rgba(255, 183, 213, 0.05);
+}
+
+.gallery-item:hover img { 
+    filter: grayscale(0) brightness(1); 
+    transform: scale(1.05); /* Эффект увеличения */
+}
 
 /* ТЕКСТ */
-.terminal-text { line-height: 1.6; font-size: 0.85em; white-space: pre-wrap; }
+.terminal-text { line-height: 1.6; font-size: 0.85em; white-space: pre-wrap; position: relative; }
 .cursor { display: inline-block; width: 8px; height: 14px; background: var(--green); margin-left: 5px; animation: blink 0.8s infinite; vertical-align: middle; }
 
 @keyframes blink { 0%, 100% { opacity: 1; } 50% { opacity: 0; } }
 @keyframes scanlines { from { background-position: 0 0; } to { background-position: 0 100%; } }
-@keyframes terminal-glow { 0%, 100% { opacity: 1; } 50% { opacity: 0.95; } }
+@keyframes terminal-glow { 0%, 100% { opacity: 1; } 50% { opacity: 0.93; } }
