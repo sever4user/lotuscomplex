@@ -37,19 +37,16 @@ function startTypewriter() {
     
     function type() {
         if (i < logContent.length) {
-            // Ускоренная печать: пачки от 2 до 5 символов
-            let burst = Math.floor(Math.random() * 4) + 2; 
-            container.innerHTML = logContent.substring(0, i + burst) + '<span class="cursor"></span>';
-            i += burst;
+            // ПЕЧАТАЕМ ПО ОДНОМУ СИМВОЛУ (как ты просил)
+            container.innerHTML = logContent.substring(0, i + 1) + '<span class="cursor"></span>';
+            i++;
             
-            // Базовая задержка стала еще меньше (5-15мс)
-            let delay = Math.floor(Math.random() * 10) + 5; 
+            // СКОРОСТЬ: 10мс (быстро), но с паузами на знаках
+            let delay = 10; 
+            let char = logContent[i-1];
             
-            let lastChar = logContent[i-1];
-            if (lastChar === '.') delay = 350; 
-            if (lastChar === '\n') delay = 400;
-            // Случайные микро-запинки для эффекта чтения диска
-            if (Math.random() > 0.97) delay = 600; 
+            if (char === '.' || char === '!' || char === '?') delay = 400; 
+            if (char === '\n') delay = 300;
             
             setTimeout(type, delay);
         } else {
