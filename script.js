@@ -31,6 +31,11 @@ const statusLine = document.getElementById("statusLine");
 const sfxToggle = document.getElementById("sfxToggle");
 const masterVolumeRange = document.getElementById("masterVolumeRange");
 const typed = { logs: false, contacts: false };
+const AUDIO_TUNING = {
+  masterDefault: 0.62,
+  clickPeak: 0.011,
+  humMasterGain: 0.72
+};
 const mediaExtensions = {
   audio: [".mp3", ".ogg", ".wav", ".m4a"],
   visuals: [".png", ".jpg", ".jpeg", ".webp", ".gif", ".avif"]
@@ -43,7 +48,7 @@ const state = {
   players: [],
   keyBuffer: "",
   activeMusicCount: 0,
-  masterVolume: Number(masterVolumeRange?.value || 0.6),
+  masterVolume: AUDIO_TUNING.masterDefault,
   rerenderAscii: null
 };
 
@@ -59,7 +64,7 @@ function playUiClick() {
   osc.frequency.setValueAtTime(360, now);
   osc.frequency.exponentialRampToValueAtTime(275, now + 0.08);
   gain.gain.setValueAtTime(0.0001, now);
-  gain.gain.exponentialRampToValueAtTime(0.009 * state.masterVolume, now + 0.02);
+  gain.gain.exponentialRampToValueAtTime(AUDIO_TUNING.clickPeak * state.masterVolume, now + 0.02);
   gain.gain.exponentialRampToValueAtTime(0.0001, now + 0.11);
   osc.connect(gain);
   gain.connect(ctx.destination);
@@ -119,7 +124,7 @@ function startTerminalHum() {
   noise.loop = true;
 
   noiseGain.gain.value = 0.0042;
-  master.gain.value = 0.8 * state.masterVolume;
+  master.gain.value = AUDIO_TUNING.humMasterGain * state.masterVolume;
 
   bass.connect(bassGain);
   bassGain.connect(master);
@@ -271,8 +276,11 @@ function preloadNextTrack(currentIndex) {
 function updateSfxVolume(value) {
   state.masterVolume = Math.max(0, Math.min(1, value));
   if (state.humNodes?.master) {
-    state.humNodes.master.gain.value = 0.8 * state.masterVolume;
+    state.humNodes.master.gain.value = AUDIO_TUNING.humMasterGain * state.masterVolume;
   }
+  state.players.forEach((player) => {
+    player.audio.volume = state.masterVolume;
+  });
 }
 
 async function renderMusic() {
@@ -313,7 +321,7 @@ async function renderMusic() {
     const progress = card.querySelector(".seek-progress");
 
     audio.src = file.url;
-    audio.volume = 1;
+    audio.volume = state.masterVolume;
 
     playButton.addEventListener("click", async () => {
       playUiClick();
@@ -479,13 +487,15 @@ function setupAsciiVines() {
 
   const renderPattern = () => {
     const motif = document.body.classList.contains("easter-sever") ? motifs.buttercup : motifs.lotus;
-    const motifWidth = motif.length + 3;
-    const columns = Math.ceil(window.innerWidth / 8 / motifWidth) + 1;
-    const rows = Math.ceil(window.innerHeight / 14) + 2;
+    const motifUnit = `${motif}   `;
+    const fontPx = Math.max(7, Math.min(11, window.innerWidth * 0.008));
+    const cellWidth = fontPx * 0.62;
+    const columns = Math.ceil(window.innerWidth / (cellWidth * motifUnit.length)) + 6;
+    const rows = Math.ceil(window.innerHeight / (fontPx * 1.3)) + 6;
     let result = "";
     for (let y = 0; y < rows; y += 1) {
       const pad = y % 2 === 0 ? " " : "";
-      result += pad + `${`${motif}   `.repeat(columns)}\n`;
+      result += `${pad}${motifUnit.repeat(columns)}\n\n`;
     }
     backdrop.textContent = result;
   };
@@ -524,6 +534,10 @@ masterVolumeRange?.addEventListener("input", () => {
 });
 
 async function init() {
+  if (masterVolumeRange) {
+    masterVolumeRange.value = String(AUDIO_TUNING.masterDefault);
+  }
+  updateSfxVolume(AUDIO_TUNING.masterDefault);
   setTab("logs");
   setupClipboardMentions();
   setupEasterEggs();
