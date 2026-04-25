@@ -481,8 +481,8 @@ function setupAsciiVines() {
   if (!backdrop) return;
 
   const motifs = {
-    lotus: " ~ -=( <✿> )=- ~ ",
-    buttercup: " ~ --‹( ✿ )›-- ~ "
+    lotus: " -=(<✿>)=- ",
+    buttercup: " --‹[ ✿ ]›-- "
   };
 
   const renderPattern = () => {
