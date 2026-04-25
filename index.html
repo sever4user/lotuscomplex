@@ -26,7 +26,10 @@
       <button class="tab" data-section="contacts">[ CONTACTS ]</button>
     </nav>
 
-    <p id="statusLine" class="status-line">STATUS: ONLINE // SECTION: LOGS</p>
+    <div class="status-wrap">
+      <p id="statusLine" class="status-line">STATUS: ONLINE // SECTION: LOGS</p>
+      <button id="sfxToggle" class="sfx-toggle" type="button" aria-pressed="false">SFX: OFF</button>
+    </div>
 
     <main>
       <section id="logs" class="panel active" aria-live="polite">
@@ -34,12 +37,12 @@
       </section>
 
       <section id="music" class="panel">
-        <p class="hint">Файлы автоматически берутся из папки <code>audio</code> (или из <code>audio/tracks.json</code>).</p>
+        <p class="hint">Файлы автоматически берутся только из папки <code>audio</code> через GitHub API.</p>
         <div id="musicList" class="music-list"></div>
       </section>
 
       <section id="visuals" class="panel">
-        <p class="hint">Работы автоматически берутся из папки <code>visuals</code> (или из <code>visuals/images.json</code>).</p>
+        <p class="hint">Работы автоматически берутся только из папки <code>visuals</code> через GitHub API.</p>
         <div id="visualGrid" class="visual-grid"></div>
       </section>
 
