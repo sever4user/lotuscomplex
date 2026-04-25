@@ -1,51 +1,59 @@
 <!DOCTYPE html>
 <html lang="ru">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>LOTUSCOMPLEX // SYSTEM</title>
-    <link rel="stylesheet" href="style.css">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>LOTUS COMPLEX // PORTFOLIO TERMINAL</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
 </head>
 <body>
+  <div class="scan-overlay" aria-hidden="true"></div>
+  <div class="pulse-noise" aria-hidden="true"></div>
 
-    <div class="terminal-overlay"></div>
+  <div class="page">
+    <header class="project-header">
+      <h1>LOTUS COMPLEX</h1>
+      <p class="subtitle">PORTFOLIO NODE // SINGLE PAGE SYSTEM</p>
+    </header>
 
-    <div class="container">
-        <header>
-            <h1>LOTUSCOMPLEX</h1>
-            <div class="system-ver">SYSTEM_v.1.0 // PROJECT SEVER</div>
-        </header>
+    <nav class="tabs" aria-label="Sections">
+      <button class="tab active" data-section="logs">[ LOGS ]</button>
+      <button class="tab" data-section="music">[ MUSIC ]</button>
+      <button class="tab" data-section="visuals">[ VISUALS ]</button>
+      <button class="tab" data-section="contacts">[ CONTACTS ]</button>
+    </nav>
 
-        <nav class="system-nav">
-            <button onclick="showSection('logs')">[ LOGS ]</button>
-            <button onclick="showSection('music')">[ MUSIC ]</button>
-            <button onclick="showSection('visuals')">[ VISUALS ]</button>
-            <button onclick="showSection('contacts')">[ CONTACTS ]</button>
-        </nav>
+    <p id="statusLine" class="status-line">STATUS: ONLINE // SECTION: LOGS</p>
 
-        <div id="status-line" class="system-status">STATUS: ONLINE // SECTION: LOGS</div>
+    <main>
+      <section id="logs" class="panel active" aria-live="polite">
+        <div id="logsTypewriter" class="terminal-text"></div>
+      </section>
 
-        <main>
-            <section id="logs-section" class="content-section active">
-                <div id="typewriter-logs" class="terminal-text"></div>
-            </section>
+      <section id="music" class="panel">
+        <p class="hint">Файлы автоматически берутся из папки <code>audio</code> (или из <code>audio/tracks.json</code>).</p>
+        <div id="musicList" class="music-list"></div>
+      </section>
 
-            <section id="music-section" class="content-section">
-                <div id="playlist"></div>
-            </section>
+      <section id="visuals" class="panel">
+        <p class="hint">Работы автоматически берутся из папки <code>visuals</code> (или из <code>visuals/images.json</code>).</p>
+        <div id="visualGrid" class="visual-grid"></div>
+      </section>
 
-            <section id="visuals-section" class="content-section">
-                <div class="gallery-grid"></div>
-            </section>
+      <section id="contacts" class="panel">
+        <div id="contactsTypewriter" class="terminal-text"></div>
+      </section>
+    </main>
+  </div>
 
-            <section id="contacts-section" class="content-section">
-                <div id="contact-data" class="terminal-text"></div>
-            </section>
-        </main>
-    </div>
+  <div id="lightbox" class="lightbox" aria-hidden="true">
+    <button id="closeLightbox" class="close-lightbox" aria-label="Закрыть">[X]</button>
+    <img id="lightboxImage" alt="Fullscreen artwork">
+  </div>
 
-    <div id="overlay-bg"></div>
-
-    <script src="script.js"></script>
+  <script src="script.js"></script>
 </body>
 </html>
