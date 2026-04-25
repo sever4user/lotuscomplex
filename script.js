@@ -32,9 +32,9 @@ const sfxToggle = document.getElementById("sfxToggle");
 const masterVolumeRange = document.getElementById("masterVolumeRange");
 const typed = { logs: false, contacts: false };
 const AUDIO_TUNING = {
-  masterDefault: 0.75,
-  clickPeak: 0.03,
-  humMasterGain: 1
+  masterDefault: 0.60,
+  clickPeak: 0.05,
+  humMasterGain: 1.3
 };
 const mediaExtensions = {
   audio: [".mp3", ".ogg", ".wav", ".m4a"],
