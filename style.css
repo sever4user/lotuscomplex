@@ -302,8 +302,8 @@ h1 {
 }
 
 .icon-volume {
-  width: 0.82rem;
-  height: 0.72rem;
+  width: 1rem;
+  height: 0.9rem;
   display: inline-block;
   position: relative;
 }
@@ -312,19 +312,19 @@ h1 {
   content: "";
   position: absolute;
   left: 0;
-  top: 0.16rem;
-  width: 0.25rem;
-  height: 0.4rem;
+  top: 0.18rem;
+  width: 0.28rem;
+  height: 0.5rem;
   background: var(--green);
 }
 
 .icon-volume::after {
   content: "";
   position: absolute;
-  left: 0.2rem;
-  top: 0.06rem;
-  width: 0.46rem;
-  height: 0.58rem;
+  left: 0.24rem;
+  top: 0.05rem;
+  width: 0.56rem;
+  height: 0.72rem;
   clip-path: polygon(0 20%, 66% 0, 66% 100%, 0 80%);
   background: var(--green);
 }
@@ -339,24 +339,54 @@ h1 {
   padding: 0;
   display: grid;
   place-items: center;
+  position: relative;
+}
+
+.master-volume-btn::before,
+.master-volume-btn::after {
+  content: "";
+  position: absolute;
+  border: 2px solid transparent;
+  border-left: 0;
+  border-radius: 0 999px 999px 0;
+  pointer-events: none;
+}
+
+.master-volume-btn::before {
+  width: 8px;
+  height: 10px;
+  right: 34px;
+  border-right-color: color-mix(in srgb, var(--green) 80%, transparent);
+}
+
+.master-volume-btn::after {
+  width: 13px;
+  height: 16px;
+  right: 30px;
+  border-right-color: color-mix(in srgb, var(--green) 55%, transparent);
 }
 
 .master-volume-pop {
   position: absolute;
   left: 50%;
-  bottom: calc(100% + 0.3rem);
+  bottom: calc(100% - 1px);
   transform: translateX(-50%);
   min-width: 1.8rem;
   border: 1px solid var(--line);
   background: color-mix(in srgb, var(--surface-strong) 88%, black);
   padding: 0.55rem 0.38rem;
-  display: none;
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
+  transition: opacity 0.18s ease, visibility 0.18s ease;
   z-index: 220;
 }
 
-.master-volume-shell:hover .master-volume-pop,
-.master-volume-shell:focus-within .master-volume-pop {
-  display: block;
+.master-volume-shell:hover .master-volume-pop {
+  opacity: 1;
+  visibility: visible;
+  pointer-events: auto;
+  transition-delay: 0.08s;
 }
 
 .volume-range {
