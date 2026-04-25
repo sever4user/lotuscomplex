@@ -340,14 +340,10 @@ h1 {
 .master-volume-btn {
   min-width: 98px;
   min-height: 100%;
-  padding: 0;
+  padding: 0 0.7rem;
   display: grid;
   place-items: center;
-}
-
-.master-volume-btn .icon-volume::before,
-.master-volume-btn .icon-volume::after {
-  filter: drop-shadow(0 0 5px color-mix(in srgb, var(--green) 35%, transparent));
+  letter-spacing: 0.07em;
 }
 
 .master-volume-pop {
