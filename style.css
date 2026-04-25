@@ -302,31 +302,36 @@ h1 {
 }
 
 .icon-volume {
-  width: 1rem;
-  height: 0.9rem;
+  width: 1.22rem;
+  height: 1.02rem;
   display: inline-block;
   position: relative;
+  color: var(--green);
 }
 
 .icon-volume::before {
   content: "";
   position: absolute;
-  left: 0;
-  top: 0.18rem;
-  width: 0.28rem;
-  height: 0.5rem;
-  background: var(--green);
+  left: 0.03rem;
+  top: 0.17rem;
+  width: 0.67rem;
+  height: 0.68rem;
+  background: currentColor;
+  clip-path: polygon(0 33%, 34% 33%, 72% 0, 72% 100%, 34% 67%, 0 67%);
 }
 
 .icon-volume::after {
   content: "";
   position: absolute;
-  left: 0.24rem;
-  top: 0.05rem;
-  width: 0.56rem;
-  height: 0.72rem;
-  clip-path: polygon(0 20%, 66% 0, 66% 100%, 0 80%);
-  background: var(--green);
+  left: 0.74rem;
+  top: 0.22rem;
+  width: 0.2rem;
+  height: 0.48rem;
+  border: 2px solid transparent;
+  border-left: 0;
+  border-radius: 0 999px 999px 0;
+  border-right-color: color-mix(in srgb, var(--green) 86%, transparent);
+  box-shadow: 0 0 0 0.14rem, 0 0 0 0.28rem;
 }
 
 .master-volume-shell {
@@ -339,31 +344,15 @@ h1 {
   padding: 0;
   display: grid;
   place-items: center;
-  position: relative;
 }
 
-.master-volume-btn::before,
-.master-volume-btn::after {
-  content: "";
-  position: absolute;
-  border: 2px solid transparent;
-  border-left: 0;
-  border-radius: 0 999px 999px 0;
-  pointer-events: none;
+.master-volume-btn .icon-volume::after {
+  box-shadow: 0 0 0 0.16rem, 0 0 0 0.33rem;
 }
 
-.master-volume-btn::before {
-  width: 8px;
-  height: 10px;
-  right: 34px;
-  border-right-color: color-mix(in srgb, var(--green) 80%, transparent);
-}
-
-.master-volume-btn::after {
-  width: 13px;
-  height: 16px;
-  right: 30px;
-  border-right-color: color-mix(in srgb, var(--green) 55%, transparent);
+.master-volume-btn .icon-volume::before,
+.master-volume-btn .icon-volume::after {
+  filter: drop-shadow(0 0 5px color-mix(in srgb, var(--green) 35%, transparent));
 }
 
 .master-volume-pop {
