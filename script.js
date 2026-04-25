@@ -29,6 +29,7 @@ const tabButtons = [...document.querySelectorAll(".tab")];
 const panels = [...document.querySelectorAll(".panel")];
 const statusLine = document.getElementById("statusLine");
 const sfxToggle = document.getElementById("sfxToggle");
+const masterVolumeRange = document.getElementById("masterVolumeRange");
 const typed = { logs: false, contacts: false };
 const mediaExtensions = {
   audio: [".mp3", ".ogg", ".wav", ".m4a"],
@@ -41,7 +42,9 @@ const state = {
   humNodes: null,
   players: [],
   keyBuffer: "",
-  activeMusicCount: 0
+  activeMusicCount: 0,
+  masterVolume: Number(masterVolumeRange?.value || 0.6),
+  rerenderAscii: null
 };
 
 function playUiClick() {
@@ -56,7 +59,7 @@ function playUiClick() {
   osc.frequency.setValueAtTime(360, now);
   osc.frequency.exponentialRampToValueAtTime(275, now + 0.08);
   gain.gain.setValueAtTime(0.0001, now);
-  gain.gain.exponentialRampToValueAtTime(0.008, now + 0.02);
+  gain.gain.exponentialRampToValueAtTime(0.009 * state.masterVolume, now + 0.02);
   gain.gain.exponentialRampToValueAtTime(0.0001, now + 0.11);
   osc.connect(gain);
   gain.connect(ctx.destination);
@@ -83,53 +86,58 @@ function setSfxEnabled(value) {
 function startTerminalHum() {
   const ctx = getAudioContext();
   if (!ctx || state.humNodes) return;
-  const low = ctx.createOscillator();
-  const high = ctx.createOscillator();
-  const lfo = ctx.createOscillator();
-  const lfoGain = ctx.createGain();
+
+  const brownFilter = ctx.createBiquadFilter();
+  const lowpass = ctx.createBiquadFilter();
+  const bass = ctx.createOscillator();
+  const bassGain = ctx.createGain();
   const noise = ctx.createBufferSource();
   const noiseGain = ctx.createGain();
-  const merge = ctx.createGain();
+  const master = ctx.createGain();
 
-  low.type = "sawtooth";
-  low.frequency.value = 52;
-  high.type = "triangle";
-  high.frequency.value = 104;
-  lfo.type = "sine";
-  lfo.frequency.value = 0.23;
-  lfoGain.gain.value = 7;
-  lfo.connect(lfoGain);
-  lfoGain.connect(low.frequency);
+  bass.type = "sine";
+  bass.frequency.value = 53;
+  bassGain.gain.value = 0.0012;
+
+  brownFilter.type = "lowshelf";
+  brownFilter.frequency.value = 190;
+  brownFilter.gain.value = 9;
+  lowpass.type = "lowpass";
+  lowpass.frequency.value = 520;
+  lowpass.Q.value = 0.6;
 
   const bufferSize = ctx.sampleRate * 2;
   const buffer = ctx.createBuffer(1, bufferSize, ctx.sampleRate);
   const data = buffer.getChannelData(0);
-  for (let i = 0; i < bufferSize; i += 1) data[i] = (Math.random() * 2 - 1) * 0.45;
+  let brown = 0;
+  for (let i = 0; i < bufferSize; i += 1) {
+    const white = Math.random() * 2 - 1;
+    brown = (brown + 0.022 * white) / 1.015;
+    data[i] = brown * 3.2;
+  }
   noise.buffer = buffer;
   noise.loop = true;
 
-  noiseGain.gain.value = 0.0016;
-  merge.gain.value = 0.0026;
+  noiseGain.gain.value = 0.0042;
+  master.gain.value = 0.8 * state.masterVolume;
 
-  low.connect(merge);
-  high.connect(merge);
+  bass.connect(bassGain);
+  bassGain.connect(master);
   noise.connect(noiseGain);
-  noiseGain.connect(merge);
-  merge.connect(ctx.destination);
+  noiseGain.connect(brownFilter);
+  brownFilter.connect(lowpass);
+  lowpass.connect(master);
+  master.connect(ctx.destination);
 
-  low.start();
-  high.start();
-  lfo.start();
+  bass.start();
   noise.start();
-  state.humNodes = { low, high, lfo, noise };
+  state.humNodes = { noise, bass, master };
 }
 
 function stopTerminalHum() {
   if (!state.humNodes) return;
-  state.humNodes.low.stop();
-  state.humNodes.high.stop();
-  state.humNodes.lfo.stop();
   state.humNodes.noise.stop();
+  state.humNodes.bass.stop();
   state.humNodes = null;
 }
 
@@ -260,6 +268,13 @@ function preloadNextTrack(currentIndex) {
   next.preloaded = true;
 }
 
+function updateSfxVolume(value) {
+  state.masterVolume = Math.max(0, Math.min(1, value));
+  if (state.humNodes?.master) {
+    state.humNodes.master.gain.value = 0.8 * state.masterVolume;
+  }
+}
+
 async function renderMusic() {
   const musicList = document.getElementById("musicList");
   const files = await resolveFiles("audio");
@@ -281,12 +296,6 @@ async function renderMusic() {
         <div class="track-btns">
           <button type="button" class="track-btn play-btn" aria-label="Play or pause"><span class="icon-play"></span></button>
           <button type="button" class="track-btn stop-btn" aria-label="Stop"><span class="icon-stop"></span></button>
-          <div class="volume-shell">
-            <button type="button" class="track-btn volume-btn" aria-label="Volume"><span class="icon-volume"></span></button>
-            <div class="volume-pop">
-              <input class="volume-range" type="range" min="0" max="1" step="0.01" value="0.85" aria-label="Track volume">
-            </div>
-          </div>
         </div>
         <div class="seek-wrap">
           <div class="seek-base"></div>
@@ -300,12 +309,11 @@ async function renderMusic() {
     const audio = card.querySelector("audio");
     const playButton = card.querySelector(".play-btn");
     const stopButton = card.querySelector(".stop-btn");
-    const volumeRange = card.querySelector(".volume-range");
     const seek = card.querySelector(".seek");
     const progress = card.querySelector(".seek-progress");
 
     audio.src = file.url;
-    audio.volume = Number(volumeRange.value);
+    audio.volume = 1;
 
     playButton.addEventListener("click", async () => {
       playUiClick();
@@ -331,10 +339,6 @@ async function renderMusic() {
       playButton.classList.remove("is-playing");
       progress.style.width = "0%";
       seek.value = "0";
-    });
-
-    volumeRange.addEventListener("input", () => {
-      audio.volume = Number(volumeRange.value);
     });
 
     seek.addEventListener("input", () => {
@@ -452,40 +456,58 @@ function setupEasterEggs() {
     if (state.keyBuffer.includes("sever")) {
       document.body.classList.add("easter-sever");
       statusLine.textContent = "EASTER MODE: SEVER";
+      state.rerenderAscii?.();
       playUiClick();
     }
     if (state.keyBuffer.includes("lotus")) {
       document.body.classList.remove("easter-sever");
       statusLine.textContent = "EASTER MODE: LOTUS";
+      state.rerenderAscii?.();
       playUiClick();
     }
   });
 }
 
 function setupAsciiVines() {
-  const vines = document.getElementById("asciiVines");
-  if (!vines) return;
+  const backdrop = document.getElementById("asciiVines");
+  if (!backdrop) return;
 
-  vines.textContent = `
-~^~  //\\\\   __/\\\\\\\\\\__      .  .   //\\\\
-  \\\\//  \\\\_//  /\\  /\\  \\_  _/|\\/|\\_//  \\\\
-__/\\____/\\\\__/  \\/  \\/\\__\\/  /\\  /\\__\\___
-\\  //\\  //  \\  /\\  /  /  /_/  \\/  \\_  /  /
- \\\\// \\\\//    \\/  \\/__/  /  /\\__/\\  \\ \\/\\/
- /\\   /\\   .--..--.  _.-'  /  /  \\  \\  /\\
-//\\\\ //\\\\ /  /\\/\\  \\/  _.-'__/____\\__\\/  \\
-`;
+  const motifs = {
+    lotus: "(\\_/)|( * )| /_\\ ",
+    buttercup: " .-. |(o)| `-' "
+  };
+
+  const renderPattern = () => {
+    const motif = document.body.classList.contains("easter-sever") ? motifs.buttercup : motifs.lotus;
+    const motifWidth = motif.length + 3;
+    const columns = Math.ceil(window.innerWidth / 8 / motifWidth) + 1;
+    const rows = Math.ceil(window.innerHeight / 14) + 2;
+    let result = "";
+    for (let y = 0; y < rows; y += 1) {
+      const pad = y % 2 === 0 ? " " : "";
+      result += pad + `${`${motif}   `.repeat(columns)}\n`;
+    }
+    backdrop.textContent = result;
+  };
+
+  state.rerenderAscii = renderPattern;
+  renderPattern();
 
   const move = (clientX, clientY) => {
-    const mx = (clientX / window.innerWidth - 0.5) * 1.2;
-    const my = (clientY / window.innerHeight - 0.5) * 0.8;
-    vines.style.transform = `translate(${mx}rem, ${my}rem)`;
+    const mx = (clientX / window.innerWidth - 0.5) * 1.5;
+    const my = (clientY / window.innerHeight - 0.5) * 1.1;
+    backdrop.style.transform = `translate(${mx}rem, ${my}rem)`;
   };
+  window.addEventListener("resize", renderPattern);
   document.addEventListener("mousemove", (event) => move(event.clientX, event.clientY));
-  document.addEventListener("touchmove", (event) => {
-    const t = event.touches[0];
-    if (t) move(t.clientX, t.clientY);
-  }, { passive: true });
+  document.addEventListener(
+    "touchmove",
+    (event) => {
+      const t = event.touches[0];
+      if (t) move(t.clientX, t.clientY);
+    },
+    { passive: true }
+  );
 }
 
 tabButtons.forEach((button) => {
@@ -495,6 +517,10 @@ tabButtons.forEach((button) => {
 sfxToggle.addEventListener("click", () => {
   setSfxEnabled(!state.sfxEnabled);
   playUiClick();
+});
+
+masterVolumeRange?.addEventListener("input", () => {
+  updateSfxVolume(Number(masterVolumeRange.value));
 });
 
 async function init() {
