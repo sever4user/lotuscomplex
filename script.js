@@ -64,7 +64,7 @@ function detectLiteMode() {
   const cores = navigator.hardwareConcurrency || 8;
   const saveData = navigator.connection?.saveData === true;
   const reducedMotion = window.matchMedia?.("(prefers-reduced-motion: reduce)")?.matches === true;
-  return saveData || reducedMotion || memory <= 4 || cores <= 4;
+  return saveData || reducedMotion || memory <= 4 || cores <= 4 || memory <= 2;
 }
 
 function playUiClick() {
@@ -126,7 +126,7 @@ function startTerminalHum() {
   lowpass.frequency.value = 520;
   lowpass.Q.value = 0.6;
 
-  const bufferSize = ctx.sampleRate * 2;
+  const bufferSize = ctx.sampleRate * 0.5;
   const buffer = ctx.createBuffer(1, bufferSize, ctx.sampleRate);
   const data = buffer.getChannelData(0);
   let brown = 0;
@@ -291,7 +291,17 @@ function updateSeekVisual(seek, progress, audio) {
   seek.max = String(audio.duration);
   seek.value = String(audio.currentTime);
   const ratio = (audio.currentTime / audio.duration) * 100;
-  progress.style.width = `${ratio}%`;
+  progress.style.width = `${Math.min(100, ratio)}%`;
+}
+
+let seekThrottle = null;
+function updateSeekDebounced(seek, progress, audio) {
+  if (seekThrottle) return;
+  seekThrottle = true;
+  requestAnimationFrame(() => {
+    updateSeekVisual(seek, progress, audio);
+    setTimeout(() => { seekThrottle = null; }, 16);
+  });
 }
 
 function preloadNextTrack(currentIndex) {
@@ -341,7 +351,7 @@ async function renderMusic() {
           <input class="seek" type="range" min="0" max="100" step="0.01" value="0" aria-label="Track position">
         </div>
       </div>
-      <audio preload="metadata" controlslist="nodownload noplaybackrate"></audio>
+      <audio preload="metadata" controlslist="nodownload noplaybackrate" crossorigin="anonymous"></audio>
     `;
 
     const audio = card.querySelector("audio");
@@ -386,7 +396,7 @@ async function renderMusic() {
     });
 
     audio.addEventListener("timeupdate", () => {
-      updateSeekVisual(seek, progress, audio);
+      updateSeekDebounced(seek, progress, audio);
       if (audio.currentTime > 2) preloadNextTrack(index);
     });
 
@@ -490,6 +500,26 @@ async function renderVisuals() {
   }
 }
 
+function setupLazyImageLoading() {
+  if (!("IntersectionObserver" in window)) return;
+  
+  const imageObserver = new IntersectionObserver((entries) => {
+    entries.forEach((entry) => {
+      if (entry.isIntersecting) {
+        const img = entry.target;
+        if (img.dataset.src) {
+          img.src = img.dataset.src;
+          imageObserver.unobserve(img);
+        }
+      }
+    });
+  }, { rootMargin: "200px" });
+
+  document.querySelectorAll(".visual-item img[data-src]").forEach((img) => {
+    imageObserver.observe(img);
+  });
+}
+
 function setupClipboardMentions() {
   document.addEventListener("click", async (event) => {
     const target = event.target.closest(".copy-mention");
@@ -557,9 +587,17 @@ function setupAsciiVines() {
   renderPattern();
 
   let resizeRaf = null;
+  let resizeTimeout = null;
   window.addEventListener("resize", () => {
+    if (resizeTimeout) clearTimeout(resizeTimeout);
     if (resizeRaf) cancelAnimationFrame(resizeRaf);
-    resizeRaf = requestAnimationFrame(renderPattern);
+    
+    resizeTimeout = setTimeout(() => {
+      resizeRaf = requestAnimationFrame(() => {
+        renderPattern();
+        resizeRaf = null;
+      });
+    }, 150);
   });
 
   if (!state.liteMode) {
@@ -602,6 +640,7 @@ async function init() {
   setupClipboardMentions();
   setupEasterEggs();
   setupAsciiVines();
+  setupLazyImageLoading();
 }
 
 init();
