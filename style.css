@@ -44,25 +44,22 @@ body {
   height: 100vh;
   margin: 0;
   z-index: 20;
-  color: rgba(var(--ascii-rgb), 0.14);
-  text-shadow: 0 0 8px rgba(var(--ascii-rgb), 0.25);
-  font-size: clamp(0.6rem, 0.9vw, 1rem);
+  color: rgba(var(--ascii-rgb), 0.22);
+  text-shadow: 0 0 10px rgba(var(--ascii-rgb), 0.35);
+  font-size: clamp(0.9rem, 1.4vw, 1.4rem);
   line-height: 1.35;
   pointer-events: none;
   white-space: pre;
   overflow: hidden;
-  transform: translate(0, 0);
-  transition: transform 0.4s ease-out;
   user-select: none;
-  will-change: transform;
   contain: layout style paint;
-  opacity: 0.4;
+  opacity: 0.55;
 }
 
 body.lite-mode .ascii-vines {
-  opacity: 0.12;
+  opacity: 0.18;
   text-shadow: none;
-  font-size: clamp(0.45rem, 0.7vw, 0.8rem);
+  font-size: clamp(0.6rem, 1vw, 1rem);
 }
 
 .scan-overlay,
@@ -731,8 +728,8 @@ body.easter-sever {
   }
 
   .ascii-vines {
-    opacity: 0.12;
-    font-size: clamp(0.6rem, 1vw, 1rem);
+    opacity: 0.2;
+    font-size: clamp(0.7rem, 1.2vw, 1.1rem);
   }
 
   .visual-item {

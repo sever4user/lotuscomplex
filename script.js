@@ -54,9 +54,7 @@ const state = {
   loadedSections: {
     music: false,
     visuals: false
-  },
-  pointerRaf: null,
-  pointerTarget: { x: 0.5, y: 0.5 }
+  }
 };
 
 function detectLiteMode() {
@@ -575,21 +573,21 @@ function setupAsciiVines() {
   const renderPattern = () => {
     const motif = document.body.classList.contains("easter-sever") ? motifs.buttercup : motifs.lotus;
     
-    // Красивая плотность с умеренными отступами
+    // Крупный размер шрифта
     const fontPx = state.liteMode
-      ? Math.max(10, Math.min(14, window.innerWidth * 0.015))
-      : Math.max(9, Math.min(13, window.innerWidth * 0.012));
+      ? Math.max(14, Math.min(18, window.innerWidth * 0.022))
+      : Math.max(16, Math.min(22, window.innerWidth * 0.028));
     
-    // Отступы для воздуха
-    const gapX = state.liteMode ? 8 : 6;
-    const gapY = state.liteMode ? 5 : 4;
+    // Умеренные отступы для воздуха
+    const gapX = state.liteMode ? 10 : 8;
+    const gapY = state.liteMode ? 6 : 5;
     
-    const columns = Math.ceil(window.innerWidth / (fontPx * gapX)) + 2;
+    const columns = Math.ceil(window.innerWidth / (fontPx * motif.length * gapX)) + 2;
     const rows = Math.ceil(window.innerHeight / (fontPx * gapY)) + 2;
     
     let result = "";
     for (let y = 0; y < rows; y += 1) {
-      const offset = y % 2 === 0 ? "" : " ".repeat(Math.floor(gapX * 0.5));
+      const offset = y % 2 === 0 ? "" : " ".repeat(Math.floor(gapX * 0.4));
       const line = Array(columns).fill(motif).join("");
       result += `${offset}${line}\n`;
     }
@@ -599,6 +597,7 @@ function setupAsciiVines() {
   state.rerenderAscii = renderPattern;
   renderPattern();
 
+  // Только resize, без анимации
   let resizeRaf = null;
   let resizeTimeout = null;
   window.addEventListener("resize", () => {
@@ -612,30 +611,6 @@ function setupAsciiVines() {
       });
     }, 300);
   });
-
-  // Минимальный parallax для атмосферы
-  if (!state.liteMode) {
-    const applyPointer = () => {
-      state.pointerRaf = null;
-      const mx = (state.pointerTarget.x - 0.5) * 0.2;
-      const my = (state.pointerTarget.y - 0.5) * 0.15;
-      backdrop.style.transform = `translate(${mx}rem, ${my}rem)`;
-    };
-    
-    let pointerThrottle = null;
-    document.addEventListener("pointermove", (event) => {
-      if (pointerThrottle) return;
-      pointerThrottle = true;
-      
-      state.pointerTarget.x = event.clientX / window.innerWidth;
-      state.pointerTarget.y = event.clientY / window.innerHeight;
-      
-      requestAnimationFrame(() => {
-        pointerThrottle = null;
-        applyPointer();
-      });
-    });
-  }
 }
 
 tabButtons.forEach((button) => {
