@@ -54,6 +54,8 @@ body {
   transform: translate(0, 0);
   transition: transform 0.22s ease-out;
   user-select: none;
+  will-change: transform;
+  contain: layout style paint;
 }
 
 .scan-overlay,
@@ -61,6 +63,8 @@ body {
   position: fixed;
   inset: 0;
   pointer-events: none;
+  will-change: background-position, opacity;
+  contain: layout style paint;
 }
 
 .scan-overlay {
@@ -91,6 +95,7 @@ body {
   position: relative;
   z-index: 120;
   filter: drop-shadow(1px 0 rgba(var(--accent-rgb), 0.05)) drop-shadow(-1px 0 rgba(var(--primary-rgb), 0.05));
+  contain: layout style paint;
 }
 
 .project-header {
@@ -98,6 +103,7 @@ body {
   background: var(--header-tint);
   backdrop-filter: blur(1px);
   padding: 1.4rem 1.25rem 1rem;
+  contain: layout style paint;
 }
 
 h1 {
@@ -186,6 +192,7 @@ h1 {
   background: var(--panel-tint);
   min-height: 54vh;
   padding: 1rem;
+  contain: layout style paint;
 }
 
 .panel.active {
@@ -229,6 +236,7 @@ h1 {
   border: 1px solid var(--track-border);
   background: color-mix(in srgb, var(--button-tint) 75%, transparent);
   padding: 0.9rem 0.7rem 0.95rem;
+  contain: layout style paint;
 }
 
 .track-title {
@@ -480,6 +488,7 @@ h1 {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
   gap: 0.7rem;
+  contain: layout style paint;
 }
 
 .load-more-visuals {
@@ -507,6 +516,7 @@ h1 {
   overflow: hidden;
   min-height: 0;
   aspect-ratio: 4 / 3;
+  contain: layout style paint;
 }
 
 .visual-item img {
@@ -516,6 +526,7 @@ h1 {
   display: block;
   transition: transform 0.25s ease, filter 0.25s ease;
   filter: brightness(0.8) saturate(0.95);
+  will-change: transform, filter;
 }
 
 .visual-item:hover {
