@@ -1,7 +1,8 @@
 const GH_USER = "sever4user";
 const GH_REPO = "lotuscomplex";
 
-const logsContent = `> BOOT SEQUENCE: LOTUS COMPLEX
+const logsContent = {
+  ru: `> BOOT SEQUENCE: LOTUS COMPLEX
 > NODE: AUTHOR PROFILE INITIALIZED
 
 Я создаю аудиовизуальные миры на стыке 3D, музыки и narrative-эстетики.
@@ -14,27 +15,53 @@ GITHUB: https://github.com/sever4user
 - CONCRETE DOME // серия 3D-сцен
 - ECHO FRAME // визуальные исследования материалов
 
-> LOG STREAM READY`;
+> LOG STREAM READY`,
+  en: `> BOOT SEQUENCE: LOTUS COMPLEX
+> NODE: AUTHOR PROFILE INITIALIZED
 
-const contactsContent = `> SECURE CHANNEL OPEN
+I create audio-visual worlds at the intersection of 3D, music and narrative aesthetics.
+LOTUS COMPLEX project is a personal archive of artifacts, sound and code.
+TG: @sever4user
+GITHUB: https://github.com/sever4user
+
+Other projects:
+- SEVER SIGNALS // experimental sound capsules
+- CONCRETE DOME // series of 3D scenes
+- ECHO FRAME // visual material research
+
+> LOG STREAM READY`
+};
+
+const contactsContent = {
+  ru: `> SECURE CHANNEL OPEN
 
 TG: @sever4user
 MAIL: hello@lotuscomplex.art
 INST: @lotuscomplex
 GITHUB: https://github.com/sever4user
 
-> AWAITING NEW CONNECTION...`;
+> AWAITING NEW CONNECTION...`,
+  en: `> SECURE CHANNEL OPEN
+
+TG: @sever4user
+MAIL: hello@lotuscomplex.art
+INST: @lotuscomplex
+GITHUB: https://github.com/sever4user
+
+> AWAITING NEW CONNECTION...`
+};
 
 const tabButtons = [...document.querySelectorAll(".tab")];
 const panels = [...document.querySelectorAll(".panel")];
 const statusLine = document.getElementById("statusLine");
 const sfxToggle = document.getElementById("sfxToggle");
+const langToggle = document.getElementById("langToggle");
 const masterVolumeRange = document.getElementById("masterVolumeRange");
-const typed = { logs: false, contacts: false };
+const typed = { logs: { ru: false, en: false }, contacts: { ru: false, en: false } };
 const AUDIO_TUNING = {
   masterDefault: 0.62,
-  clickPeak: 0.011,
-  humMasterGain: 0.72
+  clickPeak: 0.022,     // Громкость UI-кликов (увеличь/уменьшь это значение)
+  humMasterGain: 1.44   // Громкость фонового шума (уменьши если слишком громко)
 };
 const mediaExtensions = {
   audio: [".mp3", ".ogg", ".wav", ".m4a"],
@@ -54,7 +81,8 @@ const state = {
   loadedSections: {
     music: false,
     visuals: false
-  }
+  },
+  currentLang: "ru"
 };
 
 function detectLiteMode() {
@@ -186,21 +214,37 @@ function setTab(sectionId) {
   panels.forEach((panel) => {
     panel.classList.toggle("active", panel.id === sectionId);
   });
-  statusLine.textContent = `STATUS: ONLINE // SECTION: ${sectionId.toUpperCase()}`;
+  statusLine.textContent = `STATUS: ONLINE // SECTION: ${sectionId.toUpperCase()} // LANG: ${state.currentLang.toUpperCase()}`;
   playUiClick();
 
-  if (sectionId === "logs" && !typed.logs) {
-    startTypewriter("logsTypewriter", logsContent);
-    typed.logs = true;
+  if (sectionId === "logs" && !typed.logs[state.currentLang]) {
+    startTypewriter("logsTypewriter", logsContent[state.currentLang]);
+    typed.logs[state.currentLang] = true;
   }
-  if (sectionId === "contacts" && !typed.contacts) {
-    startTypewriter("contactsTypewriter", contactsContent);
-    typed.contacts = true;
+  if (sectionId === "contacts" && !typed.contacts[state.currentLang]) {
+    startTypewriter("contactsTypewriter", contactsContent[state.currentLang]);
+    typed.contacts[state.currentLang] = true;
   }
 
   ensureSectionLoaded(sectionId).catch(() => {
     statusLine.textContent = "LOAD ERROR";
   });
+}
+
+function toggleLanguage() {
+  state.currentLang = state.currentLang === "ru" ? "en" : "ru";
+  const activePanel = document.querySelector(".panel.active");
+  if (activePanel && activePanel.id === "logs") {
+    startTypewriter("logsTypewriter", logsContent[state.currentLang]);
+    typed.logs[state.currentLang] = true;
+  }
+  if (activePanel && activePanel.id === "contacts") {
+    startTypewriter("contactsTypewriter", contactsContent[state.currentLang]);
+    typed.contacts[state.currentLang] = true;
+  }
+  const currentSection = document.querySelector(".tab.active")?.dataset.section || "logs";
+  statusLine.textContent = `STATUS: ONLINE // SECTION: ${currentSection.toUpperCase()} // LANG: ${state.currentLang.toUpperCase()}`;
+  playUiClick();
 }
 
 function enhanceInteractiveText(target) {
@@ -578,12 +622,12 @@ function setupAsciiVines() {
       ? Math.max(14, Math.min(18, window.innerWidth * 0.022))
       : Math.max(16, Math.min(22, window.innerWidth * 0.028));
     
-    // Умеренные отступы для воздуха
-    const gapX = state.liteMode ? 10 : 8;
-    const gapY = state.liteMode ? 6 : 5;
+    // Меньше отступов чтобы заполнить экран
+    const gapX = state.liteMode ? 6 : 5;
+    const gapY = state.liteMode ? 4 : 3;
     
-    const columns = Math.ceil(window.innerWidth / (fontPx * motif.length * gapX)) + 2;
-    const rows = Math.ceil(window.innerHeight / (fontPx * gapY)) + 2;
+    const columns = Math.ceil(window.innerWidth / (fontPx * motif.length * 0.6 * gapX)) + 3;
+    const rows = Math.ceil(window.innerHeight / (fontPx * gapY)) + 3;
     
     let result = "";
     for (let y = 0; y < rows; y += 1) {
@@ -620,6 +664,11 @@ tabButtons.forEach((button) => {
 sfxToggle.addEventListener("click", () => {
   setSfxEnabled(!state.sfxEnabled);
   playUiClick();
+});
+
+langToggle.addEventListener("click", () => {
+  toggleLanguage();
+  langToggle.textContent = `LANG: ${state.currentLang.toUpperCase()}`;
 });
 
 masterVolumeRange?.addEventListener("input", () => {

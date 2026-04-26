@@ -106,7 +106,7 @@ h1 {
   color: var(--lotus);
   letter-spacing: 0.32em;
   font-size: clamp(2rem, 5.3vw, 4rem);
-  text-shadow: 0 0 12px rgba(var(--accent-rgb), 0.4), 0 0 4px rgba(var(--accent-rgb), 0.3);
+  text-shadow: 0 0 8px rgba(var(--accent-rgb), 0.25), 0 0 2px rgba(var(--accent-rgb), 0.2);
 }
 
 .subtitle {
@@ -114,7 +114,7 @@ h1 {
   font-size: 0.78rem;
   letter-spacing: 0.12em;
   color: var(--green);
-  text-shadow: 0 0 6px rgba(var(--primary-rgb), 0.35);
+  text-shadow: 0 0 4px rgba(var(--primary-rgb), 0.25);
 }
 
 .tabs {
@@ -141,7 +141,7 @@ h1 {
   color: var(--lotus);
   background: color-mix(in srgb, var(--lotus) 14%, transparent);
   border-color: var(--lotus-soft);
-  box-shadow: 0 0 10px rgba(var(--accent-rgb), 0.18);
+  box-shadow: 0 0 6px rgba(var(--accent-rgb), 0.15);
 }
 
 .status-wrap {
@@ -170,7 +170,7 @@ h1 {
 .sfx-toggle[aria-pressed="true"] {
   border-color: var(--lotus-soft);
   color: var(--lotus);
-  box-shadow: 0 0 8px rgba(var(--accent-rgb), 0.25);
+  box-shadow: 0 0 6px rgba(var(--accent-rgb), 0.2);
 }
 
 .sfx-toggle[aria-pressed="false"] {
@@ -203,7 +203,7 @@ h1 {
   white-space: pre-wrap;
   line-height: 1.65;
   color: var(--text);
-  text-shadow: 0 0 6px rgba(var(--primary-rgb), 0.35), 0 0 10px rgba(var(--accent-rgb), 0.15);
+  text-shadow: 0 0 4px rgba(var(--primary-rgb), 0.25), 0 0 6px rgba(var(--accent-rgb), 0.12);
 }
 
 .hint {
@@ -222,7 +222,7 @@ h1 {
   height: 1rem;
   margin-left: 0.2rem;
   background: var(--green);
-  box-shadow: 0 0 8px var(--green);
+  box-shadow: 0 0 6px var(--green);
   animation: blink 0.7s step-end infinite;
 }
 
@@ -242,7 +242,7 @@ h1 {
   margin: 0 0 0.8rem;
   font-size: 0.84rem;
   color: var(--green);
-  text-shadow: 0 0 6px rgba(var(--primary-rgb), 0.3);
+  text-shadow: 0 0 4px rgba(var(--primary-rgb), 0.25);
 }
 
 .track audio {
@@ -273,7 +273,7 @@ h1 {
 }
 
 .track-btn:hover {
-  box-shadow: 0 0 8px rgba(var(--primary-rgb), 0.4);
+  box-shadow: 0 0 6px rgba(var(--primary-rgb), 0.3);
 }
 
 .play-btn.is-playing .icon-play {
@@ -394,7 +394,7 @@ h1 {
   border-radius: 1px;
   border: 1px solid rgba(var(--accent-rgb), 0.95);
   background: var(--lotus);
-  box-shadow: 0 0 6px rgba(var(--accent-rgb), 0.45);
+  box-shadow: 0 0 4px rgba(var(--accent-rgb), 0.35);
 }
 
 .volume-range::-webkit-slider-runnable-track {
@@ -409,7 +409,7 @@ h1 {
   border-radius: 1px;
   border: 1px solid rgba(var(--accent-rgb), 0.95);
   background: var(--lotus);
-  box-shadow: 0 0 6px rgba(var(--accent-rgb), 0.45);
+  box-shadow: 0 0 4px rgba(var(--accent-rgb), 0.35);
 }
 
 .volume-range::-moz-range-track {
@@ -464,7 +464,7 @@ h1 {
   border: 1px solid rgba(var(--accent-rgb), 0.95);
   background: var(--lotus);
   margin-top: 1px;
-  box-shadow: 0 0 7px rgba(var(--accent-rgb), 0.5);
+  box-shadow: 0 0 5px rgba(var(--accent-rgb), 0.35);
 }
 
 .seek::-moz-range-track {
@@ -479,7 +479,7 @@ h1 {
   border-radius: 1px;
   border: 1px solid rgba(var(--accent-rgb), 0.95);
   background: var(--lotus);
-  box-shadow: 0 0 7px rgba(var(--accent-rgb), 0.5);
+  box-shadow: 0 0 5px rgba(var(--accent-rgb), 0.35);
 }
 
 .visual-grid {
@@ -503,7 +503,7 @@ h1 {
 .load-more-visuals:hover {
   border-color: var(--lotus-soft);
   color: var(--lotus);
-  box-shadow: 0 0 8px rgba(var(--accent-rgb), 0.2);
+  box-shadow: 0 0 6px rgba(var(--accent-rgb), 0.15);
 }
 
 .visual-item {
@@ -529,7 +529,7 @@ h1 {
 
 .visual-item:hover {
   border-color: var(--lotus);
-  box-shadow: 0 0 14px rgba(var(--accent-rgb), 0.25), inset 0 0 18px rgba(var(--primary-rgb), 0.08);
+  box-shadow: 0 0 10px rgba(var(--accent-rgb), 0.2), inset 0 0 14px rgba(var(--primary-rgb), 0.06);
 }
 
 .visual-item:hover img {
@@ -557,7 +557,7 @@ h1 {
   max-height: 100%;
   object-fit: contain;
   border: 1px solid var(--lotus);
-  box-shadow: 0 0 24px rgba(var(--accent-rgb), 0.35);
+  box-shadow: 0 0 18px rgba(var(--accent-rgb), 0.28);
 }
 
 .close-lightbox {
@@ -592,7 +592,7 @@ h1 {
 }
 
 .inline-link:hover {
-  text-shadow: 0 0 8px rgba(var(--accent-rgb), 0.5);
+  text-shadow: 0 0 6px rgba(var(--accent-rgb), 0.35);
 }
 
 .copy-mention {
@@ -609,7 +609,7 @@ h1 {
 .copy-mention:hover {
   border-color: var(--lotus-soft);
   color: var(--lotus);
-  box-shadow: 0 0 6px rgba(var(--accent-rgb), 0.25);
+  box-shadow: 0 0 5px rgba(var(--accent-rgb), 0.2);
 }
 
 body.easter-sever {
@@ -648,10 +648,10 @@ body.easter-sever {
 @keyframes textPulse {
   0%,
   100% {
-    text-shadow: 0 0 8px rgba(var(--accent-rgb), 0.35), 0 0 2px rgba(var(--accent-rgb), 0.25);
+    text-shadow: 0 0 6px rgba(var(--accent-rgb), 0.25), 0 0 2px rgba(var(--accent-rgb), 0.18);
   }
   50% {
-    text-shadow: 0 0 14px rgba(var(--accent-rgb), 0.45), 0 0 6px rgba(var(--primary-rgb), 0.2);
+    text-shadow: 0 0 10px rgba(var(--accent-rgb), 0.32), 0 0 4px rgba(var(--primary-rgb), 0.15);
   }
 }
 
