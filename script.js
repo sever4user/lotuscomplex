@@ -57,11 +57,19 @@ const statusLine = document.getElementById("statusLine");
 const sfxToggle = document.getElementById("sfxToggle");
 const langToggle = document.getElementById("langToggle");
 const masterVolumeRange = document.getElementById("masterVolumeRange");
-const typed = { logs: { ru: false, en: false }, contacts: { ru: false, en: false } };
+const typed = { 
+  logs: { ru: false, en: false }, 
+  contacts: { ru: false, en: false }
+};
+
+let currentTyping = {
+  logs: { ru: 0, en: 0, animId: null },
+  contacts: { ru: 0, en: 0, animId: null }
+};
 const AUDIO_TUNING = {
   masterDefault: 0.62,
-  clickPeak: 0.022,     // Громкость UI-кликов (увеличь/уменьшь это значение)
-  humMasterGain: 1.44   // Громкость фонового шума (уменьши если слишком громко)
+  clickPeak: 0.044,     // Громкость UI-кликов (умножь на 2 чтобы увеличить)
+  humMasterGain: 2.88   // Громкость фонового шума (уменьши если слишком громко)
 };
 const mediaExtensions = {
   audio: [".mp3", ".ogg", ".wav", ".m4a"],
@@ -226,22 +234,35 @@ function setTab(sectionId) {
     typed.contacts[state.currentLang] = true;
   }
 
+  // Обновляем видимость языков при переключении вкладки
+  updateLanguageVisibility(sectionId);
+
   ensureSectionLoaded(sectionId).catch(() => {
     statusLine.textContent = "LOAD ERROR";
   });
 }
 
+function updateLanguageVisibility(sectionId) {
+  const targetId = sectionId === "logs" ? "logsTypewriter" : "contactsTypewriter";
+  const target = document.getElementById(targetId);
+  if (!target) return;
+
+  const langSpans = target.querySelectorAll('[data-lang]');
+  langSpans.forEach(span => {
+    const lang = span.getAttribute('data-lang');
+    span.style.display = lang === state.currentLang ? "inline" : "none";
+  });
+}
+
 function toggleLanguage() {
   state.currentLang = state.currentLang === "ru" ? "en" : "ru";
+  
   const activePanel = document.querySelector(".panel.active");
-  if (activePanel && activePanel.id === "logs") {
-    startTypewriter("logsTypewriter", logsContent[state.currentLang]);
-    typed.logs[state.currentLang] = true;
+  if (activePanel) {
+    const sectionId = activePanel.id;
+    updateLanguageVisibility(sectionId);
   }
-  if (activePanel && activePanel.id === "contacts") {
-    startTypewriter("contactsTypewriter", contactsContent[state.currentLang]);
-    typed.contacts[state.currentLang] = true;
-  }
+  
   const currentSection = document.querySelector(".tab.active")?.dataset.section || "logs";
   statusLine.textContent = `STATUS: ONLINE // SECTION: ${currentSection.toUpperCase()} // LANG: ${state.currentLang.toUpperCase()}`;
   playUiClick();
@@ -268,26 +289,53 @@ function startTypewriter(targetId, text) {
   const target = document.getElementById(targetId);
   if (!target) return;
 
-  let index = 0;
-  target.textContent = "";
+  const section = targetId === "logsTypewriter" ? "logs" : "contacts";
+  currentTyping[section].ru = 0;
+  currentTyping[section].en = 0;
+
+  // Создаём контейнеры для каждого языка
+  target.innerHTML = `
+    <span data-lang="ru" class="lang-content"></span>
+    <span data-lang="en" class="lang-content"></span>
+  `;
+
+  const langSpans = {
+    ru: target.querySelector('[data-lang="ru"]'),
+    en: target.querySelector('[data-lang="en"]')
+  };
+
+  const textRu = section === "logs" ? logsContent.ru : contactsContent.ru;
+  const textEn = section === "logs" ? logsContent.en : contactsContent.en;
 
   const write = () => {
-    if (index <= text.length) {
-      target.textContent = text.slice(0, index);
-      const cursor = document.createElement("span");
-      cursor.className = "cursor";
-      target.appendChild(cursor);
-      index += 1;
-
-      const previousChar = text[index - 1];
-      let delay = 18;
-      if (previousChar === "\n") delay = 95;
-      if (previousChar === "." || previousChar === ":" || previousChar === "-") delay = 120;
-      setTimeout(write, delay);
-      return;
+    let continue = false;
+    
+    // Печатаем русский
+    if (currentTyping[section].ru <= textRu.length) {
+      langSpans.ru.textContent = textRu.slice(0, currentTyping[section].ru);
+      currentTyping[section].ru += 1;
+      continue = true;
     }
-    enhanceInteractiveText(target);
+    
+    // Печатаем английский
+    if (currentTyping[section].en <= textEn.length) {
+      langSpans.en.textContent = textEn.slice(0, currentTyping[section].en);
+      currentTyping[section].en += 1;
+      continue = true;
+    }
+
+    if (continue) {
+      currentTyping[section].animId = requestAnimationFrame(write);
+    } else {
+      // Оба текста завершены
+      enhanceInteractiveText(target);
+    }
   };
+
+  // Показываем только текущий язык
+  langSpans.ru.style.display = state.currentLang === "ru" ? "inline" : "none";
+  langSpans.en.style.display = state.currentLang === "en" ? "inline" : "none";
+  
   write();
 }
 
@@ -617,22 +665,31 @@ function setupAsciiVines() {
   const renderPattern = () => {
     const motif = document.body.classList.contains("easter-sever") ? motifs.buttercup : motifs.lotus;
     
-    // Крупный размер шрифта
+    // Размер шрифта в пикселях
     const fontPx = state.liteMode
-      ? Math.max(14, Math.min(18, window.innerWidth * 0.022))
-      : Math.max(16, Math.min(22, window.innerWidth * 0.028));
+      ? Math.max(12, Math.min(16, window.innerWidth * 0.018))
+      : Math.max(14, Math.min(18, window.innerWidth * 0.022));
     
-    // Меньше отступов чтобы заполнить экран
-    const gapX = state.liteMode ? 6 : 5;
-    const gapY = state.liteMode ? 4 : 3;
+    // Ширина одного символа примерно 0.6 от размера шрифта
+    const charWidth = fontPx * 0.6;
+    const charHeight = fontPx * 1.35;
     
-    const columns = Math.ceil(window.innerWidth / (fontPx * motif.length * 0.6 * gapX)) + 3;
-    const rows = Math.ceil(window.innerHeight / (fontPx * gapY)) + 3;
+    // Длина паттерна в пикселях
+    const patternWidth = motif.length * charWidth;
+    
+    // Вычисляем точное количество столбцов и строк для заполнения экрана
+    const columns = Math.ceil(window.innerWidth / patternWidth) + 1;
+    const rows = Math.ceil(window.innerHeight / charHeight) + 1;
+    
+    // Отступы между паттернами
+    const gapX = state.liteMode ? 4 : 3;
+    const gapY = state.liteMode ? 3 : 2;
     
     let result = "";
     for (let y = 0; y < rows; y += 1) {
-      const offset = y % 2 === 0 ? "" : " ".repeat(Math.floor(gapX * 0.4));
-      const line = Array(columns).fill(motif).join("");
+      // Смещение для шахматного порядка
+      const offset = y % 2 === 0 ? "" : " ".repeat(Math.floor(gapX * 0.3));
+      const line = Array(columns).fill(motif).join(" ".repeat(gapX - 1));
       result += `${offset}${line}\n`;
     }
     backdrop.textContent = result;
