@@ -66,7 +66,10 @@ function detectLiteMode() {
   const cores = navigator.hardwareConcurrency || 8;
   const saveData = navigator.connection?.saveData === true;
   const reducedMotion = window.matchMedia?.("(prefers-reduced-motion: reduce)")?.matches === true;
-  return saveData || reducedMotion || memory <= 4 || cores <= 4 || memory <= 2;
+  const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+  const screenWidth = window.screen?.width || 1920;
+  
+  return saveData || reducedMotion || isMobile || memory <= 4 || cores <= 4 || screenWidth <= 768;
 }
 
 function playUiClick() {
@@ -109,7 +112,15 @@ function setEffectsEnabled(value) {
   state.effectsEnabled = value;
   effectsToggle.textContent = value ? "FX: ON" : "FX: OFF";
   effectsToggle.setAttribute("aria-pressed", value ? "true" : "false");
-  document.body.classList.toggle("no-effects", !value);
+  
+  if (!value) {
+    document.body.classList.add("no-effects");
+    const backdrop = document.getElementById("asciiVines");
+    if (backdrop) backdrop.textContent = "";
+  } else {
+    document.body.classList.remove("no-effects");
+  }
+  
   playUiClick();
 }
 
@@ -575,37 +586,30 @@ function setupAsciiVines() {
   if (!backdrop) return;
 
   const motifs = {
-    lotus: " --=<❀>=-- ",
-    buttercup: " --‹( ✿ )›-- "
+    lotus: "❀",
+    buttercup: "✿"
   };
 
   const renderPattern = () => {
     const motif = document.body.classList.contains("easter-sever") ? motifs.buttercup : motifs.lotus;
     
-    // Максимально редкая сетка, крупные символы
+    // Крупные символы, умеренная плотность
     const fontPx = state.liteMode
-      ? Math.max(10, Math.min(14, window.innerWidth * 0.012))
-      : Math.max(9, Math.min(12, window.innerWidth * 0.01));
+      ? Math.max(16, Math.min(24, window.innerWidth * 0.025))
+      : Math.max(14, Math.min(20, window.innerWidth * 0.02));
     
-    // Сильно увеличенные отступы между элементами
-    const spacingX = state.liteMode ? 12 : 10; // символов по горизонтали
-    const spacingY = state.liteMode ? 6 : 5;  // строк по вертикали
+    // Нормальная плотность сетки
+    const gapX = state.liteMode ? 6 : 5;
+    const gapY = state.liteMode ? 4 : 3;
     
-    const columns = Math.ceil(window.innerWidth / (fontPx * 0.6 * motif.length * spacingX)) + 2;
-    const rows = Math.ceil(window.innerHeight / (fontPx * 1.5 * spacingY)) + 2;
+    const columns = Math.ceil(window.innerWidth / (fontPx * gapX)) + 2;
+    const rows = Math.ceil(window.innerHeight / (fontPx * gapY)) + 2;
     
     let result = "";
     for (let y = 0; y < rows; y += 1) {
-      const pad = " ".repeat(Math.floor(spacingX * (y % 2 === 0 ? 1 : 0.5)));
-      const line = motif.repeat(columns);
-      result += `${pad}${line}\n`;
-      
-      // Добавляем пустые строки между рядами для разреженности
-      if (y < rows - 1) {
-        for (let s = 0; s < spacingY - 1; s += 1) {
-          result += "\n";
-        }
-      }
+      const offset = y % 2 === 0 ? "" : " ".repeat(Math.floor(fontPx * 0.3));
+      const line = Array(columns).fill(motif).join(" ".repeat(gapX - 1));
+      result += `${offset}${line}\n`;
     }
     backdrop.textContent = result;
   };
@@ -624,15 +628,15 @@ function setupAsciiVines() {
         renderPattern();
         resizeRaf = null;
       });
-    }, 200);
+    }, 250);
   });
 
   // Отключаем pointer effects для снижения нагрузки
-  if (!state.liteMode) {
+  if (!state.liteMode && state.effectsEnabled) {
     const applyPointer = () => {
       state.pointerRaf = null;
-      const mx = (state.pointerTarget.x - 0.5) * 0.4;
-      const my = (state.pointerTarget.y - 0.5) * 0.3;
+      const mx = (state.pointerTarget.x - 0.5) * 0.3;
+      const my = (state.pointerTarget.y - 0.5) * 0.2;
       backdrop.style.transform = `translate(${mx}rem, ${my}rem)`;
     };
     

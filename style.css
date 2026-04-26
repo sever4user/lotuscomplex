@@ -44,8 +44,8 @@ body {
   height: 100vh;
   margin: 0;
   z-index: 20;
-  color: rgba(var(--ascii-rgb), 0.08);
-  font-size: clamp(0.52rem, 0.8vw, 0.8rem);
+  color: rgba(var(--ascii-rgb), 0.12);
+  font-size: clamp(0.7rem, 1.2vw, 1.2rem);
   line-height: 1.4;
   pointer-events: none;
   white-space: pre;
@@ -55,11 +55,12 @@ body {
   user-select: none;
   will-change: transform;
   contain: layout style paint;
-  opacity: 0.35;
+  opacity: 0.25;
 }
 
 body.lite-mode .ascii-vines {
-  opacity: 0.15;
+  opacity: 0.08;
+  font-size: clamp(0.5rem, 0.8vw, 0.9rem);
 }
 
 .scan-overlay,
@@ -67,30 +68,20 @@ body.lite-mode .ascii-vines {
   position: fixed;
   inset: 0;
   pointer-events: none;
-  will-change: background-position, opacity;
   contain: layout style paint;
 }
 
 .scan-overlay {
   z-index: 100;
-  background: repeating-linear-gradient(
-    180deg,
-    rgba(0, 0, 0, 0) 0,
-    rgba(0, 0, 0, 0) 2px,
-    rgba(var(--primary-rgb), 0.03) 3px,
-    rgba(var(--primary-rgb), 0.008) 5px
-  );
-  animation: scanMove 20s linear infinite;
-  opacity: 0.5;
+  background: linear-gradient(180deg, transparent 50%, rgba(0, 0, 0, 0.3) 50%);
+  background-size: 100% 4px;
+  opacity: 0.04;
 }
 
 .pulse-noise {
   z-index: 90;
-  opacity: 0.06;
-  background-image: radial-gradient(rgba(var(--accent-rgb), 0.08) 1px, transparent 1px);
-  background-size: 4px 4px;
-  mix-blend-mode: screen;
-  animation: noisePulse 6s ease-in-out infinite;
+  opacity: 0;
+  display: none;
 }
 
 .page {
@@ -653,19 +644,10 @@ body.easter-sever {
 @keyframes noisePulse {
   0%,
   100% {
-    opacity: 0.06;
+    opacity: 0;
   }
   50% {
-    opacity: 0.12;
-  }
-}
-
-@keyframes scanMove {
-  from {
-    background-position: 0 0;
-  }
-  to {
-    background-position: 0 120px;
+    opacity: 0;
   }
 }
 
@@ -732,9 +714,8 @@ body.easter-sever {
   }
 
   .ascii-vines {
-    opacity: 0.65;
-    font-size: 0.44rem;
-    line-height: 1.38;
+    opacity: 0.12;
+    font-size: clamp(0.6rem, 1vw, 1rem);
   }
 
   .visual-item {
@@ -769,9 +750,8 @@ body.lite-mode .tab {
 }
 
 body.no-effects .scan-overlay,
-body.no-effects .pulse-noise,
 body.no-effects .ascii-vines {
-  display: none;
+  display: none !important;
 }
 
 body.no-effects h1,
@@ -779,24 +759,28 @@ body.no-effects .subtitle,
 body.no-effects .terminal-text,
 body.no-effects .tab,
 body.no-effects .inline-link:hover {
-  text-shadow: none;
+  text-shadow: none !important;
 }
 
 body.no-effects .project-header {
-  backdrop-filter: none;
+  backdrop-filter: none !important;
 }
 
 body.no-effects .page {
-  filter: none;
+  filter: none !important;
 }
 
 body.no-effects .visual-item:hover {
-  box-shadow: none;
+  box-shadow: none !important;
 }
 
 body.no-effects .visual-item:hover img {
-  transform: none;
-  filter: none;
+  transform: none !important;
+  filter: none !important;
+}
+
+body.no-effects .cursor {
+  display: none !important;
 }
 
 @media (prefers-reduced-motion: reduce) {
