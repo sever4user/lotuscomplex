@@ -32,9 +32,9 @@ const sfxToggle = document.getElementById("sfxToggle");
 const masterVolumeRange = document.getElementById("masterVolumeRange");
 const typed = { logs: false, contacts: false };
 const AUDIO_TUNING = {
-  masterDefault: 0.60,
-  clickPeak: 0.05,
-  humMasterGain: 1.3
+  masterDefault: 0.62,
+  clickPeak: 0.011,
+  humMasterGain: 0.72
 };
 const mediaExtensions = {
   audio: [".mp3", ".ogg", ".wav", ".m4a"],
@@ -49,8 +49,23 @@ const state = {
   keyBuffer: "",
   activeMusicCount: 0,
   masterVolume: AUDIO_TUNING.masterDefault,
-  rerenderAscii: null
+  rerenderAscii: null,
+  liteMode: false,
+  loadedSections: {
+    music: false,
+    visuals: false
+  },
+  pointerRaf: null,
+  pointerTarget: { x: 0.5, y: 0.5 }
 };
+
+function detectLiteMode() {
+  const memory = navigator.deviceMemory || 8;
+  const cores = navigator.hardwareConcurrency || 8;
+  const saveData = navigator.connection?.saveData === true;
+  const reducedMotion = window.matchMedia?.("(prefers-reduced-motion: reduce)")?.matches === true;
+  return saveData || reducedMotion || memory <= 4 || cores <= 4;
+}
 
 function playUiClick() {
   if (!state.sfxEnabled) return;
@@ -152,6 +167,17 @@ function updateHumState() {
   else startTerminalHum();
 }
 
+async function ensureSectionLoaded(sectionId) {
+  if (sectionId === "music" && !state.loadedSections.music) {
+    state.loadedSections.music = true;
+    await renderMusic();
+  }
+  if (sectionId === "visuals" && !state.loadedSections.visuals) {
+    state.loadedSections.visuals = true;
+    await renderVisuals();
+  }
+}
+
 function setTab(sectionId) {
   tabButtons.forEach((button) => {
     button.classList.toggle("active", button.dataset.section === sectionId);
@@ -170,6 +196,10 @@ function setTab(sectionId) {
     startTypewriter("contactsTypewriter", contactsContent);
     typed.contacts = true;
   }
+
+  ensureSectionLoaded(sectionId).catch(() => {
+    statusLine.textContent = "LOAD ERROR";
+  });
 }
 
 function enhanceInteractiveText(target) {
@@ -428,15 +458,36 @@ async function renderVisuals() {
   }
 
   visualGrid.innerHTML = "";
-  files.forEach((file) => {
-    const button = document.createElement("button");
-    button.className = "visual-item";
-    button.type = "button";
-    button.setAttribute("aria-label", `Open ${file.name}`);
-    button.innerHTML = `<img src="${file.url}" alt="${file.name}" loading="lazy">`;
-    button.addEventListener("click", () => openLightbox(file.url));
-    visualGrid.appendChild(button);
-  });
+  let cursor = 0;
+  const batchSize = state.liteMode ? 8 : 16;
+
+  const appendBatch = () => {
+    const slice = files.slice(cursor, cursor + batchSize);
+    slice.forEach((file) => {
+      const button = document.createElement("button");
+      button.className = "visual-item";
+      button.type = "button";
+      button.setAttribute("aria-label", `Open ${file.name}`);
+      button.innerHTML = `<img src="${file.url}" alt="${file.name}" loading="lazy" decoding="async">`;
+      button.addEventListener("click", () => openLightbox(file.url));
+      visualGrid.appendChild(button);
+    });
+    cursor += slice.length;
+    if (cursor >= files.length) {
+      loadMoreButton.remove();
+    }
+  };
+
+  const loadMoreButton = document.createElement("button");
+  loadMoreButton.className = "load-more-visuals";
+  loadMoreButton.type = "button";
+  loadMoreButton.textContent = "[ LOAD MORE ]";
+  loadMoreButton.addEventListener("click", appendBatch);
+
+  appendBatch();
+  if (cursor < files.length) {
+    visualGrid.after(loadMoreButton);
+  }
 }
 
 function setupClipboardMentions() {
@@ -481,21 +532,23 @@ function setupAsciiVines() {
   if (!backdrop) return;
 
   const motifs = {
-    lotus: " -=(<✿>)=- ",
-    buttercup: " --‹[ ✿ ]›-- "
+    lotus: "(\\_/)|( * )| /_\\ ",
+    buttercup: " .-. |(o)| `-' "
   };
 
   const renderPattern = () => {
     const motif = document.body.classList.contains("easter-sever") ? motifs.buttercup : motifs.lotus;
-    const motifUnit = `${motif}   `;
-    const fontPx = Math.max(7, Math.min(11, window.innerWidth * 0.008));
+    const motifUnit = state.liteMode ? `${motif}      ` : `${motif}   `;
+    const fontPx = state.liteMode
+      ? Math.max(8, Math.min(12, window.innerWidth * 0.009))
+      : Math.max(7, Math.min(11, window.innerWidth * 0.008));
     const cellWidth = fontPx * 0.62;
-    const columns = Math.ceil(window.innerWidth / (cellWidth * motifUnit.length)) + 6;
-    const rows = Math.ceil(window.innerHeight / (fontPx * 1.3)) + 6;
+    const columns = Math.ceil(window.innerWidth / (cellWidth * motifUnit.length)) + (state.liteMode ? 3 : 6);
+    const rows = Math.ceil(window.innerHeight / (fontPx * 1.3)) + (state.liteMode ? 2 : 5);
     let result = "";
     for (let y = 0; y < rows; y += 1) {
       const pad = y % 2 === 0 ? " " : "";
-      result += `${pad}${motifUnit.repeat(columns)}\n\n`;
+      result += `${pad}${motifUnit.repeat(columns)}\n`;
     }
     backdrop.textContent = result;
   };
@@ -503,21 +556,25 @@ function setupAsciiVines() {
   state.rerenderAscii = renderPattern;
   renderPattern();
 
-  const move = (clientX, clientY) => {
-    const mx = (clientX / window.innerWidth - 0.5) * 1.5;
-    const my = (clientY / window.innerHeight - 0.5) * 1.1;
-    backdrop.style.transform = `translate(${mx}rem, ${my}rem)`;
-  };
-  window.addEventListener("resize", renderPattern);
-  document.addEventListener("mousemove", (event) => move(event.clientX, event.clientY));
-  document.addEventListener(
-    "touchmove",
-    (event) => {
-      const t = event.touches[0];
-      if (t) move(t.clientX, t.clientY);
-    },
-    { passive: true }
-  );
+  let resizeRaf = null;
+  window.addEventListener("resize", () => {
+    if (resizeRaf) cancelAnimationFrame(resizeRaf);
+    resizeRaf = requestAnimationFrame(renderPattern);
+  });
+
+  if (!state.liteMode) {
+    const applyPointer = () => {
+      state.pointerRaf = null;
+      const mx = (state.pointerTarget.x - 0.5) * 1.2;
+      const my = (state.pointerTarget.y - 0.5) * 0.9;
+      backdrop.style.transform = `translate(${mx}rem, ${my}rem)`;
+    };
+    document.addEventListener("pointermove", (event) => {
+      state.pointerTarget.x = event.clientX / window.innerWidth;
+      state.pointerTarget.y = event.clientY / window.innerHeight;
+      if (!state.pointerRaf) state.pointerRaf = requestAnimationFrame(applyPointer);
+    });
+  }
 }
 
 tabButtons.forEach((button) => {
@@ -534,6 +591,9 @@ masterVolumeRange?.addEventListener("input", () => {
 });
 
 async function init() {
+  state.liteMode = detectLiteMode();
+  document.body.classList.toggle("lite-mode", state.liteMode);
+
   if (masterVolumeRange) {
     masterVolumeRange.value = String(AUDIO_TUNING.masterDefault);
   }
@@ -542,7 +602,6 @@ async function init() {
   setupClipboardMentions();
   setupEasterEggs();
   setupAsciiVines();
-  await Promise.all([renderMusic(), renderVisuals()]);
 }
 
 init();
