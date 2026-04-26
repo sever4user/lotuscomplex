@@ -29,7 +29,6 @@ const tabButtons = [...document.querySelectorAll(".tab")];
 const panels = [...document.querySelectorAll(".panel")];
 const statusLine = document.getElementById("statusLine");
 const sfxToggle = document.getElementById("sfxToggle");
-const effectsToggle = document.getElementById("effectsToggle");
 const masterVolumeRange = document.getElementById("masterVolumeRange");
 const typed = { logs: false, contacts: false };
 const AUDIO_TUNING = {
@@ -44,7 +43,6 @@ const mediaExtensions = {
 
 const state = {
   sfxEnabled: false,
-  effectsEnabled: true,
   audioCtx: null,
   humNodes: null,
   players: [],
@@ -106,22 +104,6 @@ function setSfxEnabled(value) {
   sfxToggle.setAttribute("aria-pressed", value ? "true" : "false");
   if (value && state.activeMusicCount === 0) startTerminalHum();
   else stopTerminalHum();
-}
-
-function setEffectsEnabled(value) {
-  state.effectsEnabled = value;
-  effectsToggle.textContent = value ? "FX: ON" : "FX: OFF";
-  effectsToggle.setAttribute("aria-pressed", value ? "true" : "false");
-  
-  if (!value) {
-    document.body.classList.add("no-effects");
-    const backdrop = document.getElementById("asciiVines");
-    if (backdrop) backdrop.textContent = "";
-  } else {
-    document.body.classList.remove("no-effects");
-  }
-  
-  playUiClick();
 }
 
 function startTerminalHum() {
@@ -586,29 +568,29 @@ function setupAsciiVines() {
   if (!backdrop) return;
 
   const motifs = {
-    lotus: "❀",
-    buttercup: "✿"
+    lotus: " --=<❀>=-- ",
+    buttercup: " --‹( ✿ )›-- "
   };
 
   const renderPattern = () => {
     const motif = document.body.classList.contains("easter-sever") ? motifs.buttercup : motifs.lotus;
     
-    // Крупные символы, умеренная плотность
+    // Красивая плотность с умеренными отступами
     const fontPx = state.liteMode
-      ? Math.max(16, Math.min(24, window.innerWidth * 0.025))
-      : Math.max(14, Math.min(20, window.innerWidth * 0.02));
+      ? Math.max(10, Math.min(14, window.innerWidth * 0.015))
+      : Math.max(9, Math.min(13, window.innerWidth * 0.012));
     
-    // Нормальная плотность сетки
-    const gapX = state.liteMode ? 6 : 5;
-    const gapY = state.liteMode ? 4 : 3;
+    // Отступы для воздуха
+    const gapX = state.liteMode ? 8 : 6;
+    const gapY = state.liteMode ? 5 : 4;
     
     const columns = Math.ceil(window.innerWidth / (fontPx * gapX)) + 2;
     const rows = Math.ceil(window.innerHeight / (fontPx * gapY)) + 2;
     
     let result = "";
     for (let y = 0; y < rows; y += 1) {
-      const offset = y % 2 === 0 ? "" : " ".repeat(Math.floor(fontPx * 0.3));
-      const line = Array(columns).fill(motif).join(" ".repeat(gapX - 1));
+      const offset = y % 2 === 0 ? "" : " ".repeat(Math.floor(gapX * 0.5));
+      const line = Array(columns).fill(motif).join("");
       result += `${offset}${line}\n`;
     }
     backdrop.textContent = result;
@@ -628,15 +610,15 @@ function setupAsciiVines() {
         renderPattern();
         resizeRaf = null;
       });
-    }, 250);
+    }, 300);
   });
 
-  // Отключаем pointer effects для снижения нагрузки
-  if (!state.liteMode && state.effectsEnabled) {
+  // Минимальный parallax для атмосферы
+  if (!state.liteMode) {
     const applyPointer = () => {
       state.pointerRaf = null;
-      const mx = (state.pointerTarget.x - 0.5) * 0.3;
-      const my = (state.pointerTarget.y - 0.5) * 0.2;
+      const mx = (state.pointerTarget.x - 0.5) * 0.2;
+      const my = (state.pointerTarget.y - 0.5) * 0.15;
       backdrop.style.transform = `translate(${mx}rem, ${my}rem)`;
     };
     
@@ -663,10 +645,6 @@ tabButtons.forEach((button) => {
 sfxToggle.addEventListener("click", () => {
   setSfxEnabled(!state.sfxEnabled);
   playUiClick();
-});
-
-effectsToggle.addEventListener("click", () => {
-  setEffectsEnabled(!state.effectsEnabled);
 });
 
 masterVolumeRange?.addEventListener("input", () => {
