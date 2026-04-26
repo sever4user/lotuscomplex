@@ -72,16 +72,16 @@ body {
     rgba(var(--primary-rgb), 0.06) 3px,
     rgba(var(--primary-rgb), 0.015) 5px
   );
-  animation: scanMove 11s linear infinite;
+  animation: scanMove 16s linear infinite;
 }
 
 .pulse-noise {
   z-index: 90;
-  opacity: 0.18;
+  opacity: 0.12;
   background-image: radial-gradient(rgba(var(--accent-rgb), 0.13) 1px, transparent 1px);
   background-size: 3px 3px;
   mix-blend-mode: screen;
-  animation: noisePulse 2.5s ease-in-out infinite;
+  animation: noisePulse 4.2s ease-in-out infinite;
 }
 
 .page {
@@ -90,13 +90,13 @@ body {
   padding: 2.5rem 0 4rem;
   position: relative;
   z-index: 120;
-  filter: drop-shadow(1px 0 rgba(var(--accent-rgb), 0.08)) drop-shadow(-1px 0 rgba(var(--primary-rgb), 0.08));
+  filter: drop-shadow(1px 0 rgba(var(--accent-rgb), 0.05)) drop-shadow(-1px 0 rgba(var(--primary-rgb), 0.05));
 }
 
 .project-header {
   border: 1px solid var(--line);
   background: var(--header-tint);
-  backdrop-filter: blur(2px);
+  backdrop-filter: blur(1px);
   padding: 1.4rem 1.25rem 1rem;
 }
 
@@ -482,6 +482,23 @@ h1 {
   gap: 0.7rem;
 }
 
+.load-more-visuals {
+  margin-top: 0.75rem;
+  border: 1px solid var(--line);
+  background: var(--surface-strong);
+  color: var(--green);
+  font: inherit;
+  letter-spacing: 0.07em;
+  padding: 0.55rem 0.8rem;
+  cursor: pointer;
+}
+
+.load-more-visuals:hover {
+  border-color: var(--lotus-soft);
+  color: var(--lotus);
+  box-shadow: 0 0 10px rgba(var(--accent-rgb), 0.26);
+}
+
 .visual-item {
   position: relative;
   border: 1px solid var(--visual-border);
@@ -717,5 +734,40 @@ body.easter-sever {
 
   .visual-item {
     aspect-ratio: 1 / 1;
+  }
+}
+
+body.lite-mode .scan-overlay,
+body.lite-mode .pulse-noise {
+  display: none;
+}
+
+body.lite-mode .ascii-vines {
+  text-shadow: none;
+  transition: none;
+  opacity: 0.08;
+}
+
+body.lite-mode .page {
+  filter: none;
+}
+
+body.lite-mode .project-header {
+  backdrop-filter: none;
+}
+
+body.lite-mode h1,
+body.lite-mode .subtitle,
+body.lite-mode .terminal-text,
+body.lite-mode .tab {
+  text-shadow: none;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .scan-overlay,
+  .pulse-noise,
+  h1,
+  .cursor {
+    animation: none !important;
   }
 }
