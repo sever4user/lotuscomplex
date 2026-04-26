@@ -29,6 +29,7 @@ const tabButtons = [...document.querySelectorAll(".tab")];
 const panels = [...document.querySelectorAll(".panel")];
 const statusLine = document.getElementById("statusLine");
 const sfxToggle = document.getElementById("sfxToggle");
+const effectsToggle = document.getElementById("effectsToggle");
 const masterVolumeRange = document.getElementById("masterVolumeRange");
 const typed = { logs: false, contacts: false };
 const AUDIO_TUNING = {
@@ -43,6 +44,7 @@ const mediaExtensions = {
 
 const state = {
   sfxEnabled: false,
+  effectsEnabled: true,
   audioCtx: null,
   humNodes: null,
   players: [],
@@ -101,6 +103,14 @@ function setSfxEnabled(value) {
   sfxToggle.setAttribute("aria-pressed", value ? "true" : "false");
   if (value && state.activeMusicCount === 0) startTerminalHum();
   else stopTerminalHum();
+}
+
+function setEffectsEnabled(value) {
+  state.effectsEnabled = value;
+  effectsToggle.textContent = value ? "FX: ON" : "FX: OFF";
+  effectsToggle.setAttribute("aria-pressed", value ? "true" : "false");
+  document.body.classList.toggle("no-effects", !value);
+  playUiClick();
 }
 
 function startTerminalHum() {
@@ -300,7 +310,7 @@ function updateSeekDebounced(seek, progress, audio) {
   seekThrottle = true;
   requestAnimationFrame(() => {
     updateSeekVisual(seek, progress, audio);
-    setTimeout(() => { seekThrottle = null; }, 16);
+    setTimeout(() => { seekThrottle = null; }, 32);
   });
 }
 
@@ -397,11 +407,14 @@ async function renderMusic() {
 
     audio.addEventListener("timeupdate", () => {
       updateSeekDebounced(seek, progress, audio);
-      if (audio.currentTime > 2) preloadNextTrack(index);
+      if (audio.currentTime > 2 && !audio.ended) preloadNextTrack(index);
     });
 
     audio.addEventListener("ended", () => {
       playButton.classList.remove("is-playing");
+      state.activeMusicCount = Math.max(0, state.activeMusicCount - 1);
+      updateHumState();
+      
       const next = state.players[index + 1];
       if (next) {
         stopAllPlayers(index + 1);
@@ -568,17 +581,31 @@ function setupAsciiVines() {
 
   const renderPattern = () => {
     const motif = document.body.classList.contains("easter-sever") ? motifs.buttercup : motifs.lotus;
-    const motifUnit = state.liteMode ? `${motif}      ` : `${motif}   `;
+    
+    // Максимально редкая сетка, крупные символы
     const fontPx = state.liteMode
-      ? Math.max(8, Math.min(12, window.innerWidth * 0.009))
-      : Math.max(7, Math.min(11, window.innerWidth * 0.008));
-    const cellWidth = fontPx * 0.62;
-    const columns = Math.ceil(window.innerWidth / (cellWidth * motifUnit.length)) + (state.liteMode ? 3 : 6);
-    const rows = Math.ceil(window.innerHeight / (fontPx * 1.3)) + (state.liteMode ? 2 : 5);
+      ? Math.max(10, Math.min(14, window.innerWidth * 0.012))
+      : Math.max(9, Math.min(12, window.innerWidth * 0.01));
+    
+    // Сильно увеличенные отступы между элементами
+    const spacingX = state.liteMode ? 12 : 10; // символов по горизонтали
+    const spacingY = state.liteMode ? 6 : 5;  // строк по вертикали
+    
+    const columns = Math.ceil(window.innerWidth / (fontPx * 0.6 * motif.length * spacingX)) + 2;
+    const rows = Math.ceil(window.innerHeight / (fontPx * 1.5 * spacingY)) + 2;
+    
     let result = "";
     for (let y = 0; y < rows; y += 1) {
-      const pad = y % 2 === 0 ? " " : "";
-      result += `${pad}${motifUnit.repeat(columns)}\n`;
+      const pad = " ".repeat(Math.floor(spacingX * (y % 2 === 0 ? 1 : 0.5)));
+      const line = motif.repeat(columns);
+      result += `${pad}${line}\n`;
+      
+      // Добавляем пустые строки между рядами для разреженности
+      if (y < rows - 1) {
+        for (let s = 0; s < spacingY - 1; s += 1) {
+          result += "\n";
+        }
+      }
     }
     backdrop.textContent = result;
   };
@@ -597,20 +624,30 @@ function setupAsciiVines() {
         renderPattern();
         resizeRaf = null;
       });
-    }, 150);
+    }, 200);
   });
 
+  // Отключаем pointer effects для снижения нагрузки
   if (!state.liteMode) {
     const applyPointer = () => {
       state.pointerRaf = null;
-      const mx = (state.pointerTarget.x - 0.5) * 1.2;
-      const my = (state.pointerTarget.y - 0.5) * 0.9;
+      const mx = (state.pointerTarget.x - 0.5) * 0.4;
+      const my = (state.pointerTarget.y - 0.5) * 0.3;
       backdrop.style.transform = `translate(${mx}rem, ${my}rem)`;
     };
+    
+    let pointerThrottle = null;
     document.addEventListener("pointermove", (event) => {
+      if (pointerThrottle) return;
+      pointerThrottle = true;
+      
       state.pointerTarget.x = event.clientX / window.innerWidth;
       state.pointerTarget.y = event.clientY / window.innerHeight;
-      if (!state.pointerRaf) state.pointerRaf = requestAnimationFrame(applyPointer);
+      
+      requestAnimationFrame(() => {
+        pointerThrottle = null;
+        applyPointer();
+      });
     });
   }
 }
@@ -622,6 +659,10 @@ tabButtons.forEach((button) => {
 sfxToggle.addEventListener("click", () => {
   setSfxEnabled(!state.sfxEnabled);
   playUiClick();
+});
+
+effectsToggle.addEventListener("click", () => {
+  setEffectsEnabled(!state.effectsEnabled);
 });
 
 masterVolumeRange?.addEventListener("input", () => {
