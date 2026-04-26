@@ -252,6 +252,14 @@ function updateLanguageVisibility(sectionId) {
     const lang = span.getAttribute('data-lang');
     span.style.display = lang === state.currentLang ? "inline" : "none";
   });
+  
+  // Устанавливаем display для новых панелей
+  if (sectionId === "logs" || sectionId === "contacts") {
+    const ruSpan = target.querySelector('[data-lang="ru"]');
+    const enSpan = target.querySelector('[data-lang="en"]');
+    if (ruSpan) ruSpan.style.display = state.currentLang === "ru" ? "inline" : "none";
+    if (enSpan) enSpan.style.display = state.currentLang === "en" ? "inline" : "none";
+  }
 }
 
 function toggleLanguage() {
@@ -366,10 +374,6 @@ function startTypewriter(targetId, text) {
     }
   };
 
-  // Показываем только текущий язык
-  langSpans.ru.style.display = state.currentLang === "ru" ? "inline" : "none";
-  langSpans.en.style.display = state.currentLang === "en" ? "inline" : "none";
-  
   write();
 }
 
