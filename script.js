@@ -269,20 +269,45 @@ function toggleLanguage() {
 }
 
 function enhanceInteractiveText(target) {
-  const plain = target.textContent || "";
-  const withLinks = plain.replace(
-    /(https?:\/\/[^\s]+|(?:github\.com|t\.me|instagram\.com)\/[^\s]+)/gi,
-    (match) => {
-      const href = match.startsWith("http") ? match : `https://${match}`;
-      return `<a class="inline-link" target="_blank" rel="noopener noreferrer" href="${href}">${match}</a>`;
-    }
-  );
-  const withMentions = withLinks.replace(
-    /(^|[\s(])(@[a-zA-Z0-9_а-яА-Я.-]+)/g,
-    (full, prefix, mention) =>
-      `${prefix}<button type="button" class="copy-mention" data-copy="${mention}">${mention}</button>`
-  );
-  target.innerHTML = withMentions;
+  // Сохраняем текущее состояние языков
+  const currentLang = state.currentLang;
+  
+  const ruSpan = target.querySelector('[data-lang="ru"]');
+  const enSpan = target.querySelector('[data-lang="en"]');
+  
+  if (ruSpan) {
+    const plain = ruSpan.textContent || "";
+    const withLinks = plain.replace(
+      /(https?:\/\/[^\s]+|(?:github\.com|t\.me|instagram\.com)\/[^\s]+)/gi,
+      (match) => {
+        const href = match.startsWith("http") ? match : `https://${match}`;
+        return `<a class="inline-link" target="_blank" rel="noopener noreferrer" href="${href}">${match}</a>`;
+      }
+    );
+    const withMentions = withLinks.replace(
+      /(^|[\s(])(@[a-zA-Z0-9_а-яА-Я.-]+)/g,
+      (full, prefix, mention) =>
+        `${prefix}<button type="button" class="copy-mention" data-copy="${mention}">${mention}</button>`
+    );
+    ruSpan.innerHTML = withMentions;
+  }
+  
+  if (enSpan) {
+    const plain = enSpan.textContent || "";
+    const withLinks = plain.replace(
+      /(https?:\/\/[^\s]+|(?:github\.com|t\.me|instagram\.com)\/[^\s]+)/gi,
+      (match) => {
+        const href = match.startsWith("http") ? match : `https://${match}`;
+        return `<a class="inline-link" target="_blank" rel="noopener noreferrer" href="${href}">${match}</a>`;
+      }
+    );
+    const withMentions = withLinks.replace(
+      /(^|[\s(])(@[a-zA-Z0-9_а-яА-Я.-]+)/g,
+      (full, prefix, mention) =>
+        `${prefix}<button type="button" class="copy-mention" data-copy="${mention}">${mention}</button>`
+    );
+    enSpan.innerHTML = withMentions;
+  }
 }
 
 function startTypewriter(targetId, text) {
@@ -311,24 +336,33 @@ function startTypewriter(targetId, text) {
     let continue = false;
     
     // Печатаем русский
-    if (currentTyping[section].ru <= textRu.length) {
-      langSpans.ru.textContent = textRu.slice(0, currentTyping[section].ru);
+    if (currentTyping[section].ru < textRu.length) {
+      langSpans.ru.textContent = textRu.slice(0, currentTyping[section].ru + 1);
       currentTyping[section].ru += 1;
       continue = true;
     }
     
     // Печатаем английский
-    if (currentTyping[section].en <= textEn.length) {
-      langSpans.en.textContent = textEn.slice(0, currentTyping[section].en);
+    if (currentTyping[section].en < textEn.length) {
+      langSpans.en.textContent = textEn.slice(0, currentTyping[section].en + 1);
       currentTyping[section].en += 1;
       continue = true;
     }
 
     if (continue) {
+      // Добавляем курсор
+      let cursor = target.querySelector('.cursor');
+      if (!cursor) {
+        cursor = document.createElement('span');
+        cursor.className = 'cursor';
+        target.appendChild(cursor);
+      }
       currentTyping[section].animId = requestAnimationFrame(write);
     } else {
       // Оба текста завершены
       enhanceInteractiveText(target);
+      const cursor = target.querySelector('.cursor');
+      if (cursor) cursor.style.display = 'none';
     }
   };
 
