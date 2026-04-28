@@ -5,7 +5,7 @@ const logsContent = {
   ru: `> BOOT SEQUENCE: LOTUS COMPLEX > NODE: AUTHOR PROFILE INITIALIZED
 
 Я создаю аудиовизуальные миры на стыке музыки, 3D и narrative-эстетики.
-кт LOTUS COMPLEX - это персональный архив звуков и артефактов
+  кт LOTUS COMPLEX - это персональный архив звуков и артефактов
 > Вся информация на сайте предоставлена в ознакомительных целях
 
 Другие проекты:
@@ -226,38 +226,9 @@ function setTab(sectionId) {
     startTypewriter("contactsTypewriter");
   }
 
-  // Обновляем видимость языков при переключении вкладки
-  updateLanguageVisibility(sectionId);
-
   ensureSectionLoaded(sectionId).catch(() => {
     statusLine.textContent = "LOAD ERROR";
   });
-}
-
-function updateLanguageVisibility(sectionId) {
-  const targetId = sectionId === "logs" ? "logsTypewriter" : "contactsTypewriter";
-  const target = document.getElementById(targetId);
-  if (!target) return;
-
-  const langSpans = target.querySelectorAll('[data-lang]');
-  langSpans.forEach(span => {
-    const lang = span.getAttribute('data-lang');
-    span.style.display = lang === state.currentLang ? "inline" : "none";
-  });
-}
-  
-function toggleLanguage() {
-  state.currentLang = state.currentLang === "ru" ? "en" : "ru";
-  
-  const activePanel = document.querySelector(".panel.active");
-  if (activePanel) {
-    const sectionId = activePanel.id;
-    updateLanguageVisibility(sectionId);
-  }
-    
-  const currentSection = document.querySelector(".tab.active")?.dataset.section || "logs";
-  statusLine.textContent = `STATUS: ONLINE // SECTION: ${currentSection.toUpperCase()} // LANG: ${state.currentLang.toUpperCase()}`;
-  playUiClick();
 }
 
 function enhanceInteractiveText(target) {
@@ -366,6 +337,10 @@ function startTypewriter(targetId) {
     }
   };
 
+  // Скрываем неактивный язык сразу
+  langSpans.ru.style.display = state.currentLang === "ru" ? "inline" : "none";
+  langSpans.en.style.display = state.currentLang === "en" ? "inline" : "none";
+  
   write();
 }
 
