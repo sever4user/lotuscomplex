@@ -16,8 +16,8 @@ https://band.link/sever4user
 
 const contactsContent = `> SECURE CHANNEL OPEN
 
-MAIL: lotuscomplex@gmail.com
-INST: @lotuscomplex
+MAIL: 1o7uscomp13x@gmail.com
+INST: @1o7uscomp13x
 TG: @lotuscomplex
 
 > AWAITING NEW CONNECTION...`;
