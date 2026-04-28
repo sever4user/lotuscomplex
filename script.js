@@ -3,7 +3,8 @@ const GH_REPO = "lotuscomplex";
 
 const logsContent = {
   ru: `
-> BOOT SEQUENCE: LOTUS COMPLEX > NODE: AUTHOR PROFILE INITIALIZED
+> BOOT SEQUENCE: LOTUS COMPLEX 
+> NODE: AUTHOR PROFILE INITIALIZED
 
 Я создаю аудиовизуальные миры на стыке музыки, 3D и narrative-эстетики.
 Проект LOTUS COMPLEX - это персональный архив звуков и артефактов
@@ -15,7 +16,8 @@ https://band.link/sever4user
 
 > LOG STREAM READY`,
   en: `
-> BOOT SEQUENCE: LOTUS COMPLEX > NODE: AUTHOR PROFILE INITIALIZED
+> BOOT SEQUENCE: LOTUS COMPLEX 
+> NODE: AUTHOR PROFILE INITIALIZED
 
 I create audio-visual worlds at the intersection of music, 3D and narrative aesthetics.
 LOTUS COMPLEX project is a personal archive of sounds and artifacts
