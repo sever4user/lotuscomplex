@@ -207,14 +207,11 @@ h1 {
   text-shadow: 0 0 8px rgba(var(--primary-rgb), 0.4), 0 0 12px rgba(var(--accent-rgb), 0.2);
 }
 
-.terminal-text .lang-content:first-child {
-  margin: 0;
-  padding: 0;
-}
-
 .lang-content {
   display: inline;
   white-space: pre-wrap;
+  margin: 0;
+  padding: 0;
 }
 
 .hint {
@@ -739,8 +736,9 @@ body.easter-sever {
   }
 
   .ascii-vines {
-    opacity: 0.55;
-    font-size: clamp(1rem, 1.5vw, 1.4rem);
+    opacity: 0.7;
+    font-size: clamp(1.3rem, 2vw, 1.6rem);
+    text-shadow: 0 0 12px rgba(var(--ascii-rgb), 0.7);
   }
 
   .visual-item {
