@@ -2,8 +2,7 @@ const GH_USER = "sever4user";
 const GH_REPO = "lotuscomplex";
 
 const logsContent = {
-  ru: `
-> BOOT SEQUENCE: LOTUS COMPLEX 
+  ru: `> BOOT SEQUENCE: LOTUS COMPLEX 
 > NODE: AUTHOR PROFILE INITIALIZED
 
 Я создаю аудиовизуальные миры на стыке музыки, 3D и narrative-эстетики.
@@ -15,8 +14,7 @@ const logsContent = {
 https://band.link/sever4user
 
 > LOG STREAM READY`,
-  en: `
-> BOOT SEQUENCE: LOTUS COMPLEX 
+  en: `> BOOT SEQUENCE: LOTUS COMPLEX 
 > NODE: AUTHOR PROFILE INITIALIZED
 
 I create audio-visual worlds at the intersection of music, 3D and narrative aesthetics.
