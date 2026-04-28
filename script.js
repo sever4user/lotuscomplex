@@ -78,8 +78,11 @@ const state = {
     music: false,
     visuals: false
   },
-  currentLang: "ru",
-  lastLang: "ru"
+  currentLang: "en",
+  typedSections: {
+    logs: false,
+    contacts: false
+  }
 };
 
 function detectLiteMode() {
@@ -213,24 +216,18 @@ function setTab(sectionId) {
   statusLine.textContent = `STATUS: ONLINE // SECTION: ${sectionId.toUpperCase()} // LANG: ${state.currentLang.toUpperCase()}`;
   playUiClick();
 
+  // Печатаем текст ТОЛЬКО если он еще не был напечатан
+  if (sectionId === "logs" && !state.typedSections.logs) {
+    state.typedSections.logs = true;
+    startTypewriter("logsTypewriter");
+  }
+  if (sectionId === "contacts" && !state.typedSections.contacts) {
+    state.typedSections.contacts = true;
+    startTypewriter("contactsTypewriter");
+  }
+
   // Обновляем видимость языков при переключении вкладки
   updateLanguageVisibility(sectionId);
-
-  // Печатаем текст ТОЛЬКО если он еще не напечатан ни на одном языке
-  const sectionKey = sectionId === "logs" ? "logs" : "contacts";
-  const logsTarget = document.getElementById("logsTypewriter");
-  const contactsTarget = document.getElementById("contactsTypewriter");
-  
-  const alreadyTyped = sectionId === "logs" 
-    ? (logsTarget && logsTarget.querySelector('[data-lang]'))
-    : (contactsTarget && contactsTarget.querySelector('[data-lang]'));
-  
-  if (sectionId === "logs" && !alreadyTyped) {
-    startTypewriter("logsTypewriter", logsContent[state.currentLang]);
-  }
-  if (sectionId === "contacts" && !alreadyTyped) {
-    startTypewriter("contactsTypewriter", contactsContent[state.currentLang]);
-  }
 
   ensureSectionLoaded(sectionId).catch(() => {
     statusLine.textContent = "LOAD ERROR";
@@ -332,7 +329,7 @@ function enhanceInteractiveText(target) {
   }
 }
 
-function startTypewriter(targetId, text) {
+function startTypewriter(targetId) {
   const target = document.getElementById(targetId);
   if (!target) return;
 
@@ -783,6 +780,10 @@ async function init() {
     masterVolumeRange.value = String(AUDIO_TUNING.masterDefault);
   }
   updateSfxVolume(AUDIO_TUNING.masterDefault);
+  
+  // Устанавливаем язык по умолчанию в UI
+  langToggle.textContent = `LANG: ${state.currentLang.toUpperCase()}`;
+  
   setTab("logs");
   setupClipboardMentions();
   setupEasterEggs();
