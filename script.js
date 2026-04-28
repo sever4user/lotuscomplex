@@ -2,7 +2,8 @@ const GH_USER = "sever4user";
 const GH_REPO = "lotuscomplex";
 
 const logsContent = {
-  ru: `> BOOT SEQUENCE: LOTUS COMPLEX > NODE: AUTHOR PROFILE INITIALIZED
+  ru: `
+> BOOT SEQUENCE: LOTUS COMPLEX > NODE: AUTHOR PROFILE INITIALIZED
 
 Я создаю аудиовизуальные миры на стыке музыки, 3D и narrative-эстетики.
 Проект LOTUS COMPLEX - это персональный архив звуков и артефактов
@@ -13,7 +14,8 @@ const logsContent = {
 https://band.link/sever4user
 
 > LOG STREAM READY`,
-  en: `> BOOT SEQUENCE: LOTUS COMPLEX > NODE: AUTHOR PROFILE INITIALIZED
+  en: `
+> BOOT SEQUENCE: LOTUS COMPLEX > NODE: AUTHOR PROFILE INITIALIZED
 
 I create audio-visual worlds at the intersection of music, 3D and narrative aesthetics.
 LOTUS COMPLEX project is a personal archive of sounds and artifacts
@@ -27,16 +29,18 @@ https://band.link/sever4user
 };
 
 const contactsContent = {
-  ru: `> SECURE CHANNEL OPEN
+  ru: `
+> SECURE CHANNEL OPEN
 
-MAIL: lotuscomplex@gmail.com
+MAIL: 1o7uscomp13x@gmail.com
 INST: @lotuscomplex
 TG: @lotuscomplex
 
 > AWAITING NEW CONNECTION...`,
-  en: `> SECURE CHANNEL OPEN
+  en: `
+> SECURE CHANNEL OPEN
 
-MAIL: lotuscomplex@gmail.com
+MAIL: 1o7uscomp13x@gmail.com
 INST: @lotuscomplex
 TG: @lotuscomplex
 
