@@ -5,7 +5,7 @@ const logsContent = {
   ru: `> BOOT SEQUENCE: LOTUS COMPLEX > NODE: AUTHOR PROFILE INITIALIZED
 
 Я создаю аудиовизуальные миры на стыке музыки, 3D и narrative-эстетики.
-Проект LOTUS COMPLEX - это персональный архив звуков и артефактов
+кт LOTUS COMPLEX - это персональный архив звуков и артефактов
 > Вся информация на сайте предоставлена в ознакомительных целях
 
 Другие проекты:
@@ -49,10 +49,6 @@ const statusLine = document.getElementById("statusLine");
 const sfxToggle = document.getElementById("sfxToggle");
 const langToggle = document.getElementById("langToggle");
 const masterVolumeRange = document.getElementById("masterVolumeRange");
-const typed = { 
-  logs: { ru: false, en: false }, 
-  contacts: { ru: false, en: false }
-};
 
 let currentTyping = {
   logs: { ru: 0, en: 0, animId: null },
@@ -82,7 +78,8 @@ const state = {
     music: false,
     visuals: false
   },
-  currentLang: "ru"
+  currentLang: "ru",
+  lastLang: "ru"
 };
 
 function detectLiteMode() {
@@ -216,17 +213,24 @@ function setTab(sectionId) {
   statusLine.textContent = `STATUS: ONLINE // SECTION: ${sectionId.toUpperCase()} // LANG: ${state.currentLang.toUpperCase()}`;
   playUiClick();
 
-  if (sectionId === "logs" && !typed.logs[state.currentLang]) {
-    startTypewriter("logsTypewriter", logsContent[state.currentLang]);
-    typed.logs[state.currentLang] = true;
-  }
-  if (sectionId === "contacts" && !typed.contacts[state.currentLang]) {
-    startTypewriter("contactsTypewriter", contactsContent[state.currentLang]);
-    typed.contacts[state.currentLang] = true;
-  }
-
   // Обновляем видимость языков при переключении вкладки
   updateLanguageVisibility(sectionId);
+
+  // Печатаем текст ТОЛЬКО если он еще не напечатан ни на одном языке
+  const sectionKey = sectionId === "logs" ? "logs" : "contacts";
+  const logsTarget = document.getElementById("logsTypewriter");
+  const contactsTarget = document.getElementById("contactsTypewriter");
+  
+  const alreadyTyped = sectionId === "logs" 
+    ? (logsTarget && logsTarget.querySelector('[data-lang]'))
+    : (contactsTarget && contactsTarget.querySelector('[data-lang]'));
+  
+  if (sectionId === "logs" && !alreadyTyped) {
+    startTypewriter("logsTypewriter", logsContent[state.currentLang]);
+  }
+  if (sectionId === "contacts" && !alreadyTyped) {
+    startTypewriter("contactsTypewriter", contactsContent[state.currentLang]);
+  }
 
   ensureSectionLoaded(sectionId).catch(() => {
     statusLine.textContent = "LOAD ERROR";
@@ -243,23 +247,31 @@ function updateLanguageVisibility(sectionId) {
     const lang = span.getAttribute('data-lang');
     span.style.display = lang === state.currentLang ? "inline" : "none";
   });
-  
-  // Устанавливаем display для новых панелей
-  if (sectionId === "logs" || sectionId === "contacts") {
-    const ruSpan = target.querySelector('[data-lang="ru"]');
-    const enSpan = target.querySelector('[data-lang="en"]');
-    if (ruSpan) ruSpan.style.display = state.currentLang === "ru" ? "inline" : "none";
-    if (enSpan) enSpan.style.display = state.currentLang === "en" ? "inline" : "none";
-  }
 }
-
+  
 function toggleLanguage() {
   state.currentLang = state.currentLang === "ru" ? "en" : "ru";
+  
+  // Сбрасываем флаги печати для перепечатки текста
+  typed.logs[state.currentLang] = false;
+  typed.contacts[state.currentLang] = false;
   
   const activePanel = document.querySelector(".panel.active");
   if (activePanel) {
     const sectionId = activePanel.id;
     updateLanguageVisibility(sectionId);
+    
+    // Если мы на вкладке logs или contacts - перепечатываем текст
+    if (sectionId === "logs" || sectionId === "contacts") {
+      const targetId = sectionId === "logs" ? "logsTypewriter" : "contactsTypewriter";
+      const target = document.getElementById(targetId);
+      if (target) {
+        // Очищаем и перепечатываем
+        const text = sectionId === "logs" ? logsContent[state.currentLang] : contactsContent[state.currentLang];
+        startTypewriter(targetId, text);
+        typed[sectionId][state.currentLang] = true;
+      }
+    }
   }
   
   const currentSection = document.querySelector(".tab.active")?.dataset.section || "logs";
