@@ -2,52 +2,34 @@ const GH_USER = "sever4user";
 const GH_REPO = "lotuscomplex";
 
 const logsContent = {
-  ru: `> BOOT SEQUENCE: LOTUS COMPLEX
-> NODE: AUTHOR PROFILE INITIALIZED
-
-Я создаю аудиовизуальные миры на стыке 3D, музыки и narrative-эстетики.
-Проект LOTUS COMPLEX - это персональный архив артефактов, звука и кода.
-TG: @sever4user
-GITHUB: https://github.com/sever4user
-
+  ru: `> BOOT SEQUENCE: LOTUS COMPLEX > NODE: AUTHOR PROFILE INITIALIZED
+Я создаю аудиовизуальные миры на стыке музыки, 3D и narrative-эстетики.
+Проект LOTUS COMPLEX - это персональный архив звуков и артефактов
+> Вся информация на сайте предоставлена в ознакомительных целях
 Другие проекты:
-- SEVER SIGNALS // экспериментальные саунд-капсулы
-- CONCRETE DOME // серия 3D-сцен
-- ECHO FRAME // визуальные исследования материалов
-
+- sever4user // артсит, экспериментальная электроника
+https://band.link/sever4user
 > LOG STREAM READY`,
-  en: `> BOOT SEQUENCE: LOTUS COMPLEX
-> NODE: AUTHOR PROFILE INITIALIZED
-
-I create audio-visual worlds at the intersection of 3D, music and narrative aesthetics.
-LOTUS COMPLEX project is a personal archive of artifacts, sound and code.
-TG: @sever4user
-GITHUB: https://github.com/sever4user
-
+  en: `> BOOT SEQUENCE: LOTUS COMPLEX > NODE: AUTHOR PROFILE INITIALIZED
+I create audio-visual worlds at the intersection of music, 3D and narrative aesthetics.
+LOTUS COMPLEX project is a personal archive of sounds and artifacts
+> All information on the site is for informational purposes only
 Other projects:
-- SEVER SIGNALS // experimental sound capsules
-- CONCRETE DOME // series of 3D scenes
-- ECHO FRAME // visual material research
-
+- sever4user // artsit, experimental electronics
+https://band.link/sever4user
 > LOG STREAM READY`
 };
 
 const contactsContent = {
   ru: `> SECURE CHANNEL OPEN
-
-TG: @sever4user
-MAIL: hello@lotuscomplex.art
+MAIL: lotuscomplex@gmail.com
 INST: @lotuscomplex
-GITHUB: https://github.com/sever4user
-
+TG: @lotuscomplex
 > AWAITING NEW CONNECTION...`,
   en: `> SECURE CHANNEL OPEN
-
-TG: @sever4user
-MAIL: hello@lotuscomplex.art
+MAIL: lotuscomplex@gmail.com
 INST: @lotuscomplex
-GITHUB: https://github.com/sever4user
-
+TG: @lotuscomplex
 > AWAITING NEW CONNECTION...`
 };
 
@@ -98,10 +80,8 @@ function detectLiteMode() {
   const cores = navigator.hardwareConcurrency || 8;
   const saveData = navigator.connection?.saveData === true;
   const reducedMotion = window.matchMedia?.("(prefers-reduced-motion: reduce)")?.matches === true;
-  const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
-  const screenWidth = window.screen?.width || 1920;
   
-  return saveData || reducedMotion || isMobile || memory <= 4 || cores <= 4 || screenWidth <= 768;
+  return saveData || reducedMotion || memory <= 2 || cores <= 2;
 }
 
 function playUiClick() {
@@ -277,22 +257,26 @@ function toggleLanguage() {
 }
 
 function enhanceInteractiveText(target) {
-  // Сохраняем текущее состояние языков
-  const currentLang = state.currentLang;
-  
   const ruSpan = target.querySelector('[data-lang="ru"]');
   const enSpan = target.querySelector('[data-lang="en"]');
   
   if (ruSpan) {
     const plain = ruSpan.textContent || "";
+    // Сначала ссылки
     const withLinks = plain.replace(
-      /(https?:\/\/[^\s]+|(?:github\.com|t\.me|instagram\.com)\/[^\s]+)/gi,
+      /(https?:\/\/[^\s]+|(?:github\.com|t\.me|instagram\.com|band\.link)\/[^\s]+)/gi,
       (match) => {
         const href = match.startsWith("http") ? match : `https://${match}`;
         return `<a class="inline-link" target="_blank" rel="noopener noreferrer" href="${href}">${match}</a>`;
       }
     );
-    const withMentions = withLinks.replace(
+    // Затем email (копируется по клику)
+    const withEmail = withLinks.replace(
+      /([a-zA-Z0-9._-]+@[a-zA-Z0-9._-]+\.[a-zA-Z0-9._-]+)/g,
+      (match) => `<button type="button" class="copy-mention" data-copy="${match}">${match}</button>`
+    );
+    // Затем упоминания
+    const withMentions = withEmail.replace(
       /(^|[\s(])(@[a-zA-Z0-9_а-яА-Я.-]+)/g,
       (full, prefix, mention) =>
         `${prefix}<button type="button" class="copy-mention" data-copy="${mention}">${mention}</button>`
@@ -302,14 +286,21 @@ function enhanceInteractiveText(target) {
   
   if (enSpan) {
     const plain = enSpan.textContent || "";
+    // Сначала ссылки
     const withLinks = plain.replace(
-      /(https?:\/\/[^\s]+|(?:github\.com|t\.me|instagram\.com)\/[^\s]+)/gi,
+      /(https?:\/\/[^\s]+|(?:github\.com|t\.me|instagram\.com|band\.link)\/[^\s]+)/gi,
       (match) => {
         const href = match.startsWith("http") ? match : `https://${match}`;
         return `<a class="inline-link" target="_blank" rel="noopener noreferrer" href="${href}">${match}</a>`;
       }
     );
-    const withMentions = withLinks.replace(
+    // Затем email (копируется по клику)
+    const withEmail = withLinks.replace(
+      /([a-zA-Z0-9._-]+@[a-zA-Z0-9._-]+\.[a-zA-Z0-9._-]+)/g,
+      (match) => `<button type="button" class="copy-mention" data-copy="${match}">${match}</button>`
+    );
+    // Затем упоминания
+    const withMentions = withEmail.replace(
       /(^|[\s(])(@[a-zA-Z0-9_а-яА-Я.-]+)/g,
       (full, prefix, mention) =>
         `${prefix}<button type="button" class="copy-mention" data-copy="${mention}">${mention}</button>`
@@ -326,7 +317,7 @@ function startTypewriter(targetId, text) {
   currentTyping[section].ru = 0;
   currentTyping[section].en = 0;
 
-  // Создаём контейнеры для каждого языка
+  // Создаём контейнеры для каждого языка (убираем отступы)
   target.innerHTML = `
     <span data-lang="ru" class="lang-content"></span>
     <span data-lang="en" class="lang-content"></span>
@@ -700,13 +691,18 @@ function setupAsciiVines() {
     buttercup: " --‹( ✿ )›-- "
   };
 
+  // Фиксированный seed для рандома чтобы паттерн не мигал при resize
+  let seed = 12345;
+  const random = () => {
+    seed = (seed * 9301 + 49297) % 233280;
+    return seed / 233280;
+  };
+
   const renderPattern = () => {
     const motif = document.body.classList.contains("easter-sever") ? motifs.buttercup : motifs.lotus;
     
-    // Размер шрифта в пикселях
-    const fontPx = state.liteMode
-      ? Math.max(12, Math.min(16, window.innerWidth * 0.018))
-      : Math.max(14, Math.min(18, window.innerWidth * 0.022));
+    // Размер шрифта в пикселях (одинаковый для всех устройств)
+    const fontPx = Math.max(14, Math.min(18, window.innerWidth * 0.022));
     
     // Ширина одного символа примерно 0.6 от размера шрифта
     const charWidth = fontPx * 0.6;
@@ -715,19 +711,26 @@ function setupAsciiVines() {
     // Длина паттерна в пикселях
     const patternWidth = motif.length * charWidth;
     
-    // Вычисляем точное количество столбцов и строк для заполнения экрана
-    const columns = Math.ceil(window.innerWidth / patternWidth) + 1;
-    const rows = Math.ceil(window.innerHeight / charHeight) + 1;
+    // Вычисляем количество столбцов и строк для заполнения экрана
+    const columns = Math.ceil(window.innerWidth / patternWidth) + 2;
+    const rows = Math.ceil(window.innerHeight / charHeight) + 2;
     
-    // Отступы между паттернами
-    const gapX = state.liteMode ? 4 : 3;
-    const gapY = state.liteMode ? 3 : 2;
+    // Отступы между паттернами (меньше для плотности)
+    const baseGapX = 2;
+    const baseGapY = 1;
     
     let result = "";
     for (let y = 0; y < rows; y += 1) {
-      // Смещение для шахматного порядка
-      const offset = y % 2 === 0 ? "" : " ".repeat(Math.floor(gapX * 0.3));
-      const line = Array(columns).fill(motif).join(" ".repeat(gapX - 1));
+      // Рандомное смещение для каждого ряда (фиксированное по seed)
+      const randomOffset = Math.floor(random() * 3);
+      const offset = " ".repeat(randomOffset + (y % 2 === 0 ? 0 : baseGapX));
+      
+      // Рандомные пробелы между паттернами
+      let line = "";
+      for (let x = 0; x < columns; x += 1) {
+        const gap = baseGapX + Math.floor(random() * 2);
+        line += motif + " ".repeat(gap);
+      }
       result += `${offset}${line}\n`;
     }
     backdrop.textContent = result;
