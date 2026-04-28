@@ -1,19 +1,7 @@
 const GH_USER = "sever4user";
 const GH_REPO = "lotuscomplex";
 
-const logsContent = {
-  ru: `> BOOT SEQUENCE: LOTUS COMPLEX > NODE: AUTHOR PROFILE INITIALIZED
-
-Я создаю аудиовизуальные миры на стыке музыки, 3D и narrative-эстетики.
-  кт LOTUS COMPLEX - это персональный архив звуков и артефактов
-> Вся информация на сайте предоставлена в ознакомительных целях
-
-Другие проекты:
-- sever4user // артсит, экспериментальная электроника
-https://band.link/sever4user
-
-> LOG STREAM READY`,
-  en: `> BOOT SEQUENCE: LOTUS COMPLEX > NODE: AUTHOR PROFILE INITIALIZED
+const logsContent = `> BOOT SEQUENCE: LOTUS COMPLEX > NODE: AUTHOR PROFILE INITIALIZED
 
 I create audio-visual worlds at the intersection of music, 3D and narrative aesthetics.
 LOTUS COMPLEX project is a personal archive of sounds and artifacts
@@ -23,8 +11,15 @@ Other projects:
 - sever4user // artsit, experimental electronics
 https://band.link/sever4user
 
-> LOG STREAM READY`
-};
+> LOG STREAM READY`;
+
+const contactsContent = `> SECURE CHANNEL OPEN
+
+MAIL: lotuscomplex@gmail.com
+INST: @lotuscomplex
+TG: @lotuscomplex
+
+> AWAITING NEW CONNECTION...`;
 
 const contactsContent = {
   ru: `> SECURE CHANNEL OPEN
@@ -51,8 +46,8 @@ const langToggle = document.getElementById("langToggle");
 const masterVolumeRange = document.getElementById("masterVolumeRange");
 
 let currentTyping = {
-  logs: { ru: 0, en: 0, animId: null },
-  contacts: { ru: 0, en: 0, animId: null }
+  logs: { text: 0, animId: null },
+  contacts: { text: 0, animId: null }
 };
 const AUDIO_TUNING = {
   masterDefault: 0.62,
@@ -78,7 +73,6 @@ const state = {
     music: false,
     visuals: false
   },
-  currentLang: "en",
   typedSections: {
     logs: false,
     contacts: false
@@ -213,7 +207,7 @@ function setTab(sectionId) {
   panels.forEach((panel) => {
     panel.classList.toggle("active", panel.id === sectionId);
   });
-  statusLine.textContent = `STATUS: ONLINE // SECTION: ${sectionId.toUpperCase()} // LANG: ${state.currentLang.toUpperCase()}`;
+  statusLine.textContent = `STATUS: ONLINE // SECTION: ${sectionId.toUpperCase()}`;
   playUiClick();
 
   // Печатаем текст ТОЛЬКО если он еще не был напечатан
@@ -231,89 +225,28 @@ function setTab(sectionId) {
   });
 }
 
-function toggleLanguage() {
-  state.currentLang = state.currentLang === "ru" ? "en" : "ru";
-  
-  // Обновляем текст кнопки
-  const langToggle = document.getElementById("langToggle");
-  if (langToggle) {
-    langToggle.textContent = `LANG: ${state.currentLang.toUpperCase()}`;
-  }
-  
-  // Обновляем видимость текста на активной панели
-  const activePanel = document.querySelector(".panel.active");
-  if (activePanel) {
-    const sectionId = activePanel.id;
-    const targetId = sectionId === "logs" ? "logsTypewriter" : (sectionId === "contacts" ? "contactsTypewriter" : null);
-    
-    if (targetId) {
-      const target = document.getElementById(targetId);
-      if (target) {
-        const ruSpan = target.querySelector('[data-lang="ru"]');
-        const enSpan = target.querySelector('[data-lang="en"]');
-        if (ruSpan) ruSpan.style.display = state.currentLang === "ru" ? "inline" : "none";
-        if (enSpan) enSpan.style.display = state.currentLang === "en" ? "inline" : "none";
-      }
-    }
-  }
-  
-  // Обновляем статус бар
-  const currentSection = document.querySelector(".tab.active")?.dataset.section || "logs";
-  statusLine.textContent = `STATUS: ONLINE // SECTION: ${currentSection.toUpperCase()} // LANG: ${state.currentLang.toUpperCase()}`;
-  playUiClick();
-}
-
 function enhanceInteractiveText(target) {
-  const ruSpan = target.querySelector('[data-lang="ru"]');
-  const enSpan = target.querySelector('[data-lang="en"]');
-  
-  if (ruSpan) {
-    const plain = ruSpan.textContent || "";
-    // Сначала ссылки
-    const withLinks = plain.replace(
-      /(https?:\/\/[^\s]+|(?:github\.com|t\.me|instagram\.com|band\.link)\/[^\s]+)/gi,
-      (match) => {
-        const href = match.startsWith("http") ? match : `https://${match}`;
-        return `<a class="inline-link" target="_blank" rel="noopener noreferrer" href="${href}">${match}</a>`;
-      }
-    );
-    // Затем email (копируется по клику)
-    const withEmail = withLinks.replace(
-      /([a-zA-Z0-9._-]+@[a-zA-Z0-9._-]+\.[a-zA-Z0-9._-]+)/g,
-      (match) => `<button type="button" class="copy-mention" data-copy="${match}">${match}</button>`
-    );
-    // Затем упоминания
-    const withMentions = withEmail.replace(
-      /(^|[\s(])(@[a-zA-Z0-9_а-яА-Я.-]+)/g,
-      (full, prefix, mention) =>
-        `${prefix}<button type="button" class="copy-mention" data-copy="${mention}">${mention}</button>`
-    );
-    ruSpan.innerHTML = withMentions;
-  }
-  
-  if (enSpan) {
-    const plain = enSpan.textContent || "";
-    // Сначала ссылки
-    const withLinks = plain.replace(
-      /(https?:\/\/[^\s]+|(?:github\.com|t\.me|instagram\.com|band\.link)\/[^\s]+)/gi,
-      (match) => {
-        const href = match.startsWith("http") ? match : `https://${match}`;
-        return `<a class="inline-link" target="_blank" rel="noopener noreferrer" href="${href}">${match}</a>`;
-      }
-    );
-    // Затем email (копируется по клику)
-    const withEmail = withLinks.replace(
-      /([a-zA-Z0-9._-]+@[a-zA-Z0-9._-]+\.[a-zA-Z0-9._-]+)/g,
-      (match) => `<button type="button" class="copy-mention" data-copy="${match}">${match}</button>`
-    );
-    // Затем упоминания
-    const withMentions = withEmail.replace(
-      /(^|[\s(])(@[a-zA-Z0-9_а-яА-Я.-]+)/g,
-      (full, prefix, mention) =>
-        `${prefix}<button type="button" class="copy-mention" data-copy="${mention}">${mention}</button>`
-    );
-    enSpan.innerHTML = withMentions;
-  }
+  const plain = target.textContent || "";
+  // Сначала ссылки
+  const withLinks = plain.replace(
+    /(https?:\/\/[^\s]+|(?:github\.com|t\.me|instagram\.com|band\.link)\/[^\s]+)/gi,
+    (match) => {
+      const href = match.startsWith("http") ? match : `https://${match}`;
+      return `<a class="inline-link" target="_blank" rel="noopener noreferrer" href="${href}">${match}</a>`;
+    }
+  );
+  // Затем email (копируется по клику)
+  const withEmail = withLinks.replace(
+    /([a-zA-Z0-9._-]+@[a-zA-Z0-9._-]+\.[a-zA-Z0-9._-]+)/g,
+    (match) => `<button type="button" class="copy-mention" data-copy="${match}">${match}</button>`
+  );
+  // Затем упоминания
+  const withMentions = withEmail.replace(
+    /(^|[\s(])(@[a-zA-Z0-9_а-яА-Я.-]+)/g,
+    (full, prefix, mention) =>
+      `${prefix}<button type="button" class="copy-mention" data-copy="${mention}">${mention}</button>`
+  );
+  target.innerHTML = withMentions;
 }
 
 function startTypewriter(targetId) {
@@ -321,39 +254,15 @@ function startTypewriter(targetId) {
   if (!target) return;
 
   const section = targetId === "logsTypewriter" ? "logs" : "contacts";
-  currentTyping[section].ru = 0;
-  currentTyping[section].en = 0;
+  currentTyping[section].text = 0;
 
-  // Создаём контейнеры для каждого языка без лишних пробелов
-  target.innerHTML = `<span data-lang="ru" class="lang-content"></span><span data-lang="en" class="lang-content"></span>`;
-
-  const langSpans = {
-    ru: target.querySelector('[data-lang="ru"]'),
-    en: target.querySelector('[data-lang="en"]')
-  };
-
-  const textRu = section === "logs" ? logsContent.ru : contactsContent.ru;
-  const textEn = section === "logs" ? logsContent.en : contactsContent.en;
+  const text = section === "logs" ? logsContent : contactsContent;
 
   const write = () => {
-    let shouldContinue = false;
-    
-    // Печатаем русский
-    if (currentTyping[section].ru < textRu.length) {
-      langSpans.ru.textContent = textRu.slice(0, currentTyping[section].ru + 1);
-      currentTyping[section].ru += 1;
-      shouldContinue = true;
-    }
-    
-    // Печатаем английский
-    if (currentTyping[section].en < textEn.length) {
-      langSpans.en.textContent = textEn.slice(0, currentTyping[section].en + 1);
-      currentTyping[section].en += 1;
-      shouldContinue = true;
-    }
-
-    if (shouldContinue) {
-      // Добавляем курсор
+    if (currentTyping[section].text < text.length) {
+      target.textContent = text.slice(0, currentTyping[section].text + 1);
+      currentTyping[section].text += 1;
+      
       let cursor = target.querySelector('.cursor');
       if (!cursor) {
         cursor = document.createElement('span');
@@ -362,17 +271,13 @@ function startTypewriter(targetId) {
       }
       currentTyping[section].animId = requestAnimationFrame(write);
     } else {
-      // Оба текста завершены
       enhanceInteractiveText(target);
       const cursor = target.querySelector('.cursor');
       if (cursor) cursor.style.display = 'none';
     }
   };
 
-  // Скрываем неактивный язык сразу
-  langSpans.ru.style.display = state.currentLang === "ru" ? "inline" : "none";
-  langSpans.en.style.display = state.currentLang === "en" ? "inline" : "none";
-  
+  target.innerHTML = '';
   write();
 }
 
@@ -754,10 +659,6 @@ sfxToggle.addEventListener("click", () => {
   playUiClick();
 });
 
-langToggle.addEventListener("click", () => {
-  toggleLanguage();
-});
-
 masterVolumeRange?.addEventListener("input", () => {
   updateSfxVolume(Number(masterVolumeRange.value));
 });
@@ -770,12 +671,6 @@ async function init() {
     masterVolumeRange.value = String(AUDIO_TUNING.masterDefault);
   }
   updateSfxVolume(AUDIO_TUNING.masterDefault);
-  
-  // Устанавливаем язык по умолчанию в UI
-  const langToggle = document.getElementById("langToggle");
-  if (langToggle) {
-    langToggle.textContent = `LANG: ${state.currentLang.toUpperCase()}`;
-  }
   
   setTab("logs");
   setupClipboardMentions();
