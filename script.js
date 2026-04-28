@@ -34,8 +34,8 @@ let currentTyping = {
 };
 const AUDIO_TUNING = {
   masterDefault: 0.62,
-  clickPeak: 0.044,     // Громкость UI-кликов (умножь на 2 чтобы увеличить)
-  humMasterGain: 2.88   // Громкость фонового шума (уменьши если слишком громко)
+  clickPeak: 0.1,     // Громкость UI-кликов (умножь на 2 чтобы увеличить)
+  humMasterGain: 3   // Громкость фонового шума (уменьши если слишком громко)
 };
 const mediaExtensions = {
   audio: [".mp3", ".ogg", ".wav", ".m4a"],
