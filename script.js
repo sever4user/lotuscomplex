@@ -231,6 +231,38 @@ function setTab(sectionId) {
   });
 }
 
+function toggleLanguage() {
+  state.currentLang = state.currentLang === "ru" ? "en" : "ru";
+  
+  // Обновляем текст кнопки
+  const langToggle = document.getElementById("langToggle");
+  if (langToggle) {
+    langToggle.textContent = `LANG: ${state.currentLang.toUpperCase()}`;
+  }
+  
+  // Обновляем видимость текста на активной панели
+  const activePanel = document.querySelector(".panel.active");
+  if (activePanel) {
+    const sectionId = activePanel.id;
+    const targetId = sectionId === "logs" ? "logsTypewriter" : (sectionId === "contacts" ? "contactsTypewriter" : null);
+    
+    if (targetId) {
+      const target = document.getElementById(targetId);
+      if (target) {
+        const ruSpan = target.querySelector('[data-lang="ru"]');
+        const enSpan = target.querySelector('[data-lang="en"]');
+        if (ruSpan) ruSpan.style.display = state.currentLang === "ru" ? "inline" : "none";
+        if (enSpan) enSpan.style.display = state.currentLang === "en" ? "inline" : "none";
+      }
+    }
+  }
+  
+  // Обновляем статус бар
+  const currentSection = document.querySelector(".tab.active")?.dataset.section || "logs";
+  statusLine.textContent = `STATUS: ONLINE // SECTION: ${currentSection.toUpperCase()} // LANG: ${state.currentLang.toUpperCase()}`;
+  playUiClick();
+}
+
 function enhanceInteractiveText(target) {
   const ruSpan = target.querySelector('[data-lang="ru"]');
   const enSpan = target.querySelector('[data-lang="en"]');
@@ -724,7 +756,6 @@ sfxToggle.addEventListener("click", () => {
 
 langToggle.addEventListener("click", () => {
   toggleLanguage();
-  langToggle.textContent = `LANG: ${state.currentLang.toUpperCase()}`;
 });
 
 masterVolumeRange?.addEventListener("input", () => {
@@ -741,7 +772,10 @@ async function init() {
   updateSfxVolume(AUDIO_TUNING.masterDefault);
   
   // Устанавливаем язык по умолчанию в UI
-  langToggle.textContent = `LANG: ${state.currentLang.toUpperCase()}`;
+  const langToggle = document.getElementById("langToggle");
+  if (langToggle) {
+    langToggle.textContent = `LANG: ${state.currentLang.toUpperCase()}`;
+  }
   
   setTab("logs");
   setupClipboardMentions();
