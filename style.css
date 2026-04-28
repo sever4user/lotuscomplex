@@ -45,15 +45,15 @@ body {
   margin: 0;
   z-index: 20;
   color: rgba(var(--ascii-rgb), 0.22);
-  text-shadow: 0 0 10px rgba(var(--ascii-rgb), 0.4);
-  font-size: clamp(0.9rem, 1.4vw, 1.4rem);
+  text-shadow: 0 0 10px rgba(var(--ascii-rgb), 0.6);
+  font-size: clamp(1.1rem, 1.8vw, 1.6rem);
   line-height: 1.35;
   pointer-events: none;
   white-space: pre;
   overflow: hidden;
   user-select: none;
   contain: layout style paint;
-  opacity: 0.55;
+  opacity: 0.65;
 }
 
 body.lite-mode .ascii-vines {
@@ -739,8 +739,8 @@ body.easter-sever {
   }
 
   .ascii-vines {
-    opacity: 0.45;
-    font-size: clamp(0.8rem, 1.2vw, 1.2rem);
+    opacity: 0.55;
+    font-size: clamp(1rem, 1.5vw, 1.4rem);
   }
 
   .visual-item {
@@ -751,35 +751,6 @@ body.easter-sever {
 body.lite-mode .scan-overlay,
 body.lite-mode .pulse-noise {
   display: none;
-}
-
-body.lite-mode .ascii-vines {
-  text-shadow: none;
-  transition: none;
-  opacity: 0.12;
-}
-
-body.lite-mode .page {
-  filter: none;
-}
-
-body.lite-mode .project-header {
-  backdrop-filter: none;
-}
-
-body.lite-mode h1,
-body.lite-mode .subtitle,
-body.lite-mode .terminal-text,
-body.lite-mode .tab {
-  text-shadow: none;
-}
-
-body.lite-mode .track-title {
-  text-shadow: none;
-}
-
-body.lite-mode .cursor {
-  box-shadow: none;
 }
 
 @media (prefers-reduced-motion: reduce) {

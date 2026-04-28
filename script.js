@@ -3,33 +3,43 @@ const GH_REPO = "lotuscomplex";
 
 const logsContent = {
   ru: `> BOOT SEQUENCE: LOTUS COMPLEX > NODE: AUTHOR PROFILE INITIALIZED
+
 Я создаю аудиовизуальные миры на стыке музыки, 3D и narrative-эстетики.
 Проект LOTUS COMPLEX - это персональный архив звуков и артефактов
 > Вся информация на сайте предоставлена в ознакомительных целях
+
 Другие проекты:
 - sever4user // артсит, экспериментальная электроника
 https://band.link/sever4user
+
 > LOG STREAM READY`,
   en: `> BOOT SEQUENCE: LOTUS COMPLEX > NODE: AUTHOR PROFILE INITIALIZED
+
 I create audio-visual worlds at the intersection of music, 3D and narrative aesthetics.
 LOTUS COMPLEX project is a personal archive of sounds and artifacts
 > All information on the site is for informational purposes only
+
 Other projects:
 - sever4user // artsit, experimental electronics
 https://band.link/sever4user
+
 > LOG STREAM READY`
 };
 
 const contactsContent = {
   ru: `> SECURE CHANNEL OPEN
+
 MAIL: lotuscomplex@gmail.com
 INST: @lotuscomplex
 TG: @lotuscomplex
+
 > AWAITING NEW CONNECTION...`,
   en: `> SECURE CHANNEL OPEN
+
 MAIL: lotuscomplex@gmail.com
 INST: @lotuscomplex
 TG: @lotuscomplex
+
 > AWAITING NEW CONNECTION...`
 };
 
@@ -81,6 +91,7 @@ function detectLiteMode() {
   const saveData = navigator.connection?.saveData === true;
   const reducedMotion = window.matchMedia?.("(prefers-reduced-motion: reduce)")?.matches === true;
   
+  // Только для очень слабых устройств
   return saveData || reducedMotion || memory <= 2 || cores <= 2;
 }
 
@@ -691,13 +702,6 @@ function setupAsciiVines() {
     buttercup: " --‹( ✿ )›-- "
   };
 
-  // Фиксированный seed для рандома чтобы паттерн не мигал при resize
-  let seed = 12345;
-  const random = () => {
-    seed = (seed * 9301 + 49297) % 233280;
-    return seed / 233280;
-  };
-
   const renderPattern = () => {
     const motif = document.body.classList.contains("easter-sever") ? motifs.buttercup : motifs.lotus;
     
@@ -715,22 +719,11 @@ function setupAsciiVines() {
     const columns = Math.ceil(window.innerWidth / patternWidth) + 2;
     const rows = Math.ceil(window.innerHeight / charHeight) + 2;
     
-    // Отступы между паттернами (меньше для плотности)
-    const baseGapX = 2;
-    const baseGapY = 1;
-    
     let result = "";
     for (let y = 0; y < rows; y += 1) {
-      // Рандомное смещение для каждого ряда (фиксированное по seed)
-      const randomOffset = Math.floor(random() * 3);
-      const offset = " ".repeat(randomOffset + (y % 2 === 0 ? 0 : baseGapX));
-      
-      // Рандомные пробелы между паттернами
-      let line = "";
-      for (let x = 0; x < columns; x += 1) {
-        const gap = baseGapX + Math.floor(random() * 2);
-        line += motif + " ".repeat(gap);
-      }
+      // Простое смещение: каждый второй ряд сдвинут
+      const offset = y % 2 === 0 ? "" : " ".repeat(3);
+      const line = Array(columns).fill(motif).join(" ".repeat(2));
       result += `${offset}${line}\n`;
     }
     backdrop.textContent = result;
