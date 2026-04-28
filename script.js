@@ -21,28 +21,10 @@ TG: @lotuscomplex
 
 > AWAITING NEW CONNECTION...`;
 
-const contactsContent = {
-  ru: `> SECURE CHANNEL OPEN
-
-MAIL: lotuscomplex@gmail.com
-INST: @lotuscomplex
-TG: @lotuscomplex
-
-> AWAITING NEW CONNECTION...`,
-  en: `> SECURE CHANNEL OPEN
-
-MAIL: lotuscomplex@gmail.com
-INST: @lotuscomplex
-TG: @lotuscomplex
-
-> AWAITING NEW CONNECTION...`
-};
-
 const tabButtons = [...document.querySelectorAll(".tab")];
 const panels = [...document.querySelectorAll(".panel")];
 const statusLine = document.getElementById("statusLine");
 const sfxToggle = document.getElementById("sfxToggle");
-const langToggle = document.getElementById("langToggle");
 const masterVolumeRange = document.getElementById("masterVolumeRange");
 
 let currentTyping = {
@@ -258,26 +240,26 @@ function startTypewriter(targetId) {
 
   const text = section === "logs" ? logsContent : contactsContent;
 
+  // Создаём курсор сразу
+  const cursor = document.createElement('span');
+  cursor.className = 'cursor';
+  target.appendChild(cursor);
+  
   const write = () => {
     if (currentTyping[section].text < text.length) {
+      // Сохраняем курсор
+      const currentCursor = target.querySelector('.cursor');
       target.textContent = text.slice(0, currentTyping[section].text + 1);
+      target.appendChild(currentCursor);
       currentTyping[section].text += 1;
-      
-      let cursor = target.querySelector('.cursor');
-      if (!cursor) {
-        cursor = document.createElement('span');
-        cursor.className = 'cursor';
-        target.appendChild(cursor);
-      }
       currentTyping[section].animId = requestAnimationFrame(write);
     } else {
       enhanceInteractiveText(target);
-      const cursor = target.querySelector('.cursor');
-      if (cursor) cursor.style.display = 'none';
+      const finalCursor = target.querySelector('.cursor');
+      if (finalCursor) finalCursor.style.display = 'none';
     }
   };
 
-  target.innerHTML = '';
   write();
 }
 
