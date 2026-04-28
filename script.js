@@ -341,23 +341,23 @@ function startTypewriter(targetId, text) {
   const textEn = section === "logs" ? logsContent.en : contactsContent.en;
 
   const write = () => {
-    let continue = false;
+    let shouldContinue = false;
     
     // Печатаем русский
     if (currentTyping[section].ru < textRu.length) {
       langSpans.ru.textContent = textRu.slice(0, currentTyping[section].ru + 1);
       currentTyping[section].ru += 1;
-      continue = true;
+      shouldContinue = true;
     }
     
     // Печатаем английский
     if (currentTyping[section].en < textEn.length) {
       langSpans.en.textContent = textEn.slice(0, currentTyping[section].en + 1);
       currentTyping[section].en += 1;
-      continue = true;
+      shouldContinue = true;
     }
 
-    if (continue) {
+    if (shouldContinue) {
       // Добавляем курсор
       let cursor = target.querySelector('.cursor');
       if (!cursor) {
