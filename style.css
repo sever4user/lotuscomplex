@@ -729,8 +729,8 @@ body.easter-sever {
   }
 
   .ascii-vines {
-    opacity: 0.8;
-    font-size: clamp(1.5rem, 3vw, 2rem) !important;
+    opacity: 0.8 !important;
+    font-size: clamp(1.3rem, 2vw, 1.5rem) !important;
     text-shadow: 0 0 12px rgba(var(--ascii-rgb), 0.7);
   }
 
