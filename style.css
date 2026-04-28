@@ -730,7 +730,7 @@ body.easter-sever {
 
   .ascii-vines {
     opacity: 0.8;
-    font-size: clamp(1.5rem, 2.5vw, 2rem);
+    font-size: clamp(1.5rem, 3vw, 2rem) !important;
     text-shadow: 0 0 12px rgba(var(--ascii-rgb), 0.7);
   }
 
