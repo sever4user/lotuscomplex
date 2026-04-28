@@ -1,7 +1,8 @@
 const GH_USER = "sever4user";
 const GH_REPO = "lotuscomplex";
 
-const logsContent = `> BOOT SEQUENCE: LOTUS COMPLEX > NODE: AUTHOR PROFILE INITIALIZED
+const logsContent = `> BOOT SEQUENCE: LOTUS COMPLEX 
+> NODE: AUTHOR PROFILE INITIALIZED
 
 I create audio-visual worlds at the intersection of music, 3D and narrative aesthetics.
 LOTUS COMPLEX project is a personal archive of sounds and artifacts
