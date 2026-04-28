@@ -249,28 +249,12 @@ function updateLanguageVisibility(sectionId) {
 function toggleLanguage() {
   state.currentLang = state.currentLang === "ru" ? "en" : "ru";
   
-  // Сбрасываем флаги печати для перепечатки текста
-  typed.logs[state.currentLang] = false;
-  typed.contacts[state.currentLang] = false;
-  
   const activePanel = document.querySelector(".panel.active");
   if (activePanel) {
     const sectionId = activePanel.id;
     updateLanguageVisibility(sectionId);
-    
-    // Если мы на вкладке logs или contacts - перепечатываем текст
-    if (sectionId === "logs" || sectionId === "contacts") {
-      const targetId = sectionId === "logs" ? "logsTypewriter" : "contactsTypewriter";
-      const target = document.getElementById(targetId);
-      if (target) {
-        // Очищаем и перепечатываем
-        const text = sectionId === "logs" ? logsContent[state.currentLang] : contactsContent[state.currentLang];
-        startTypewriter(targetId, text);
-        typed[sectionId][state.currentLang] = true;
-      }
-    }
   }
-  
+    
   const currentSection = document.querySelector(".tab.active")?.dataset.section || "logs";
   statusLine.textContent = `STATUS: ONLINE // SECTION: ${currentSection.toUpperCase()} // LANG: ${state.currentLang.toUpperCase()}`;
   playUiClick();
