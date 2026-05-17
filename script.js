@@ -23,10 +23,10 @@ TG: @sever4user
 
 // Soundtrack categories mapping to GitHub folders
 const soundtrackCategories = {
-  kletka: "soundtracks/kletka",
-  privet: "soundtracks/privet",
-  lights: "soundtracks/lights",
-  mystuff: "soundtracks/mystuff"
+  kletka: { name: "KLETKA", folder: "soundtracks/kletka" },
+  privet: { name: "PRIVET", folder: "soundtracks/privet" },
+  lights: { name: "AS THE LIGHTS FADE AWAY", folder: "soundtracks/lights" },
+  mystuff: { name: "MY STUFF", folder: "soundtracks/mystuff" }
 };
 
 // My own music releases (edit this array to add/remove releases)
@@ -48,9 +48,8 @@ const panels = [...document.querySelectorAll(".panel")];
 const statusLine = document.getElementById("statusLine");
 const sfxToggle = document.getElementById("sfxToggle");
 const masterVolumeRange = document.getElementById("masterVolumeRange");
-const musicTabsContainer = document.getElementById("musicTabs");
 const musicSubTabs = document.getElementById("musicTabs");
-const soundtrackTabs = document.getElementById("soundtrackTabs");
+const soundtrackDropdowns = document.getElementById("soundtrackDropdowns");
 
 let currentTyping = {
   logs: { text: 0, animId: null },
@@ -200,122 +199,10 @@ function updateHumState() {
 }
 
 async function ensureSectionLoaded(sectionId) {
-  if (sectionId === "music" && !state.loadedSections.music) {
-    state.loadedSections.music = true;
-    // Music загружается через loadMusicCategory
-  }
   if (sectionId === "visuals" && !state.loadedSections.visuals) {
     state.loadedSections.visuals = true;
     await renderVisuals();
   }
-}
-
-async function renderMusicInTarget(target, folder) {
-  const files = await resolveFiles(folder);
-
-  if (!files.length) {
-    target.innerHTML = `<p class="empty">No tracks found in ${folder} folder.</p>`;
-    return;
-  }
-
-  target.innerHTML = "";
-  state.players = [];
-
-  files.forEach((file, index) => {
-    const card = document.createElement("article");
-    card.className = "track";
-    card.innerHTML = `
-      <p class="track-title">${file.name}</p>
-      <div class="track-controls">
-        <div class="track-btns">
-          <button type="button" class="track-btn play-btn" aria-label="Play or pause"></button>
-          <button type="button" class="track-btn stop-btn" aria-label="Stop"></button>
-        </div>
-        <div class="seek-wrap">
-          <div class="seek-base"></div>
-          <div class="seek-progress"></div>
-          <input class="seek" type="range" min="0" max="100" step="0.01" value="0" aria-label="Track position">
-        </div>
-      </div>
-      <audio preload="metadata" controlslist="nodownload noplaybackrate" crossorigin="anonymous"></audio>
-    `;
-
-    const audio = card.querySelector("audio");
-    const playButton = card.querySelector(".play-btn");
-    const stopButton = card.querySelector(".stop-btn");
-    const seek = card.querySelector(".seek");
-    const progress = card.querySelector(".seek-progress");
-
-    audio.src = file.url;
-    audio.volume = state.masterVolume;
-
-    playButton.addEventListener("click", async () => {
-      playUiClick();
-      if (audio.paused) {
-        stopAllPlayers(index);
-        try {
-          await audio.play();
-          playButton.classList.add("is-playing");
-          preloadNextTrack(index);
-        } catch {
-          playButton.classList.remove("is-playing");
-        }
-      } else {
-        audio.pause();
-        playButton.classList.remove("is-playing");
-      }
-    });
-
-    stopButton.addEventListener("click", () => {
-      playUiClick();
-      audio.pause();
-      audio.currentTime = 0;
-      playButton.classList.remove("is-playing");
-      progress.style.width = "0%";
-      seek.value = "0";
-    });
-
-    seek.addEventListener("input", () => {
-      if (!Number.isFinite(audio.duration) || audio.duration <= 0) return;
-      audio.currentTime = Number(seek.value);
-      updateSeekVisual(seek, progress, audio);
-    });
-
-    audio.addEventListener("timeupdate", () => {
-      updateSeekDebounced(seek, progress, audio);
-      if (audio.currentTime > 2 && !audio.ended) preloadNextTrack(index);
-    });
-
-    audio.addEventListener("ended", () => {
-      playButton.classList.remove("is-playing");
-      state.activeMusicCount = Math.max(0, state.activeMusicCount - 1);
-      updateHumState();
-      
-      const next = state.players[index + 1];
-      if (next) {
-        stopAllPlayers(index + 1);
-        next.audio.play().then(() => {
-          next.playButton.classList.add("is-playing");
-        }).catch(() => {});
-        preloadNextTrack(index + 1);
-      }
-    });
-
-    audio.addEventListener("play", () => {
-      state.activeMusicCount = Math.max(0, state.activeMusicCount) + 1;
-      updateHumState();
-      playButton.classList.add("is-playing");
-    });
-
-    audio.addEventListener("pause", () => {
-      state.activeMusicCount = Math.max(0, state.activeMusicCount - 1);
-      updateHumState();
-      if (!audio.ended) playButton.classList.remove("is-playing");
-    });
-
-    target.appendChild(card);
-    state.players.push({ audio, playButton, preloaded: false });
-  });
 }
 
 function renderOwnMusic() {
@@ -363,11 +250,11 @@ function setTab(sectionId) {
   // Показываем подтабы для Music
   if (sectionId === "music") {
     musicSubTabs.style.display = "flex";
-    soundtrackTabs.style.display = "flex";
-    loadMusicCategory(state.currentMusicCategory);
+    renderSoundtrackDropdowns();
+    loadSoundtrackCategory("kletka");
   } else {
     musicSubTabs.style.display = "none";
-    soundtrackTabs.style.display = "none";
+    document.getElementById("soundtrackCategoryList").innerHTML = "";
   }
 
   if (sectionId === "logs" && !state.typedSections.logs) {
@@ -393,29 +280,155 @@ function loadMusicCategory(category) {
   state.currentMusicCategory = category;
   
   if (category === "soundtracks") {
-    soundtrackTabs.style.display = "flex";
     document.getElementById("soundtracksSection").style.display = "block";
     document.getElementById("ownMusicSection").style.display = "none";
-    loadSoundtrackCategory(state.currentSoundtrackCategory);
+    loadSoundtrackCategory("kletka");
   } else {
-    soundtrackTabs.style.display = "none";
     document.getElementById("soundtracksSection").style.display = "none";
     document.getElementById("ownMusicSection").style.display = "block";
     renderOwnMusic();
   }
 }
 
+function renderSoundtrackDropdowns() {
+  soundtrackDropdowns.innerHTML = "";
+  
+  Object.entries(soundtrackCategories).forEach(([key, { name, folder }]) => {
+    const dropdown = document.createElement("div");
+    dropdown.className = "soundtrack-dropdown";
+    dropdown.dataset.category = key;
+    
+    const header = document.createElement("button");
+    header.className = "dropdown-header";
+    header.innerHTML = `<span>[ ${name} ]</span>`;
+    
+    const content = document.createElement("div");
+    content.className = "dropdown-content";
+    const contentInner = document.createElement("div");
+    contentInner.className = "dropdown-content-inner";
+    contentInner.id = `tracks-${key}`;
+    content.appendChild(contentInner);
+    
+    header.addEventListener("click", async () => {
+      playUiClick();
+      const isOpen = header.classList.contains("active");
+      
+      // Закрыть все остальные
+      document.querySelectorAll(".dropdown-header").forEach(h => {
+        h.classList.remove("active");
+      });
+      document.querySelectorAll(".dropdown-content").forEach(c => {
+        c.classList.remove("open");
+      });
+      
+      if (!isOpen) {
+        header.classList.add("active");
+        content.classList.add("open");
+        
+        // Загрузить треки если ещё не загружены
+        if (!contentInner.dataset.loaded) {
+          const files = await resolveFiles(folder);
+          
+          if (!files.length) {
+            contentInner.innerHTML = `<p class="empty">No tracks found.</p>`;
+          } else {
+            contentInner.innerHTML = "";
+            const target = contentInner;
+            
+            files.forEach((file, index) => {
+              const card = document.createElement("article");
+              card.className = "track";
+              card.innerHTML = `
+                <p class="track-title">${file.name}</p>
+                <div class="track-controls">
+                  <div class="track-btns">
+                    <button type="button" class="track-btn play-btn" aria-label="Play or pause"></button>
+                    <button type="button" class="track-btn stop-btn" aria-label="Stop"></button>
+                  </div>
+                  <div class="seek-wrap">
+                    <div class="seek-base"></div>
+                    <div class="seek-progress"></div>
+                    <input class="seek" type="range" min="0" max="100" step="0.01" value="0" aria-label="Track position">
+                  </div>
+                </div>
+                <audio preload="metadata" controlslist="nodownload noplaybackrate" crossorigin="anonymous"></audio>
+              `;
+              
+              const audio = card.querySelector("audio");
+              const playButton = card.querySelector(".play-btn");
+              const stopButton = card.querySelector(".stop-btn");
+              const seek = card.querySelector(".seek");
+              const progress = card.querySelector(".seek-progress");
+              
+              audio.src = file.url;
+              audio.volume = state.masterVolume;
+              
+              playButton.addEventListener("click", async () => {
+                playUiClick();
+                if (audio.paused) {
+                  stopAllPlayers(-1);
+                  try {
+                    await audio.play();
+                    playButton.classList.add("is-playing");
+                  } catch {
+                    playButton.classList.remove("is-playing");
+                  }
+                } else {
+                  audio.pause();
+                  playButton.classList.remove("is-playing");
+                }
+              });
+              
+              stopButton.addEventListener("click", () => {
+                playUiClick();
+                audio.pause();
+                audio.currentTime = 0;
+                playButton.classList.remove("is-playing");
+                progress.style.width = "0%";
+                seek.value = "0";
+              });
+              
+              seek.addEventListener("input", () => {
+                if (!Number.isFinite(audio.duration) || audio.duration <= 0) return;
+                audio.currentTime = Number(seek.value);
+                updateSeekVisual(seek, progress, audio);
+              });
+              
+              audio.addEventListener("timeupdate", () => {
+                updateSeekDebounced(seek, progress, audio);
+              });
+              
+              audio.addEventListener("play", () => {
+                playButton.classList.add("is-playing");
+              });
+              
+              audio.addEventListener("pause", () => {
+                playButton.classList.remove("is-playing");
+              });
+              
+              target.appendChild(card);
+            });
+            
+            contentInner.dataset.loaded = "true";
+          }
+        }
+      }
+    });
+    
+    dropdown.appendChild(header);
+    dropdown.appendChild(content);
+    soundtrackDropdowns.appendChild(dropdown);
+  });
+}
+
 function loadSoundtrackCategory(category) {
   state.currentSoundtrackCategory = category;
-  const folder = soundtrackCategories[category];
-  const target = document.getElementById("soundtrackCategoryList");
   
-  // Обновляем активный таб
-  document.querySelectorAll(".soundtrack-tab").forEach(tab => {
-    tab.classList.toggle("active", tab.dataset.category === category);
-  });
-  
-  renderMusicInTarget(target, folder);
+  // Открыть соответствующий dropdown
+  const header = document.querySelector(`.dropdown-header[data-category="${category}"]`);
+  if (header) {
+    header.click();
+  }
 }
 
 function enhanceInteractiveText(target) {
@@ -468,7 +481,7 @@ function startTypewriter(targetId) {
       if (finalCursor) finalCursor.style.display = 'none';
     }
   };
-  
+
   write();
 }
 
@@ -732,16 +745,6 @@ if (musicSubTabs) {
       document.querySelectorAll(".music-tab").forEach(t => t.classList.remove("active"));
       tab.classList.add("active");
       loadMusicCategory(tab.dataset.category);
-    });
-  });
-}
-
-// Soundtrack sub-tabs
-if (soundtrackTabs) {
-  soundtrackTabs.querySelectorAll(".soundtrack-tab").forEach(tab => {
-    tab.addEventListener("click", () => {
-      playUiClick();
-      loadSoundtrackCategory(tab.dataset.category);
     });
   });
 }
