@@ -24,6 +24,7 @@ body {
   min-height: 100vh;
   overflow-x: hidden;
   position: relative;
+  background: linear-gradient(180deg, rgba(0,0,0,0.8) 0%, rgba(13,17,23,1) 30%);
 }
 
 /* ASCII Background */
@@ -100,23 +101,36 @@ body {
 .project-header {
   text-align: center;
   margin-bottom: 2rem;
-  padding: 2rem 0;
+  padding: 2rem 0 3rem 0;
   border-bottom: 1px solid var(--border);
+  position: relative;
+}
+
+.project-header::after {
+  content: '';
+  position: absolute;
+  bottom: -1px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 200px;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, var(--primary), transparent);
 }
 
 .project-header h1 {
-  font-size: clamp(2rem, 5vw, 3.5rem);
+  font-size: clamp(2.5rem, 6vw, 4rem);
   color: var(--primary);
   text-shadow: 0 0 20px rgba(var(--primary-rgb), 0.6), 0 0 30px rgba(var(--accent-rgb), 0.4);
   margin-bottom: 0.5rem;
-  letter-spacing: 0.1em;
+  letter-spacing: 0.02em;
 }
 
 .project-header .subtitle {
-  font-size: clamp(0.8rem, 2vw, 1rem);
+  font-size: clamp(0.85rem, 2vw, 1.1rem);
   color: var(--accent);
   text-shadow: 0 0 8px rgba(var(--accent-rgb), 0.5);
-  letter-spacing: 0.15em;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
 }
 
 /* Tabs Navigation */
@@ -154,14 +168,60 @@ body {
   text-shadow: 0 0 12px rgba(var(--primary-rgb), 0.6);
 }
 
-/* Status Line */
+/* Music Sub-tabs */
+.music-sub-tabs,
+.soundtrack-sub-tabs {
+  display: flex;
+  justify-content: center;
+  gap: 0.5rem;
+  margin-bottom: 1rem;
+  flex-wrap: wrap;
+}
+
+.music-tab,
+.soundtrack-tab {
+  background: transparent;
+  border: 1px solid var(--border);
+  color: var(--text);
+  padding: 0.5rem 1rem;
+  cursor: pointer;
+  font-family: inherit;
+  font-size: 0.8rem;
+  transition: all 0.2s ease;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+}
+
+.music-tab:hover,
+.soundtrack-tab:hover {
+  border-color: var(--primary);
+  color: var(--primary);
+  text-shadow: 0 0 8px rgba(var(--primary-rgb), 0.5);
+}
+
+.music-tab.active,
+.soundtrack-tab.active {
+  background: rgba(var(--primary-rgb), 0.15);
+  border-color: var(--primary);
+  color: var(--primary);
+  text-shadow: 0 0 10px rgba(var(--primary-rgb), 0.6);
+}
+
+/* Status Line - FIXED STICKY HEADER */
 .status-wrap {
+  position: sticky;
+  top: 0;
+  z-index: 100;
   display: flex;
   justify-content: space-between;
   align-items: center;
   margin-bottom: 1.5rem;
   flex-wrap: wrap;
   gap: 1rem;
+  background: rgba(13, 17, 23, 0.95);
+  backdrop-filter: blur(10px);
+  padding: 1rem;
+  border-bottom: 1px solid var(--border);
 }
 
 .status-line {
@@ -198,6 +258,7 @@ body {
 
 .master-volume-shell {
   position: relative;
+  display: inline-block;
 }
 
 .master-volume-btn {
@@ -206,22 +267,57 @@ body {
 
 .master-volume-pop {
   position: absolute;
-  top: 100%;
+  top: 120%;
   right: 0;
-  background: var(--highlight);
+  background: rgba(31, 41, 55, 0.98);
   border: 1px solid var(--border);
   padding: 1rem;
   display: none;
   z-index: 100;
   min-width: 150px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.5);
 }
 
 .master-volume-shell:hover .master-volume-pop {
   display: block;
 }
 
+/* Custom Volume Range Slider */
 .volume-range {
-  width: 100%;
+  -webkit-appearance: none;
+  appearance: none;
+  width: 120px;
+  height: 4px;
+  background: var(--border);
+  border-radius: 2px;
+  outline: none;
+}
+
+.volume-range::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 14px;
+  height: 14px;
+  background: var(--primary);
+  border-radius: 50%;
+  cursor: pointer;
+  box-shadow: 0 0 8px rgba(var(--primary-rgb), 0.8);
+  transition: all 0.2s ease;
+}
+
+.volume-range::-webkit-slider-thumb:hover {
+  transform: scale(1.2);
+  box-shadow: 0 0 12px rgba(var(--primary-rgb), 1);
+}
+
+.volume-range::-moz-range-thumb {
+  width: 14px;
+  height: 14px;
+  background: var(--primary);
+  border-radius: 50%;
+  cursor: pointer;
+  border: none;
+  box-shadow: 0 0 8px rgba(var(--primary-rgb), 0.8);
 }
 
 /* Panels */
@@ -229,9 +325,11 @@ body {
   display: none;
   min-height: 400px;
   padding: 2rem;
-  background: rgba(var(--highlight), 0.5);
+  background: rgba(13, 17, 23, 0.85);
+  backdrop-filter: blur(5px);
   border: 1px solid var(--border);
   animation: fadeIn 0.3s ease;
+  box-shadow: 0 4px 30px rgba(0, 0, 0, 0.4);
 }
 
 .panel.active {
@@ -307,15 +405,17 @@ body {
 }
 
 .track {
-  background: rgba(var(--highlight), 0.7);
+  background: rgba(13, 17, 23, 0.8);
+  backdrop-filter: blur(5px);
   border: 1px solid var(--border);
   padding: 1.5rem;
   transition: all 0.2s ease;
+  box-shadow: 0 2px 15px rgba(0, 0, 0, 0.3);
 }
 
 .track:hover {
   border-color: var(--primary);
-  box-shadow: 0 0 20px rgba(var(--primary-rgb), 0.2);
+  box-shadow: 0 4px 25px rgba(var(--primary-rgb), 0.2);
 }
 
 .track-title {
@@ -346,6 +446,7 @@ body {
   font-size: 0.8rem;
   transition: all 0.2s ease;
   text-transform: uppercase;
+  min-width: 80px;
 }
 
 .track-btn:hover {
@@ -358,6 +459,16 @@ body {
   border-color: var(--primary);
   color: var(--primary);
   text-shadow: 0 0 8px rgba(var(--primary-rgb), 0.5);
+}
+
+.play-btn::before {
+  content: '▶';
+  margin-right: 4px;
+}
+
+.stop-btn::before {
+  content: '■';
+  margin-right: 4px;
 }
 
 .seek-wrap {
@@ -454,6 +565,114 @@ body {
   padding: 3rem;
 }
 
+/* Own Music Grid */
+.own-music-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 1.5rem;
+}
+
+.own-music-card {
+  background: rgba(13, 17, 23, 0.85);
+  backdrop-filter: blur(5px);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  overflow: hidden;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+}
+
+.own-music-card:hover {
+  border-color: var(--primary);
+  transform: translateY(-5px);
+  box-shadow: 0 8px 30px rgba(var(--primary-rgb), 0.25);
+}
+
+.own-music-cover {
+  width: 100%;
+  aspect-ratio: 1;
+  overflow: hidden;
+  background: var(--highlight);
+}
+
+.own-music-cover img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 0.3s ease;
+}
+
+.own-music-card:hover .own-music-cover img {
+  transform: scale(1.05);
+}
+
+.own-music-info {
+  padding: 1.25rem;
+}
+
+.own-music-title {
+  color: var(--primary);
+  font-size: 1.1rem;
+  margin-bottom: 0.75rem;
+  text-shadow: 0 0 8px rgba(var(--primary-rgb), 0.5);
+  font-weight: 600;
+}
+
+.own-music-links {
+  display: flex;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+}
+
+.release-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  background: transparent;
+  border: 1px solid var(--border);
+  color: var(--text);
+  padding: 0.5rem 0.85rem;
+  cursor: pointer;
+  font-family: inherit;
+  font-size: 0.75rem;
+  text-decoration: none;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  transition: all 0.2s ease;
+  border-radius: 4px;
+}
+
+.release-link:hover {
+  border-color: var(--primary);
+  color: var(--primary);
+  background: rgba(var(--primary-rgb), 0.1);
+  text-shadow: 0 0 8px rgba(var(--primary-rgb), 0.4);
+}
+
+.release-link.spotify:hover {
+  border-color: #1db954;
+  color: #1db954;
+  background: rgba(29, 185, 84, 0.1);
+}
+
+.release-link.apple:hover {
+  border-color: #fa2d48;
+  color: #fa2d48;
+  background: rgba(250, 45, 72, 0.1);
+}
+
+.release-link.youtube:hover {
+  border-color: #ff0000;
+  color: #ff0000;
+  background: rgba(255, 0, 0, 0.1);
+}
+
+.release-link.bandcamp:hover {
+  border-color: #629aa9;
+  color: #629aa9;
+  background: rgba(98, 154, 169, 0.1);
+}
+
 /* Lightbox */
 .lightbox {
   position: fixed;
@@ -518,16 +737,55 @@ body {
     font-size: 0.8rem;
   }
 
+  .music-sub-tabs,
+  .soundtrack-sub-tabs {
+    gap: 0.25rem;
+    margin-bottom: 0.75rem;
+  }
+
+  .music-tab,
+  .soundtrack-tab {
+    padding: 0.4rem 0.75rem;
+    font-size: 0.7rem;
+  }
+
   .status-wrap {
-    flex-direction: column;
-    align-items: flex-start;
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    z-index: 1000;
+    flex-direction: row;
+    align-items: center;
+    padding: 0.75rem 1rem;
+    margin-bottom: 0;
+  }
+
+  .status-line {
+    font-size: 0.7rem;
+    flex: 1;
+  }
+
+  .master-volume-pop {
+    position: fixed;
+    top: 100%;
+    right: 1rem;
   }
 
   .panel {
     padding: 1rem;
+    margin-top: 3.5rem;
   }
 
   .visual-grid {
     grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+  }
+
+  .own-music-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .project-header {
+    padding: 3rem 0 2rem 0;
   }
 }

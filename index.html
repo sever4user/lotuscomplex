@@ -29,6 +29,20 @@
       <button class="tab" data-section="contacts">[ CONTACTS ]</button>
     </nav>
 
+    <!-- Music Sub-tabs -->
+    <nav id="musicTabs" class="music-sub-tabs" aria-label="Music categories" style="display: none;">
+      <button class="music-tab active" data-category="soundtracks">[ SOUNDTRACKS ]</button>
+      <button class="music-tab" data-category="own">[ MY OWN MUSIC ]</button>
+    </nav>
+
+    <!-- Soundtracks Sub-categories -->
+    <nav id="soundtrackTabs" class="soundtrack-sub-tabs" aria-label="Soundtrack categories" style="display: none;">
+      <button class="soundtrack-tab active" data-category="kletka">[ KLETKA ]</button>
+      <button class="soundtrack-tab" data-category="privet">[ PRIVET ]</button>
+      <button class="soundtrack-tab" data-category="lights">[ AS THE LIGHTS FADE AWAY ]</button>
+      <button class="soundtrack-tab" data-category="mystuff">[ MY STUFF ]</button>
+    </nav>
+
     <div class="status-wrap">
       <p id="statusLine" class="status-line">STATUS: ONLINE // SECTION: LOGS</p>
       <div class="master-volume-shell">
@@ -48,7 +62,17 @@
       </section>
 
       <section id="music" class="panel">
-        <div id="musicList" class="music-list"></div>
+        <div id="musicTabsContainer">
+          <!-- Soundtracks Section -->
+          <div id="soundtracksSection">
+            <div id="soundtrackCategoryList" class="music-list"></div>
+          </div>
+          
+          <!-- My Own Music Section -->
+          <div id="ownMusicSection" style="display: none;">
+            <div id="ownMusicGrid" class="own-music-grid"></div>
+          </div>
+        </div>
       </section>
 
       <section id="visuals" class="panel">
