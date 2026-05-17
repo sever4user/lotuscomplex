@@ -1,11 +1,10 @@
 const GH_USER = "sever4user";
-const GH_REPO = "lotuscomplex";
+const GH_REPO = "sever4user";
 
-const logsContent = `> BOOT SEQUENCE: LOTUS COMPLEX 
-> NODE: AUTHOR PROFILE INITIALIZED
+const logsContent = `> BOOT SEQUENCE: sever4user // NODE: ARTIST PROFILE INITIALIZED
 
 I create audio-visual worlds at the intersection of music, 3D and narrative aesthetics.
-LOTUS COMPLEX project is a personal archive of sounds and artifacts
+sever4user is a personal archive of sounds and experimental electronic artifacts.
 > All information on the site is for informational purposes only
 
 Other projects:
@@ -16,9 +15,9 @@ https://band.link/sever4user
 
 const contactsContent = `> SECURE CHANNEL OPEN
 
-MAIL: 1o7uscomp13x@gmail.com
-INST: @1o7uscomp13x
-TG: @lotuscomplex
+MAIL: sever4user@gmail.com
+INST: @sever4user
+TG: @sever4user
 
 > AWAITING NEW CONNECTION...`;
 
@@ -32,11 +31,13 @@ let currentTyping = {
   logs: { text: 0, animId: null },
   contacts: { text: 0, animId: null }
 };
+
 const AUDIO_TUNING = {
   masterDefault: 0.62,
-  clickPeak: 0.1,     // Громкость UI-кликов (умножь на 2 чтобы увеличить)
-  humMasterGain: 3   // Громкость фонового шума (уменьши если слишком громко)
+  clickPeak: 0.044,
+  humMasterGain: 2.88
 };
+
 const mediaExtensions = {
   audio: [".mp3", ".ogg", ".wav", ".m4a"],
   visuals: [".png", ".jpg", ".jpeg", ".webp", ".gif", ".avif"]
@@ -68,7 +69,6 @@ function detectLiteMode() {
   const saveData = navigator.connection?.saveData === true;
   const reducedMotion = window.matchMedia?.("(prefers-reduced-motion: reduce)")?.matches === true;
   
-  // Только для очень слабых устройств
   return saveData || reducedMotion || memory <= 2 || cores <= 2;
 }
 
@@ -193,7 +193,6 @@ function setTab(sectionId) {
   statusLine.textContent = `STATUS: ONLINE // SECTION: ${sectionId.toUpperCase()}`;
   playUiClick();
 
-  // Печатаем текст ТОЛЬКО если он еще не был напечатан
   if (sectionId === "logs" && !state.typedSections.logs) {
     state.typedSections.logs = true;
     startTypewriter("logsTypewriter");
@@ -210,7 +209,7 @@ function setTab(sectionId) {
 
 function enhanceInteractiveText(target) {
   const plain = target.textContent || "";
-  // Сначала ссылки
+  
   const withLinks = plain.replace(
     /(https?:\/\/[^\s]+|(?:github\.com|t\.me|instagram\.com|band\.link)\/[^\s]+)/gi,
     (match) => {
@@ -218,14 +217,14 @@ function enhanceInteractiveText(target) {
       return `<a class="inline-link" target="_blank" rel="noopener noreferrer" href="${href}">${match}</a>`;
     }
   );
-  // Затем email (копируется по клику)
+  
   const withEmail = withLinks.replace(
     /([a-zA-Z0-9._-]+@[a-zA-Z0-9._-]+\.[a-zA-Z0-9._-]+)/g,
     (match) => `<button type="button" class="copy-mention" data-copy="${match}">${match}</button>`
   );
-  // Затем упоминания
+  
   const withMentions = withEmail.replace(
-    /(^|[\s(])(@[a-zA-Z0-9_а-яА-Я.-]+)/g,
+    /(^|[\s(])(@[a-zA-Z0-9_.-]+)/g,
     (full, prefix, mention) =>
       `${prefix}<button type="button" class="copy-mention" data-copy="${mention}">${mention}</button>`
   );
@@ -241,14 +240,12 @@ function startTypewriter(targetId) {
 
   const text = section === "logs" ? logsContent : contactsContent;
 
-  // Создаём курсор сразу
   const cursor = document.createElement('span');
   cursor.className = 'cursor';
   target.appendChild(cursor);
   
   const write = () => {
     if (currentTyping[section].text < text.length) {
-      // Сохраняем курсор
       const currentCursor = target.querySelector('.cursor');
       target.textContent = text.slice(0, currentTyping[section].text + 1);
       target.appendChild(currentCursor);
@@ -260,17 +257,13 @@ function startTypewriter(targetId) {
       if (finalCursor) finalCursor.style.display = 'none';
     }
   };
-
+  
   write();
 }
 
 function extensionMatch(fileName, allowed) {
   const lower = fileName.toLowerCase();
   return allowed.some((ext) => lower.endsWith(ext));
-}
-
-function formatTrackName(fileName) {
-  return fileName.replace(/\.[^/.]+$/, "").replace(/[_-]+/g, " ").trim();
 }
 
 async function listRepoFolderByApi(folder) {
@@ -346,7 +339,7 @@ async function renderMusic() {
   const files = await resolveFiles("audio");
 
   if (!files.length) {
-    renderEmpty(musicList, "Треки не найдены в папке audio репозитория.");
+    renderEmpty(musicList, "Tracks not found in audio folder.");
     return;
   }
 
@@ -484,7 +477,7 @@ async function renderVisuals() {
   const openLightbox = configureLightbox();
 
   if (!files.length) {
-    renderEmpty(visualGrid, "Изображения не найдены в папке visuals репозитория.");
+    renderEmpty(visualGrid, "Images not found in visuals folder.");
     return;
   }
 
@@ -590,23 +583,16 @@ function setupAsciiVines() {
   const renderPattern = () => {
     const motif = document.body.classList.contains("easter-sever") ? motifs.buttercup : motifs.lotus;
     
-    // Размер шрифта в пикселях (одинаковый для всех устройств)
     const fontPx = Math.max(14, Math.min(18, window.innerWidth * 0.022));
-    
-    // Ширина одного символа примерно 0.6 от размера шрифта
     const charWidth = fontPx * 0.6;
     const charHeight = fontPx * 1.35;
-    
-    // Длина паттерна в пикселях
     const patternWidth = motif.length * charWidth;
     
-    // Вычисляем количество столбцов и строк для заполнения экрана
     const columns = Math.ceil(window.innerWidth / patternWidth) + 2;
     const rows = Math.ceil(window.innerHeight / charHeight) + 2;
     
     let result = "";
     for (let y = 0; y < rows; y += 1) {
-      // Простое смещение: каждый второй ряд сдвинут
       const offset = y % 2 === 0 ? "" : " ".repeat(3);
       const line = Array(columns).fill(motif).join(" ".repeat(2));
       result += `${offset}${line}\n`;
@@ -617,7 +603,6 @@ function setupAsciiVines() {
   state.rerenderAscii = renderPattern;
   renderPattern();
 
-  // Только resize, без анимации
   let resizeRaf = null;
   let resizeTimeout = null;
   window.addEventListener("resize", () => {
