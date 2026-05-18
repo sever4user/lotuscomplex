@@ -33,12 +33,8 @@ const soundtrackCategories = {
 const ownMusicReleases = [
   {
     title: "Release Title Example",
-    cover: "visuals/covers/release1.jpg",
-    links: [
-      { platform: "spotify", label: "Spotify", url: "https://open.spotify.com/..." },
-      { platform: "apple", label: "Apple Music", url: "https://music.apple.com/..." },
-      { platform: "youtube", label: "YouTube", url: "https://youtube.com/..." }
-    ]
+    cover: "covers/cover1.jpg",
+    streamingUrl: "https://..." // Spotify/Apple Music/YouTube link
   }
   // Add more releases here
 ];
@@ -219,17 +215,13 @@ function renderOwnMusic() {
     const card = document.createElement("article");
     card.className = "own-music-card";
     
-    const linksHtml = release.links.map(link => 
-      `<a class="release-link ${link.platform}" href="${link.url}" target="_blank" rel="noopener noreferrer">${link.label}</a>`
-    ).join("");
-    
     card.innerHTML = `
       <div class="own-music-cover">
         <img src="${release.cover}" alt="${release.title}" loading="lazy">
       </div>
       <div class="own-music-info">
         <h3 class="own-music-title">${release.title}</h3>
-        <div class="own-music-links">${linksHtml}</div>
+        <a class="release-link streaming" href="${release.streamingUrl}" target="_blank" rel="noopener noreferrer">STREAMINGS</a>
       </div>
     `;
     
@@ -312,11 +304,12 @@ function renderSoundtrackDropdowns() {
     header.addEventListener("click", async () => {
       playUiClick();
       const isOpen = header.classList.contains("active");
+      const categoryName = name;
       
       // Закрыть все остальные
       document.querySelectorAll(".dropdown-header").forEach(h => {
         h.classList.remove("active");
-        h.innerHTML = `<span>[ ${name} ]</span>`;
+        h.innerHTML = h.querySelector("span").textContent.replace("▼", "▶").replace("▲", "▼");
       });
       document.querySelectorAll(".dropdown-content").forEach(c => {
         c.classList.remove("open");
@@ -324,7 +317,7 @@ function renderSoundtrackDropdowns() {
       
       if (!isOpen) {
         header.classList.add("active");
-        header.innerHTML = `<span>[ ▼ ${name} ]</span>`;
+        header.innerHTML = `<span>[ ▼ ${categoryName} ]</span>`;
         content.classList.add("open");
         
         // Загрузить треки если ещё не загружены
@@ -368,7 +361,7 @@ function renderSoundtrackDropdowns() {
               playButton.addEventListener("click", async () => {
                 playUiClick();
                 if (audio.paused) {
-                  stopAllPlayers(-1);
+                  stopAllPlayers(-1); // Остановить все треки
                   try {
                     await audio.play();
                     playButton.classList.add("is-playing");
@@ -508,8 +501,10 @@ async function listRepoFolderByApi(folder) {
 
 async function resolveFiles(folder) {
   const files = await listRepoFolderByApi(folder);
-  // Для папок soundtracks используем аудио расширения
-  const allowedExtensions = mediaExtensions.audio;
+  // Для папок visuals используем визуальные расширения, для остальных - аудио
+  const allowedExtensions = folder.startsWith("visuals") 
+    ? mediaExtensions.visuals 
+    : mediaExtensions.audio;
   return files.filter((file) => extensionMatch(file.name, allowedExtensions));
 }
 
@@ -775,3 +770,78 @@ async function init() {
 }
 
 init();
+
+/*
+================================================================================
+                          USER GUIDE / ИНСТРУКЦИЯ
+================================================================================
+
+HOW TO ADD NEW SOUNDTRACK CATEGORIES / КАК ДОБАВИТЬ НОВУЮ КАТЕГОРИЮ ТРЕКОВ:
+
+1. Open script.js and find this section (around line 16):
+   const soundtrackCategories = {
+     kletka: { name: "KLETKA", folder: "soundtracks/kletka" },
+     privet: { name: "PRIVET", folder: "soundtracks/privet" },
+     lights: { name: "AS THE LIGHTS FADE AWAY", folder: "soundtracks/lights" },
+     mystuff: { name: "MY STUFF", folder: "soundtracks/mystuff" }
+   };
+
+2. Add a new line following this format:
+   categoryKey: { name: "DISPLAY NAME", folder: "soundtracks/folder-name" },
+
+3. Create the folder in your GitHub repository:
+   soundtracks/
+   └── your-folder-name/
+
+4. Upload your .mp3, .ogg, .wav, or .m4a files to that folder
+
+5. Commit and push to GitHub - site will auto-update
+
+
+HOW TO ADD TRACKS TO "MY OWN MUSIC" / КАК ДОБАВИТЬ РЕЛИЗ:
+
+1. Create a "covers" folder in your repository root (separate from visuals)
+   covers/
+   └── your-cover-art.jpg
+
+2. Open script.js and find this section (around line 25):
+   const ownMusicReleases = [
+     {
+       title: "Release Title Example",
+       cover: "covers/cover1.jpg",
+       streamingUrl: "https://..."
+     }
+   ];
+
+3. Add a new release following this format:
+   {
+     title: "Your Track/Album Name",
+     cover: "covers/your-cover.jpg",
+     streamingUrl: "https://open.spotify.com/..." (or any streaming link)
+   },
+
+4. Upload your cover art (square image recommended) to the covers folder
+
+5. Commit and push to GitHub - site will auto-update
+
+
+FOLDER STRUCTURE / СТРУКТУРА ПАПОК:
+
+sever4user/
+├── soundtracks/
+│   ├── kletka/
+│   │   ├── track1.mp3
+│   │   └── track2.mp3
+│   ├── privet/
+│   ├── lights/
+│   └── mystuff/
+├── covers/                    (NEW - for release covers)
+│   ├── cover1.jpg
+│   └── cover2.jpg
+├── visuals/                   (for artwork/images)
+│   └── ...
+└── audio/                     (legacy - not used now)
+    └── ...
+
+================================================================================
+*/
