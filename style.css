@@ -329,22 +329,27 @@ body {
 .master-volume-pop {
   position: absolute;
   top: 110%;
-  right: 0;
+  left: 0;
   background: rgba(13, 17, 23, 0.98) !important;
   border: 1px solid var(--border);
   padding: 1.25rem 0.75rem 0.75rem 0.75rem !important;
   display: none;
   z-index: 100;
-  min-width: 180px;
+  min-width: 150px !important;
   box-shadow: 0 4px 20px rgba(0, 0, 0, 0.5);
+  transition: opacity 0.2s ease, visibility 0.2s ease;
 }
 
 .master-volume-shell:hover .master-volume-pop {
   display: block !important;
+  opacity: 1;
+  visibility: visible;
 }
 
 .master-volume-pop:hover {
   display: block !important;
+  opacity: 1;
+  visibility: visible;
 }
 
 /* Volume Slider - minimalist terminal style */
@@ -369,6 +374,7 @@ body {
   background: var(--primary) !important;
   cursor: pointer !important;
   border: none !important;
+  border-radius: 0 !important;
   box-shadow: 0 0 6px rgba(var(--primary-rgb), 0.8) !important;
 }
 
@@ -391,6 +397,7 @@ body {
   background: var(--primary) !important;
   cursor: pointer !important;
   border: none !important;
+  border-radius: 0 !important;
   box-shadow: 0 0 6px rgba(var(--primary-rgb), 0.8) !important;
 }
 
@@ -456,44 +463,6 @@ body {
 
 .master-volume-shell:hover .master-volume-pop {
   display: block;
-}
-
-/* Custom Volume Range Slider */
-.volume-range {
-  -webkit-appearance: none;
-  appearance: none;
-  width: 120px;
-  height: 4px;
-  background: var(--border);
-  border-radius: 2px;
-  outline: none;
-}
-
-.volume-range::-webkit-slider-thumb {
-  -webkit-appearance: none;
-  appearance: none;
-  width: 14px;
-  height: 14px;
-  background: var(--primary);
-  border-radius: 50%;
-  cursor: pointer;
-  box-shadow: 0 0 8px rgba(var(--primary-rgb), 0.8);
-  transition: all 0.2s ease;
-}
-
-.volume-range::-webkit-slider-thumb:hover {
-  transform: scale(1.2);
-  box-shadow: 0 0 12px rgba(var(--primary-rgb), 1);
-}
-
-.volume-range::-moz-range-thumb {
-  width: 14px;
-  height: 14px;
-  background: var(--primary);
-  border-radius: 50%;
-  cursor: pointer;
-  border: none;
-  box-shadow: 0 0 8px rgba(var(--primary-rgb), 0.8);
 }
 
 /* Panels */
