@@ -1,5 +1,6 @@
 const GH_USER = "sever4user";
 const GH_REPO = "sever4user";
+
 const logsContent = `> BOOT SEQUENCE: sever4user // NODE: ARTIST PROFILE INITIALIZED
 I create audio-visual worlds at the intersection of music, 3D and narrative aesthetics.
 sever4user is a personal archive of sounds and experimental electronic artifacts.
@@ -8,25 +9,23 @@ Other projects:
 sever4user // artsit, experimental electronics
 https://band.link/sever4user
 LOG STREAM READY`;
+
 const contactsContent = `> SECURE CHANNEL OPEN
 MAIL: sever4user@gmail.com
 INST: @sever4user
 TG: @sever4user
 AWAITING NEW CONNECTION...`;
 
+// Чистые названия папок без пробелов
 const soundtrackCategories = {
   kletka: { name: "KLETKA", folder: "soundtracks/kletka" },
-  privet: { name: "PRIVET", folder: "soundtracks/privet" },
+  privet: { name: "PRIVET ETO NE BOL'NO", folder: "soundtracks/privet" },
   lights: { name: "AS THE LIGHTS FADE AWAY", folder: "soundtracks/lights" },
   mystuff: { name: "MY STUFF", folder: "soundtracks/mystuff" }
 };
 
 const ownMusicReleases = [
-  {
-    title: "Release Title Example",
-    cover: "covers/cover1.jpg",
-    streamingUrl: "https://..."
-  }
+  { title: "sever4user / Sib The Maid - cigarettes after cigarettes", cover: "covers/cigarettes after cigarettes.png", streamingUrl: "https://bandlink.com/" }
 ];
 
 const tabButtons = [...document.querySelectorAll(".tab")];
@@ -42,35 +41,18 @@ let currentTyping = {
   contacts: { text: 0, animId: null }
 };
 
-const AUDIO_TUNING = {
-  masterDefault: 0.62,
-  clickPeak: 0.044,
-  humMasterGain: 2.88
-};
-
+const AUDIO_TUNING = { masterDefault: 0.62, clickPeak: 0.044, humMasterGain: 2.88 };
 const mediaExtensions = {
   audio: [".mp3", ".ogg", ".wav", ".m4a"],
   visuals: [".png", ".jpg", ".jpeg", ".webp", ".gif", ".avif"]
 };
 
 const state = {
-  sfxEnabled: false,
-  audioCtx: null,
-  humNodes: null,
-  players: [],
-  activeMusicCount: 0,
-  masterVolume: AUDIO_TUNING.masterDefault,
-  liteMode: false,
-  loadedSections: {
-    music: false,
-    visuals: false
-  },
-  typedSections: {
-    logs: false,
-    contacts: false
-  },
-  currentMusicCategory: "soundtracks",
-  currentSoundtrackCategory: "kletka"
+  sfxEnabled: false, audioCtx: null, humNodes: null, activeMusicCount: 0,
+  masterVolume: AUDIO_TUNING.masterDefault, liteMode: false,
+  loadedSections: { music: false, visuals: false },
+  typedSections: { logs: false, contacts: false },
+  currentMusicCategory: "soundtracks"
 };
 
 function detectLiteMode() {
@@ -126,15 +108,9 @@ function startTerminalHum() {
   const noise = ctx.createBufferSource();
   const noiseGain = ctx.createGain();
   const master = ctx.createGain();
-  bass.type = "sine";
-  bass.frequency.value = 53;
-  bassGain.gain.value = 0.0012;
-  brownFilter.type = "lowshelf";
-  brownFilter.frequency.value = 190;
-  brownFilter.gain.value = 9;
-  lowpass.type = "lowpass";
-  lowpass.frequency.value = 520;
-  lowpass.Q.value = 0.6;
+  bass.type = "sine"; bass.frequency.value = 53; bassGain.gain.value = 0.0012;
+  brownFilter.type = "lowshelf"; brownFilter.frequency.value = 190; brownFilter.gain.value = 9;
+  lowpass.type = "lowpass"; lowpass.frequency.value = 520; lowpass.Q.value = 0.6;
   const bufferSize = ctx.sampleRate * 0.5;
   const buffer = ctx.createBuffer(1, bufferSize, ctx.sampleRate);
   const data = buffer.getChannelData(0);
@@ -144,19 +120,13 @@ function startTerminalHum() {
     brown = (brown + 0.022 * white) / 1.015;
     data[i] = brown * 3.2;
   }
-  noise.buffer = buffer;
-  noise.loop = true;
-  noiseGain.gain.value = 0.0042;
+  noise.buffer = buffer; noise.loop = true; noiseGain.gain.value = 0.0042;
   master.gain.value = AUDIO_TUNING.humMasterGain * state.masterVolume;
-  bass.connect(bassGain);
-  bassGain.connect(master);
-  noise.connect(noiseGain);
-  noiseGain.connect(brownFilter);
-  brownFilter.connect(lowpass);
-  lowpass.connect(master);
+  bass.connect(bassGain); bassGain.connect(master);
+  noise.connect(noiseGain); noiseGain.connect(brownFilter);
+  brownFilter.connect(lowpass); lowpass.connect(master);
   master.connect(ctx.destination);
-  bass.start();
-  noise.start();
+  bass.start(); noise.start();
   state.humNodes = { noise, bass, master };
 }
 
@@ -165,12 +135,6 @@ function stopTerminalHum() {
   state.humNodes.noise.stop();
   state.humNodes.bass.stop();
   state.humNodes = null;
-}
-
-function updateHumState() {
-  if (!state.sfxEnabled) return;
-  if (state.activeMusicCount > 0) stopTerminalHum();
-  else startTerminalHum();
 }
 
 async function ensureSectionLoaded(sectionId) {
@@ -191,28 +155,17 @@ function renderOwnMusic() {
     const card = document.createElement("article");
     card.className = "own-music-card";
     card.innerHTML = `
-      <div class="own-music-cover">
-        <img src="${release.cover}" alt="${release.title}" loading="lazy">
-      </div>
-      <div class="own-music-info">
-        <h3 class="own-music-title">${release.title}</h3>
-        <a class="release-link streaming" href="${release.streamingUrl}" target="_blank" rel="noopener noreferrer">STREAMINGS</a>
-      </div>
-    `;
+      <div class="own-music-cover"><img src="${release.cover}" alt="${release.title}" loading="lazy"></div>
+      <div class="own-music-info"><h3 class="own-music-title">${release.title}</h3><a class="release-link streaming" href="${release.streamingUrl}" target="_blank" rel="noopener noreferrer">STREAMINGS</a></div>`;
     grid.appendChild(card);
   });
 }
 
 function setTab(sectionId) {
-  tabButtons.forEach((button) => {
-    button.classList.toggle("active", button.dataset.section === sectionId);
-  });
-  panels.forEach((panel) => {
-    panel.classList.toggle("active", panel.id === sectionId);
-  });
+  tabButtons.forEach((btn) => btn.classList.toggle("active", btn.dataset.section === sectionId));
+  panels.forEach((panel) => panel.classList.toggle("active", panel.id === sectionId));
   statusLine.textContent = `STATUS: ONLINE // SECTION: ${sectionId.toUpperCase()}`;
   playUiClick();
-  
   if (sectionId === "music") {
     musicSubTabs.style.display = "flex";
     renderSoundtrackDropdowns();
@@ -220,22 +173,10 @@ function setTab(sectionId) {
     musicSubTabs.style.display = "none";
     soundtrackDropdowns.innerHTML = "";
   }
-  
-  if (sectionId === "logs" && !state.typedSections.logs) {
-    state.typedSections.logs = true;
-    startTypewriter("logsTypewriter");
-  }
-  if (sectionId === "contacts" && !state.typedSections.contacts) {
-    state.typedSections.contacts = true;
-    startTypewriter("contactsTypewriter");
-  }
-  if (sectionId === "visuals" && !state.loadedSections.visuals) {
-    state.loadedSections.visuals = true;
-    renderVisuals();
-  }
-  ensureSectionLoaded(sectionId).catch(() => {
-    statusLine.textContent = "LOAD ERROR";
-  });
+  if (sectionId === "logs" && !state.typedSections.logs) { state.typedSections.logs = true; startTypewriter("logsTypewriter"); }
+  if (sectionId === "contacts" && !state.typedSections.contacts) { state.typedSections.contacts = true; startTypewriter("contactsTypewriter"); }
+  if (sectionId === "visuals" && !state.loadedSections.visuals) { state.loadedSections.visuals = true; renderVisuals(); }
+  ensureSectionLoaded(sectionId).catch(() => { statusLine.textContent = "LOAD ERROR"; });
 }
 
 function loadMusicCategory(category) {
@@ -245,22 +186,25 @@ function loadMusicCategory(category) {
   if (category === "ownmusic") renderOwnMusic();
 }
 
+function formatTime(seconds) {
+  if (!Number.isFinite(seconds)) return "0:00";
+  const m = Math.floor(seconds / 60);
+  const s = Math.floor(seconds % 60);
+  return `${m}:${s.toString().padStart(2, "0")}`;
+}
+
 async function renderSoundtrackDropdowns() {
   soundtrackDropdowns.innerHTML = "";
-  
-  // Параллельная загрузка данных без блокировки UI
   const categoryPromises = Object.entries(soundtrackCategories).map(async ([key, { name, folder }]) => {
     const files = await resolveFiles(folder);
     return { key, name, files };
   });
-  
   const results = await Promise.all(categoryPromises);
-  
+
   results.forEach(({ key, name, files }, index) => {
     const dropdown = document.createElement("div");
     dropdown.className = "soundtrack-dropdown";
     dropdown.dataset.category = key;
-    dropdown.style.transitionDelay = `${index * 80}ms`; // Каскадная задержка появления
 
     const header = document.createElement("button");
     header.className = "dropdown-header";
@@ -270,12 +214,10 @@ async function renderSoundtrackDropdowns() {
     content.className = "dropdown-content";
     const contentInner = document.createElement("div");
     contentInner.className = "dropdown-content-inner";
-    contentInner.id = `tracks-${key}`;
 
     if (!files.length) {
       contentInner.innerHTML = `<p class="empty">No tracks found.</p>`;
     } else {
-      contentInner.innerHTML = "";
       files.forEach(file => {
         const card = document.createElement("article");
         card.className = "track";
@@ -283,63 +225,74 @@ async function renderSoundtrackDropdowns() {
           <p class="track-title">${file.name}</p>
           <div class="track-controls">
             <div class="track-btns">
-              <button type="button" class="track-btn play-btn" aria-label="Play or pause"></button>
+              <button type="button" class="track-btn play-btn" aria-label="Play"></button>
               <button type="button" class="track-btn stop-btn" aria-label="Stop"></button>
             </div>
             <div class="seek-wrap">
-              <div class="seek-base"></div>
-              <div class="seek-progress"></div>
-              <input class="seek" type="range" min="0" max="100" step="0.01" value="0" aria-label="Track position">
+              <input class="seek" type="range" min="0" max="100" step="0.01" value="0" aria-label="Seek">
+              <span class="track-time">0:00 / 0:00</span>
             </div>
           </div>
-          <audio preload="metadata" controlslist="nodownload noplaybackrate" crossorigin="anonymous"></audio>
-        `;
+          <audio preload="metadata" controlslist="nodownload noplaybackrate" crossorigin="anonymous"></audio>`;
 
         const audio = card.querySelector("audio");
-        const playButton = card.querySelector(".play-btn");
-        const stopButton = card.querySelector(".stop-btn");
+        const playBtn = card.querySelector(".play-btn");
+        const stopBtn = card.querySelector(".stop-btn");
         const seek = card.querySelector(".seek");
-        const progress = card.querySelector(".seek-progress");
+        const timeEl = card.querySelector(".track-time");
 
         audio.src = file.url;
         audio.volume = state.masterVolume;
 
-        playButton.addEventListener("click", async () => {
+        playBtn.addEventListener("click", async () => {
           playUiClick();
           if (audio.paused) {
-            document.querySelectorAll(".play-btn").forEach(btn => btn.classList.remove("is-playing"));
-            document.querySelectorAll("audio").forEach(aud => { if (aud !== audio) { aud.pause(); aud.currentTime = 0; } });
-            try { await audio.play(); playButton.classList.add("is-playing"); } catch { playButton.classList.remove("is-playing"); }
+            // Пауза всех остальных БЕЗ сброса времени
+            document.querySelectorAll("audio").forEach(aud => {
+              if (aud !== audio) {
+                aud.pause();
+                aud.closest(".track")?.querySelector(".play-btn")?.classList.remove("is-playing");
+              }
+            });
+            try { await audio.play(); playBtn.classList.add("is-playing"); } catch { playBtn.classList.remove("is-playing"); }
           } else {
             audio.pause();
-            playButton.classList.remove("is-playing");
+            playBtn.classList.remove("is-playing");
           }
         });
 
-        stopButton.addEventListener("click", () => {
+        stopBtn.addEventListener("click", () => {
           playUiClick();
           audio.pause();
           audio.currentTime = 0;
-          playButton.classList.remove("is-playing");
-          progress.style.width = "0%";
+          playBtn.classList.remove("is-playing");
           seek.value = "0";
+          timeEl.textContent = "0:00 / 0:00";
         });
 
         seek.addEventListener("input", () => {
-          if (!Number.isFinite(audio.duration) || audio.duration <= 0) return;
-          audio.currentTime = Number(seek.value);
-          updateSeekVisual(seek, progress, audio);
+          if (Number.isFinite(audio.duration) && audio.duration > 0) {
+            audio.currentTime = Number(seek.value);
+          }
         });
 
-        audio.addEventListener("timeupdate", () => updateSeekDebounced(seek, progress, audio));
-        audio.addEventListener("play", () => playButton.classList.add("is-playing"));
-        audio.addEventListener("pause", () => playButton.classList.remove("is-playing"));
+        const updateUI = () => {
+          if (!Number.isFinite(audio.duration) || audio.duration <= 0) return;
+          seek.max = String(audio.duration);
+          seek.value = String(audio.currentTime);
+          timeEl.textContent = `${formatTime(audio.currentTime)} / ${formatTime(audio.duration)}`;
+        };
+
+        audio.addEventListener("timeupdate", updateUI);
+        audio.addEventListener("loadedmetadata", updateUI);
+        audio.addEventListener("play", () => playBtn.classList.add("is-playing"));
+        audio.addEventListener("pause", () => playBtn.classList.remove("is-playing"));
 
         contentInner.appendChild(card);
       });
     }
-    content.appendChild(contentInner);
 
+    content.appendChild(contentInner);
     header.addEventListener("click", () => {
       playUiClick();
       const isOpen = header.classList.toggle("active");
@@ -350,14 +303,9 @@ async function renderSoundtrackDropdowns() {
     dropdown.appendChild(header);
     dropdown.appendChild(content);
     soundtrackDropdowns.appendChild(dropdown);
-  });
 
-  // Плавное появление после полной отрисовки DOM
-  requestAnimationFrame(() => {
-    soundtrackDropdowns.querySelectorAll(".soundtrack-dropdown").forEach((el, i) => {
-      el.style.transitionDelay = `${i * 80}ms`;
-      el.classList.add("visible");
-    });
+    // Плавное появление каждой категории с задержкой
+    setTimeout(() => dropdown.classList.add("visible"), index * 80);
   });
 }
 
@@ -365,20 +313,13 @@ function enhanceInteractiveText(target) {
   const plain = target.textContent || "";
   const withLinks = plain.replace(
     /(https?:\/\/[^\s]+|(?:github\.com|t\.me|instagram\.com|band\.link)\/[^\s]+)/gi,
-    (match) => {
-      const href = match.startsWith("http") ? match : `https://${match}`;
-      return `<a class="inline-link" target="_blank" rel="noopener noreferrer" href="${href}">${match}</a>`;
-    }
+    (match) => `<a class="inline-link" target="_blank" rel="noopener noreferrer" href="${match.startsWith("http") ? match : `https://${match}`}">${match}</a>`
   );
   const withEmail = withLinks.replace(
     /([a-zA-Z0-9._-]+@[a-zA-Z0-9._-]+\.[a-zA-Z0-9._-]+)/g,
     (match) => `<button type="button" class="copy-mention" data-copy="${match}">${match}</button>`
   );
-  const withMentions = withEmail.replace(
-    /(^|[\s(])(@[a-zA-Z0-9_.-]+)/g,
-    (full, prefix, mention) => `${prefix}<button type="button" class="copy-mention" data-copy="${mention}">${mention}</button>`
-  );
-  target.innerHTML = withMentions;
+  target.innerHTML = withEmail.replace(/(^|[\s(])(@[a-zA-Z0-9_.-]+)/g, (full, prefix, mention) => `${prefix}<button type="button" class="copy-mention" data-copy="${mention}">${mention}</button>`);
 }
 
 function startTypewriter(targetId) {
@@ -392,15 +333,15 @@ function startTypewriter(targetId) {
   target.appendChild(cursor);
   const write = () => {
     if (currentTyping[section].text < text.length) {
-      const currentCursor = target.querySelector('.cursor');
+      const c = target.querySelector('.cursor');
       target.textContent = text.slice(0, currentTyping[section].text + 1);
-      target.appendChild(currentCursor);
+      target.appendChild(c);
       currentTyping[section].text += 1;
       currentTyping[section].animId = requestAnimationFrame(write);
     } else {
       enhanceInteractiveText(target);
-      const finalCursor = target.querySelector('.cursor');
-      if (finalCursor) finalCursor.style.display = 'none';
+      const fc = target.querySelector('.cursor');
+      if (fc) fc.style.display = 'none';
     }
   };
   write();
@@ -412,138 +353,81 @@ function extensionMatch(fileName, allowed) {
 }
 
 async function listRepoFolderByApi(folder) {
-  const apiUrl = `https://api.github.com/repos/${GH_USER}/${GH_REPO}/contents/${folder}`;
-  const response = await fetch(apiUrl, { headers: { Accept: "application/vnd.github+json" } });
+  const response = await fetch(`https://api.github.com/repos/${GH_USER}/${GH_REPO}/contents/${folder}`, { headers: { Accept: "application/vnd.github+json" } });
   if (!response.ok) return [];
   const data = await response.json();
   if (!Array.isArray(data)) return [];
-  return data
-    .filter((entry) => entry.type === "file")
-    .map((entry) => ({
-      name: entry.name,
-      url: entry.download_url || `https://raw.githubusercontent.com/${GH_USER}/${GH_REPO}/main/${folder}/${entry.name}`
-    }));
+  return data.filter(e => e.type === "file").map(e => ({
+    name: e.name,
+    url: e.download_url || `https://raw.githubusercontent.com/${GH_USER}/${GH_REPO}/main/${folder}/${e.name}`
+  }));
 }
 
 async function resolveFiles(folder) {
   const files = await listRepoFolderByApi(folder);
-  const allowedExtensions = folder.startsWith("visuals") ? mediaExtensions.visuals : mediaExtensions.audio;
-  return files.filter((file) => extensionMatch(file.name, allowedExtensions));
-}
-
-function renderEmpty(target, text) {
-  target.innerHTML = `<p class="empty">${text}</p>`;
-}
-
-function updateSeekVisual(seek, progress, audio) {
-  if (!Number.isFinite(audio.duration) || audio.duration <= 0) return;
-  seek.max = String(audio.duration);
-  seek.value = String(audio.currentTime);
-  const ratio = (audio.currentTime / audio.duration) * 100;
-  progress.style.width = `${Math.min(100, ratio)}%`;
-}
-
-let seekThrottle = null;
-function updateSeekDebounced(seek, progress, audio) {
-  if (seekThrottle) return;
-  seekThrottle = true;
-  requestAnimationFrame(() => {
-    updateSeekVisual(seek, progress, audio);
-    setTimeout(() => { seekThrottle = null; }, 32);
-  });
+  const ext = folder.startsWith("visuals") ? mediaExtensions.visuals : mediaExtensions.audio;
+  return files.filter(f => extensionMatch(f.name, ext));
 }
 
 function updateSfxVolume(value) {
   state.masterVolume = Math.max(0, Math.min(1, value));
-  if (state.humNodes?.master) {
-    state.humNodes.master.gain.value = AUDIO_TUNING.humMasterGain * state.masterVolume;
-  }
-  document.querySelectorAll("audio").forEach(aud => { aud.volume = state.masterVolume; });
+  if (state.humNodes?.master) state.humNodes.master.gain.value = AUDIO_TUNING.humMasterGain * state.masterVolume;
+  document.querySelectorAll("audio").forEach(a => a.volume = state.masterVolume);
 }
 
 function configureLightbox() {
-  const lightbox = document.getElementById("lightbox");
-  const lightboxImage = document.getElementById("lightboxImage");
-  const closeButton = document.getElementById("closeLightbox");
-  const close = () => {
-    lightbox.classList.remove("active");
-    lightbox.setAttribute("aria-hidden", "true");
-    lightboxImage.src = "";
-    document.body.style.overflow = "";
-  };
-  closeButton.addEventListener("click", close);
-  lightbox.addEventListener("click", (event) => { if (event.target === lightbox) close(); });
-  document.addEventListener("keydown", (event) => { if (event.key === "Escape") close(); });
-  return (imageUrl) => {
-    lightboxImage.src = imageUrl;
-    lightbox.classList.add("active");
-    lightbox.setAttribute("aria-hidden", "false");
-    document.body.style.overflow = "hidden";
-  };
+  const lb = document.getElementById("lightbox");
+  const img = document.getElementById("lightboxImage");
+  const close = () => { lb.classList.remove("active"); lb.setAttribute("aria-hidden", "true"); img.src = ""; document.body.style.overflow = ""; };
+  document.getElementById("closeLightbox").addEventListener("click", close);
+  lb.addEventListener("click", (e) => { if (e.target === lb) close(); });
+  document.addEventListener("keydown", (e) => { if (e.key === "Escape") close(); });
+  return (url) => { img.src = url; lb.classList.add("active"); lb.setAttribute("aria-hidden", "false"); document.body.style.overflow = "hidden"; };
 }
 
 async function renderVisuals() {
-  const visualGrid = document.getElementById("visualGrid");
+  const grid = document.getElementById("visualGrid");
   const files = await resolveFiles("visuals");
-  const openLightbox = configureLightbox();
-  if (!files.length) {
-    renderEmpty(visualGrid, "Images not found in visuals folder.");
-    return;
-  }
-  visualGrid.innerHTML = "";
+  const openLb = configureLightbox();
+  if (!files.length) { grid.innerHTML = `<p class="empty">Images not found in visuals folder.</p>`; return; }
+  grid.innerHTML = "";
   let cursor = 0;
   const batchSize = state.liteMode ? 8 : 16;
-  const appendBatch = () => {
+  const append = () => {
     const slice = files.slice(cursor, cursor + batchSize);
-    slice.forEach((file) => {
-      const button = document.createElement("button");
-      button.className = "visual-item";
-      button.type = "button";
-      button.setAttribute("aria-label", `Open ${file.name}`);
-      button.innerHTML = `<img src="${file.url}" alt="${file.name}" loading="lazy" decoding="async">`;
-      button.addEventListener("click", () => openLightbox(file.url));
-      visualGrid.appendChild(button);
+    slice.forEach(f => {
+      const btn = document.createElement("button");
+      btn.className = "visual-item"; btn.type = "button"; btn.setAttribute("aria-label", `Open ${f.name}`);
+      btn.innerHTML = `<img src="${f.url}" alt="${f.name}" loading="lazy" decoding="async">`;
+      btn.addEventListener("click", () => openLb(f.url));
+      grid.appendChild(btn);
     });
     cursor += slice.length;
-    if (cursor >= files.length) loadMoreButton.remove();
+    if (cursor >= files.length) loadMore.remove();
   };
-  const loadMoreButton = document.createElement("button");
-  loadMoreButton.className = "load-more-visuals";
-  loadMoreButton.type = "button";
-  loadMoreButton.textContent = "[ LOAD MORE ]";
-  loadMoreButton.addEventListener("click", appendBatch);
-  appendBatch();
-  if (cursor < files.length) visualGrid.after(loadMoreButton);
+  const loadMore = document.createElement("button");
+  loadMore.className = "load-more-visuals"; loadMore.type = "button"; loadMore.textContent = "[ LOAD MORE ]";
+  loadMore.addEventListener("click", append);
+  append();
+  if (cursor < files.length) grid.after(loadMore);
 }
 
 function setupLazyImageLoading() {
   if (!("IntersectionObserver" in window)) return;
-  const imageObserver = new IntersectionObserver((entries) => {
-    entries.forEach((entry) => {
-      if (entry.isIntersecting) {
-        const img = entry.target;
-        if (img.dataset.src) { img.src = img.dataset.src; imageObserver.unobserve(img); }
-      }
-    });
-  }, { rootMargin: "200px" });
-  document.querySelectorAll(".visual-item img[data-src]").forEach((img) => imageObserver.observe(img));
+  const obs = new IntersectionObserver(entries => entries.forEach(e => { if (e.isIntersecting) { e.target.src = e.target.dataset.src; obs.unobserve(e.target); } }), { rootMargin: "200px" });
+  document.querySelectorAll(".visual-item img[data-src]").forEach(img => obs.observe(img));
 }
 
 function setupClipboardMentions() {
-  document.addEventListener("click", async (event) => {
-    const target = event.target.closest(".copy-mention");
-    if (!target) return;
-    const value = target.getAttribute("data-copy");
+  document.addEventListener("click", async (e) => {
+    const t = e.target.closest(".copy-mention");
+    if (!t) return;
+    const val = t.getAttribute("data-copy");
     try {
-      await navigator.clipboard.writeText(value);
-      statusLine.textContent = `COPIED TO CLIPBOARD: ${value}`;
-      setTimeout(() => {
-        const active = document.querySelector(".tab.active")?.dataset.section || "logs";
-        statusLine.textContent = `STATUS: ONLINE // SECTION: ${active.toUpperCase()}`;
-      }, 1200);
-    } catch {
-      statusLine.textContent = "CLIPBOARD ACCESS BLOCKED";
-    }
+      await navigator.clipboard.writeText(val);
+      statusLine.textContent = `COPIED TO CLIPBOARD: ${val}`;
+      setTimeout(() => { const a = document.querySelector(".tab.active")?.dataset.section || "logs"; statusLine.textContent = `STATUS: ONLINE // SECTION: ${a.toUpperCase()}`; }, 1200);
+    } catch { statusLine.textContent = "CLIPBOARD ACCESS BLOCKED"; }
   });
 }
 
@@ -551,36 +435,21 @@ function setupAsciiVines() {
   const backdrop = document.getElementById("asciiVines");
   if (!backdrop) return;
   const motif = " --=<❀>=-- ";
-  const renderPattern = () => {
-    const fontPx = Math.max(14, Math.min(18, window.innerWidth * 0.022));
-    const charWidth = fontPx * 0.6;
-    const charHeight = fontPx * 1.35;
-    const patternWidth = motif.length * charWidth;
-    const columns = Math.ceil(window.innerWidth / patternWidth) + 2;
-    const rows = Math.ceil(window.innerHeight / charHeight) + 2;
-    let result = "";
-    for (let y = 0; y < rows; y += 1) {
-      const offset = y % 2 === 0 ? "" : " ".repeat(3);
-      const line = Array(columns).fill(motif).join(" ".repeat(2));
-      result += `${offset}${line}\n`;
-    }
-    backdrop.textContent = result;
+  const render = () => {
+    const font = Math.max(14, Math.min(18, window.innerWidth * 0.022));
+    const cw = font * 0.6, ch = font * 1.35, pw = motif.length * cw;
+    const cols = Math.ceil(window.innerWidth / pw) + 2, rows = Math.ceil(window.innerHeight / ch) + 2;
+    let res = "";
+    for (let y = 0; y < rows; y++) res += `${y % 2 === 0 ? "" : "   "}${Array(cols).fill(motif).join("  ")}\n`;
+    backdrop.textContent = res;
   };
-  renderPattern();
-  let resizeRaf = null;
-  let resizeTimeout = null;
-  window.addEventListener("resize", () => {
-    if (resizeTimeout) clearTimeout(resizeTimeout);
-    if (resizeRaf) cancelAnimationFrame(resizeRaf);
-    resizeTimeout = setTimeout(() => {
-      resizeRaf = requestAnimationFrame(() => { renderPattern(); resizeRaf = null; });
-    }, 300);
-  });
+  render();
+  let raf = null, t = null;
+  window.addEventListener("resize", () => { clearTimeout(t); if (raf) cancelAnimationFrame(raf); t = setTimeout(() => { raf = requestAnimationFrame(() => { render(); raf = null; }); }, 300); });
 }
 
 // Инициализация событий
-tabButtons.forEach((button) => button.addEventListener("click", () => setTab(button.dataset.section)));
-
+tabButtons.forEach(btn => btn.addEventListener("click", () => setTab(btn.dataset.section)));
 if (musicSubTabs) {
   musicSubTabs.querySelectorAll(".music-tab").forEach(tab => {
     tab.addEventListener("click", () => {
@@ -591,39 +460,24 @@ if (musicSubTabs) {
     });
   });
 }
-
 sfxToggle.addEventListener("click", () => { setSfxEnabled(!state.sfxEnabled); playUiClick(); });
 
 if (masterVolumeRange) {
-  const initialValue = Number(masterVolumeRange.value) * 100;
-  masterVolumeRange.style.setProperty('--progress', `${initialValue}%`);
+  masterVolumeRange.style.setProperty('--progress', `${Number(masterVolumeRange.value) * 100}%`);
   masterVolumeRange.addEventListener("input", () => {
-    const value = Number(masterVolumeRange.value);
-    updateSfxVolume(value);
-    masterVolumeRange.style.setProperty('--progress', `${value * 100}%`);
+    updateSfxVolume(Number(masterVolumeRange.value));
+    masterVolumeRange.style.setProperty('--progress', `${Number(masterVolumeRange.value) * 100}%`);
   });
 }
 
-// Volume hover logic with strict timer reset
-const volumeShell = document.querySelector(".master-volume-shell");
-const volumePop = document.querySelector(".master-volume-pop");
-let volumeHideTimeout = null;
-
-if (volumeShell && volumePop) {
-  const showVolume = () => {
-    clearTimeout(volumeHideTimeout);
-    volumePop.classList.add("active");
-  };
-  const hideVolume = () => {
-    clearTimeout(volumeHideTimeout);
-    volumeHideTimeout = setTimeout(() => {
-      volumePop.classList.remove("active");
-    }, 1000);
-  };
-  volumeShell.addEventListener("mouseenter", showVolume);
-  volumeShell.addEventListener("mouseleave", hideVolume);
-  volumePop.addEventListener("mouseenter", showVolume);
-  volumePop.addEventListener("mouseleave", hideVolume);
+const volShell = document.querySelector(".master-volume-shell");
+const volPop = document.querySelector(".master-volume-pop");
+let volTimer = null;
+if (volShell && volPop) {
+  const show = () => { clearTimeout(volTimer); volPop.classList.add("active"); };
+  const hide = () => { clearTimeout(volTimer); volTimer = setTimeout(() => volPop.classList.remove("active"), 1000); };
+  volShell.addEventListener("mouseenter", show); volShell.addEventListener("mouseleave", hide);
+  volPop.addEventListener("mouseenter", show); volPop.addEventListener("mouseleave", hide);
 }
 
 async function init() {
