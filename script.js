@@ -316,6 +316,7 @@ function renderSoundtrackDropdowns() {
       // Закрыть все остальные
       document.querySelectorAll(".dropdown-header").forEach(h => {
         h.classList.remove("active");
+        h.innerHTML = `<span>[ ${name} ]</span>`;
       });
       document.querySelectorAll(".dropdown-content").forEach(c => {
         c.classList.remove("open");
@@ -323,6 +324,7 @@ function renderSoundtrackDropdowns() {
       
       if (!isOpen) {
         header.classList.add("active");
+        header.innerHTML = `<span>[ ▼ ${name} ]</span>`;
         content.classList.add("open");
         
         // Загрузить треки если ещё не загружены
@@ -506,7 +508,9 @@ async function listRepoFolderByApi(folder) {
 
 async function resolveFiles(folder) {
   const files = await listRepoFolderByApi(folder);
-  return files.filter((file) => extensionMatch(file.name, mediaExtensions[folder]));
+  // Для папок soundtracks используем аудио расширения
+  const allowedExtensions = mediaExtensions.audio;
+  return files.filter((file) => extensionMatch(file.name, allowedExtensions));
 }
 
 function renderEmpty(target, text) {
@@ -752,10 +756,6 @@ if (musicSubTabs) {
 sfxToggle.addEventListener("click", () => {
   setSfxEnabled(!state.sfxEnabled);
   playUiClick();
-});
-
-masterVolumeRange?.addEventListener("input", () => {
-  updateSfxVolume(Number(masterVolumeRange.value));
 });
 
 async function init() {
