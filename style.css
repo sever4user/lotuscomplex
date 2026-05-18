@@ -60,11 +60,7 @@ body {
   height: 100%;
   pointer-events: none;
   z-index: 1;
-  background: linear-gradient(
-    to bottom,
-    transparent 50%,
-    rgba(0, 0, 0, 0.1) 50%
-  );
+  background: linear-gradient(to bottom, transparent 50%, rgba(0, 0, 0, 0.1) 50%);
   background-size: 100% 4px;
   opacity: 0.3;
 }
@@ -372,7 +368,7 @@ body {
   pointer-events: auto;
 }
 
-/* Volume Slider (UNCHANGED) */
+/* Volume Slider */
 .volume-range {
   -webkit-appearance: none !important;
   appearance: none !important;
@@ -514,7 +510,6 @@ body {
   gap: 1rem;
 }
 
-/* Refined Track Player */
 .track {
   background: rgba(13, 17, 23, 0.85);
   backdrop-filter: blur(5px);
@@ -586,7 +581,6 @@ body {
 .stop-btn::before { content: '■'; font-size: 0.55rem; }
 .stop-btn:hover { border-color: #ff4444; color: #ff4444; }
 
-/* Seek Wrapper & Time */
 .seek-wrap {
   flex: 1;
   display: flex;
@@ -639,7 +633,6 @@ body {
   opacity: 0.8;
 }
 
-/* Empty State */
 .empty {
   text-align: center;
   color: var(--text);
