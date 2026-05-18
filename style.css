@@ -1,5 +1,4 @@
 :root {
-  /* PASCHAL BLUE PALETTE - EASTER THEME */
   --bg: #0d1117;
   --text: #a8b2c1;
   --primary: #58a6ff;
@@ -11,7 +10,7 @@
   --highlight: #1f2937;
 }
 
-* {
+*, *::before, *::after {
   margin: 0;
   padding: 0;
   box-sizing: border-box;
@@ -330,16 +329,25 @@ body {
   position: absolute;
   top: 100%;
   left: 0;
-  background: rgba(13, 17, 23, 0.98) !important;
+  background: rgba(13, 17, 23, 0.98);
   border: 1px solid var(--border);
-  padding: 0.3rem 1rem !important;
-  display: none;
+  padding: 0.3rem 1rem;
+  width: 100%;
   z-index: 100;
-  width: 140px !important;
   box-shadow: 0 4px 20px rgba(0, 0, 0, 0.5);
   opacity: 0;
   visibility: hidden;
+  transform: translateY(-6px);
+  pointer-events: none;
   margin-top: 8px;
+  transition: opacity 0.25s ease, visibility 0.25s ease, transform 0.25s ease;
+}
+
+.master-volume-pop.active {
+  opacity: 1;
+  visibility: visible;
+  transform: translateY(0);
+  pointer-events: auto;
 }
 
 /* Volume Slider - minimalist terminal style */
@@ -614,7 +622,6 @@ body {
   z-index: 2;
 }
 
-/* Custom seek thumb - square geometric */
 .seek::-webkit-slider-thumb {
   -webkit-appearance: none;
   appearance: none;
@@ -835,33 +842,27 @@ body {
   .page {
     padding: 1rem;
   }
-
   .tabs {
     gap: 0.25rem;
     justify-content: flex-start;
   }
-
   .tab {
     padding: 0.5rem 1rem;
     font-size: 0.8rem;
   }
-
   .music-sub-tabs {
     gap: 0.25rem;
     margin-bottom: 0.75rem;
     justify-content: flex-start;
   }
-
   .music-tab {
     padding: 0.4rem 0.75rem;
     font-size: 0.7rem;
   }
-
   .dropdown-header {
     padding: 0.6rem 0.85rem;
     font-size: 0.75rem;
   }
-
   .status-wrap {
     position: fixed;
     top: 0;
@@ -873,45 +874,37 @@ body {
     padding: 0.75rem 1rem;
     margin-bottom: 0;
   }
-
   .status-line {
     font-size: 0.65rem;
     flex: 1;
   }
-
   .audio-controls {
     gap: 0.5rem;
   }
-
   .sfx-toggle,
   .master-volume-btn {
     padding: 0.4rem 0.75rem;
     font-size: 0.7rem;
   }
-
   .volume-range {
     width: 100px;
   }
-
   .master-volume-pop {
     position: fixed;
     top: 100%;
     right: 1rem;
+    width: auto;
   }
-
   .panel {
     padding: 1rem;
     margin-top: 3.5rem;
   }
-
   .visual-grid {
     grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
   }
-
   .own-music-grid {
     grid-template-columns: 1fr;
   }
-
   .project-header {
     padding: 3rem 0 2rem 0;
   }
