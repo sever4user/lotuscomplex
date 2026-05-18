@@ -309,7 +309,9 @@ function renderSoundtrackDropdowns() {
       // Закрыть все остальные
       document.querySelectorAll(".dropdown-header").forEach(h => {
         h.classList.remove("active");
-        h.innerHTML = h.querySelector("span").textContent.replace("▼", "▶").replace("▲", "▼");
+        const textSpan = h.querySelector("span");
+        const currentText = textSpan.textContent;
+        textSpan.textContent = currentText.replace("▼", "▶");
       });
       document.querySelectorAll(".dropdown-content").forEach(c => {
         c.classList.remove("open");
@@ -361,7 +363,18 @@ function renderSoundtrackDropdowns() {
               playButton.addEventListener("click", async () => {
                 playUiClick();
                 if (audio.paused) {
-                  stopAllPlayers(-1); // Остановить все треки
+                  // Остановить все треки во всех dropdown
+                  document.querySelectorAll(".play-btn").forEach(btn => {
+                    if (btn !== playButton) {
+                      btn.classList.remove("is-playing");
+                    }
+                  });
+                  document.querySelectorAll("audio").forEach(aud => {
+                    if (aud !== audio) {
+                      aud.pause();
+                      aud.currentTime = 0;
+                    }
+                  });
                   try {
                     await audio.play();
                     playButton.classList.add("is-playing");
@@ -752,6 +765,19 @@ sfxToggle.addEventListener("click", () => {
   setSfxEnabled(!state.sfxEnabled);
   playUiClick();
 });
+
+// Volume slider with persistent display
+if (masterVolumeRange) {
+  const initialValue = Number(masterVolumeRange.value) * 100;
+  masterVolumeRange.style.setProperty('--progress', `${initialValue}%`);
+  
+  masterVolumeRange.addEventListener("input", () => {
+    const value = Number(masterVolumeRange.value);
+    updateSfxVolume(value);
+    const percentage = value * 100;
+    masterVolumeRange.style.setProperty('--progress', `${percentage}%`);
+  });
+}
 
 async function init() {
   state.liteMode = detectLiteMode();
