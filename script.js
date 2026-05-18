@@ -18,7 +18,7 @@ AWAITING NEW CONNECTION...`;
 
 const soundtrackCategories = {
   kletka: { name: "KLETKA", folder: "soundtracks/kletka" },
-  privet: { name: "PRIVET", folder: "soundtracks/privet" },
+  privet: { name: "PRIVET ETO NE BOL'NO", folder: "soundtracks/privet" },
   lights: { name: "AS THE LIGHTS FADE AWAY", folder: "soundtracks/lights" },
   mystuff: { name: "MY STUFF", folder: "soundtracks/mystuff" }
 };
