@@ -23,7 +23,6 @@ body {
   min-height: 100vh;
   overflow-x: hidden;
   position: relative;
-  background: linear-gradient(180deg, rgba(0,0,0,0.8) 0%, rgba(13,17,23,1) 30%);
 }
 
 /* ASCII Background */
@@ -210,6 +209,14 @@ body {
 /* Soundtrack Category Dropdown */
 .soundtrack-dropdown {
   margin-bottom: 1rem;
+  opacity: 0;
+  transform: translateY(10px);
+  transition: opacity 0.35s ease, transform 0.35s ease;
+}
+
+.soundtrack-dropdown.visible {
+  opacity: 1;
+  transform: translateY(0);
 }
 
 .dropdown-header {
@@ -244,7 +251,7 @@ body {
 .dropdown-content {
   max-height: 0;
   overflow: hidden;
-  transition: max-height 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+  transition: max-height 0.4s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 .dropdown-content.open {
@@ -346,7 +353,7 @@ body {
   align-items: center;
 }
 
-/* Невидимый мост, чтобы курсор не терял hover при переходе от кнопки к плашке */
+/* Невидимый мост для hover */
 .master-volume-pop::before {
   content: '';
   position: absolute;
@@ -356,8 +363,7 @@ body {
   height: 6px;
 }
 
-.master-volume-shell:hover .master-volume-pop,
-.master-volume-shell:focus-within .master-volume-pop {
+.master-volume-pop.active {
   opacity: 1;
   visibility: visible;
   transform: translateY(0);
@@ -425,7 +431,7 @@ body {
 /* Panels */
 .panel {
   display: none;
-  min-height: 400px;
+  min-height: 300px;
   padding: 2rem;
   background: rgba(13, 17, 23, 0.85);
   backdrop-filter: blur(5px);
