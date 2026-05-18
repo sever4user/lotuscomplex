@@ -248,7 +248,7 @@ function loadMusicCategory(category) {
 async function renderSoundtrackDropdowns() {
   soundtrackDropdowns.innerHTML = "";
   
-  // Параллельная загрузка всех категорий для устранения рывков
+  // Параллельная загрузка данных без блокировки UI
   const categoryPromises = Object.entries(soundtrackCategories).map(async ([key, { name, folder }]) => {
     const files = await resolveFiles(folder);
     return { key, name, files };
@@ -256,10 +256,11 @@ async function renderSoundtrackDropdowns() {
   
   const results = await Promise.all(categoryPromises);
   
-  results.forEach(({ key, name, files }) => {
+  results.forEach(({ key, name, files }, index) => {
     const dropdown = document.createElement("div");
     dropdown.className = "soundtrack-dropdown";
     dropdown.dataset.category = key;
+    dropdown.style.transitionDelay = `${index * 80}ms`; // Каскадная задержка появления
 
     const header = document.createElement("button");
     header.className = "dropdown-header";
@@ -271,7 +272,6 @@ async function renderSoundtrackDropdowns() {
     contentInner.className = "dropdown-content-inner";
     contentInner.id = `tracks-${key}`;
 
-    // Рендер треков сразу после загрузки
     if (!files.length) {
       contentInner.innerHTML = `<p class="empty">No tracks found.</p>`;
     } else {
@@ -340,7 +340,6 @@ async function renderSoundtrackDropdowns() {
     }
     content.appendChild(contentInner);
 
-    // Независимое открытие/закрытие без влияния на другие
     header.addEventListener("click", () => {
       playUiClick();
       const isOpen = header.classList.toggle("active");
@@ -351,6 +350,14 @@ async function renderSoundtrackDropdowns() {
     dropdown.appendChild(header);
     dropdown.appendChild(content);
     soundtrackDropdowns.appendChild(dropdown);
+  });
+
+  // Плавное появление после полной отрисовки DOM
+  requestAnimationFrame(() => {
+    soundtrackDropdowns.querySelectorAll(".soundtrack-dropdown").forEach((el, i) => {
+      el.style.transitionDelay = `${i * 80}ms`;
+      el.classList.add("visible");
+    });
   });
 }
 
@@ -595,6 +602,28 @@ if (masterVolumeRange) {
     updateSfxVolume(value);
     masterVolumeRange.style.setProperty('--progress', `${value * 100}%`);
   });
+}
+
+// Volume hover logic with strict timer reset
+const volumeShell = document.querySelector(".master-volume-shell");
+const volumePop = document.querySelector(".master-volume-pop");
+let volumeHideTimeout = null;
+
+if (volumeShell && volumePop) {
+  const showVolume = () => {
+    clearTimeout(volumeHideTimeout);
+    volumePop.classList.add("active");
+  };
+  const hideVolume = () => {
+    clearTimeout(volumeHideTimeout);
+    volumeHideTimeout = setTimeout(() => {
+      volumePop.classList.remove("active");
+    }, 1000);
+  };
+  volumeShell.addEventListener("mouseenter", showVolume);
+  volumeShell.addEventListener("mouseleave", hideVolume);
+  volumePop.addEventListener("mouseenter", showVolume);
+  volumePop.addEventListener("mouseleave", hideVolume);
 }
 
 async function init() {
