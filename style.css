@@ -330,71 +330,74 @@ body {
   position: absolute;
   top: 110%;
   right: 0;
-  background: rgba(13, 17, 23, 0.98);
+  background: rgba(13, 17, 23, 0.98) !important;
   border: 1px solid var(--border);
-  padding: 0.75rem;
+  padding: 1.25rem 0.75rem 0.75rem 0.75rem !important;
   display: none;
   z-index: 100;
   min-width: 180px;
   box-shadow: 0 4px 20px rgba(0, 0, 0, 0.5);
-  border-radius: 0;
 }
 
 .master-volume-shell:hover .master-volume-pop {
-  display: block;
+  display: block !important;
 }
 
 .master-volume-pop:hover {
-  display: block;
+  display: block !important;
 }
 
-/* Volume Slider - minimalist geometric design */
+/* Volume Slider - minimalist terminal style */
 .volume-range {
-  -webkit-appearance: none;
-  appearance: none;
-  width: 140px;
-  height: 2px;
-  background: var(--border);
-  cursor: pointer;
-  outline: none;
+  -webkit-appearance: none !important;
+  appearance: none !important;
+  width: 140px !important;
+  height: 2px !important;
+  background: var(--border) !important;
+  cursor: pointer !important;
+  outline: none !important;
+  border: none !important;
+  padding: 0 !important;
+  margin: 0 !important;
 }
 
 .volume-range::-webkit-slider-thumb {
-  -webkit-appearance: none;
-  appearance: none;
-  width: 12px;
-  height: 12px;
-  background: var(--primary);
-  cursor: pointer;
-  box-shadow: 0 0 8px rgba(var(--primary-rgb), 0.6);
-  border: none;
+  -webkit-appearance: none !important;
+  appearance: none !important;
+  width: 10px !important;
+  height: 10px !important;
+  background: var(--primary) !important;
+  cursor: pointer !important;
+  border: none !important;
+  box-shadow: 0 0 6px rgba(var(--primary-rgb), 0.8) !important;
 }
 
 .volume-range::-webkit-slider-thumb:hover {
-  box-shadow: 0 0 15px rgba(var(--primary-rgb), 1);
+  box-shadow: 0 0 12px rgba(var(--primary-rgb), 1) !important;
 }
 
 .volume-range::-webkit-slider-runnable-track {
-  width: 100%;
-  height: 2px;
-  background: linear-gradient(90deg, var(--primary) 0%, var(--border) 0%);
-  background-size: var(--progress, 60%) 100%;
-  background-repeat: no-repeat;
+  width: 100% !important;
+  height: 2px !important;
+  background: linear-gradient(90deg, var(--primary) 0%, var(--border) 0%) !important;
+  background-size: var(--progress, 60%) 100% !important;
+  background-repeat: no-repeat !important;
+  border: none !important;
 }
 
 .volume-range::-moz-range-thumb {
-  width: 12px;
-  height: 12px;
-  background: var(--primary);
-  cursor: pointer;
-  box-shadow: 0 0 8px rgba(var(--primary-rgb), 0.6);
-  border: none;
+  width: 10px !important;
+  height: 10px !important;
+  background: var(--primary) !important;
+  cursor: pointer !important;
+  border: none !important;
+  box-shadow: 0 0 6px rgba(var(--primary-rgb), 0.8) !important;
 }
 
 .volume-range::-moz-range-track {
-  width: 100%;
-  height: 2px;
-  background: var(--border);
+  width: 100% !important;
+  height: 2px !important;
+  background: var(--border) !important;
 }
 
 .status-line {
