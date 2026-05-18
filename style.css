@@ -339,29 +339,14 @@ body {
   box-shadow: 0 4px 20px rgba(0, 0, 0, 0.5);
   opacity: 0;
   visibility: hidden;
-  transition: opacity 0.3s ease, visibility 0.3s ease;
   margin-top: 8px;
-}
-
-.master-volume-shell:hover .master-volume-pop {
-  display: block !important;
-  opacity: 1;
-  visibility: visible;
-  transition: opacity 0.3s ease 0.5s, visibility 0.3s ease 0.5s;
-}
-
-.master-volume-pop:hover {
-  display: block !important;
-  opacity: 1;
-  visibility: visible;
-  transition: opacity 0.3s ease 0.5s, visibility 0.3s ease 0.5s;
 }
 
 /* Volume Slider - minimalist terminal style */
 .volume-range {
   -webkit-appearance: none !important;
   appearance: none !important;
-  width: 80px !important;
+  width: 100px !important;
   height: 2px !important;
   background: var(--border) !important;
   cursor: pointer !important;

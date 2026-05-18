@@ -779,6 +779,50 @@ if (masterVolumeRange) {
   });
 }
 
+// Volume pop hover with delay
+const volumeShell = document.querySelector(".master-volume-shell");
+const volumePop = document.querySelector(".master-volume-pop");
+let volumeHideTimer = null;
+
+if (volumeShell && volumePop) {
+  volumeShell.addEventListener("mouseenter", () => {
+    if (volumeHideTimer) {
+      clearTimeout(volumeHideTimer);
+      volumeHideTimer = null;
+    }
+    volumePop.style.display = "block";
+    volumePop.style.opacity = "1";
+    volumePop.style.visibility = "visible";
+  });
+  
+  volumeShell.addEventListener("mouseleave", () => {
+    volumeHideTimer = setTimeout(() => {
+      volumePop.style.opacity = "0";
+      volumePop.style.visibility = "hidden";
+      setTimeout(() => {
+        volumePop.style.display = "none";
+      }, 300);
+    }, 1000); // 1 second delay
+  });
+  
+  volumePop.addEventListener("mouseenter", () => {
+    if (volumeHideTimer) {
+      clearTimeout(volumeHideTimer);
+      volumeHideTimer = null;
+    }
+  });
+  
+  volumePop.addEventListener("mouseleave", () => {
+    volumeHideTimer = setTimeout(() => {
+      volumePop.style.opacity = "0";
+      volumePop.style.visibility = "hidden";
+      setTimeout(() => {
+        volumePop.style.display = "none";
+      }, 300);
+    }, 1000); // 1 second delay
+  });
+}
+
 async function init() {
   state.liteMode = detectLiteMode();
   document.body.classList.toggle("lite-mode", state.liteMode);
