@@ -16,16 +16,20 @@ INST: @sever4user
 TG: @sever4user
 AWAITING NEW CONNECTION...`;
 
-// Чистые названия папок без пробелов
 const soundtrackCategories = {
   kletka: { name: "KLETKA", folder: "soundtracks/kletka" },
-  privet: { name: "PRIVET ETO NE BOL'NO", folder: "soundtracks/privet" },
+  privet: { name: "PRIVET", folder: "soundtracks/privet" },
   lights: { name: "AS THE LIGHTS FADE AWAY", folder: "soundtracks/lights" },
   mystuff: { name: "MY STUFF", folder: "soundtracks/mystuff" }
 };
 
+// Обновлённые данные релиза (используй этот формат в будущем)
 const ownMusicReleases = [
-  { title: "sever4user / Sib The Maid - cigarettes after cigarettes", cover: "covers/cigarettes after cigarettes.png", streamingUrl: "https://bandlink.com/" }
+  {
+    title: "sever4user / Sib The Maid - cigarettes after cigarettes",
+    cover: "covers/cigarettes after cigarettes.png",
+    streamingUrl: "https://bandlink.com/"
+  }
 ];
 
 const tabButtons = [...document.querySelectorAll(".tab")];
@@ -154,8 +158,10 @@ function renderOwnMusic() {
   ownMusicReleases.forEach((release) => {
     const card = document.createElement("article");
     card.className = "own-music-card";
+    // Кодируем путь к изображению для корректной работы с пробелами
+    const coverSrc = encodeURI(release.cover);
     card.innerHTML = `
-      <div class="own-music-cover"><img src="${release.cover}" alt="${release.title}" loading="lazy"></div>
+      <div class="own-music-cover"><img src="${coverSrc}" alt="${release.title}" loading="lazy" onerror="this.src='data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 width=%22200%22 height=%22200%22 viewBox=%220 0 200 200%22%3E%3Crect fill=%22%231f2937%22 width=%22200%22 height=%22200%22/%3E%3Ctext x=%2250%25%22 y=%2250%25%22 dominant-baseline=%22middle%22 text-anchor=%22middle%22 fill=%22%2358a6ff%22 font-size=%2212%22 font-family=%22monospace%22%3ENO COVER%3C/text%3E%3C/svg%3E'"></div>
       <div class="own-music-info"><h3 class="own-music-title">${release.title}</h3><a class="release-link streaming" href="${release.streamingUrl}" target="_blank" rel="noopener noreferrer">STREAMINGS</a></div>`;
     grid.appendChild(card);
   });
@@ -247,7 +253,6 @@ async function renderSoundtrackDropdowns() {
         playBtn.addEventListener("click", async () => {
           playUiClick();
           if (audio.paused) {
-            // Пауза всех остальных БЕЗ сброса времени
             document.querySelectorAll("audio").forEach(aud => {
               if (aud !== audio) {
                 aud.pause();
@@ -303,8 +308,6 @@ async function renderSoundtrackDropdowns() {
     dropdown.appendChild(header);
     dropdown.appendChild(content);
     soundtrackDropdowns.appendChild(dropdown);
-
-    // Плавное появление каждой категории с задержкой
     setTimeout(() => dropdown.classList.add("visible"), index * 80);
   });
 }
