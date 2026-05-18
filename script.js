@@ -1,26 +1,18 @@
 const GH_USER = "sever4user";
 const GH_REPO = "sever4user";
-
 const logsContent = `> BOOT SEQUENCE: sever4user // NODE: ARTIST PROFILE INITIALIZED
-
 I create audio-visual worlds at the intersection of music, 3D and narrative aesthetics.
 sever4user is a personal archive of sounds and experimental electronic artifacts.
-> All information on the site is for informational purposes only
-
+All information on the site is for informational purposes only
 Other projects:
-- sever4user // artsit, experimental electronics
+sever4user // artsit, experimental electronics
 https://band.link/sever4user
-
-> LOG STREAM READY`;
-
+LOG STREAM READY`;
 const contactsContent = `> SECURE CHANNEL OPEN
-
 MAIL: sever4user@gmail.com
 INST: @sever4user
 TG: @sever4user
-
-> AWAITING NEW CONNECTION...`;
-
+AWAITING NEW CONNECTION...`;
 // Soundtrack categories mapping to GitHub folders
 const soundtrackCategories = {
   kletka: { name: "KLETKA", folder: "soundtracks/kletka" },
@@ -28,7 +20,6 @@ const soundtrackCategories = {
   lights: { name: "AS THE LIGHTS FADE AWAY", folder: "soundtracks/lights" },
   mystuff: { name: "MY STUFF", folder: "soundtracks/mystuff" }
 };
-
 // My own music releases (edit this array to add/remove releases)
 const ownMusicReleases = [
   {
@@ -36,7 +27,6 @@ const ownMusicReleases = [
     cover: "covers/cover1.jpg",
     streamingUrl: "https://..." // Spotify/Apple Music/YouTube link
   }
-  // Add more releases here
 ];
 
 const tabButtons = [...document.querySelectorAll(".tab")];
@@ -68,10 +58,8 @@ const state = {
   audioCtx: null,
   humNodes: null,
   players: [],
-  keyBuffer: "",
   activeMusicCount: 0,
   masterVolume: AUDIO_TUNING.masterDefault,
-  rerenderAscii: null,
   liteMode: false,
   loadedSections: {
     music: false,
@@ -90,7 +78,6 @@ function detectLiteMode() {
   const cores = navigator.hardwareConcurrency || 8;
   const saveData = navigator.connection?.saveData === true;
   const reducedMotion = window.matchMedia?.("(prefers-reduced-motion: reduce)")?.matches === true;
-  
   return saveData || reducedMotion || memory <= 2 || cores <= 2;
 }
 
@@ -98,7 +85,6 @@ function playUiClick() {
   if (!state.sfxEnabled) return;
   const ctx = getAudioContext();
   if (!ctx) return;
-
   const now = ctx.currentTime;
   const osc = ctx.createOscillator();
   const gain = ctx.createGain();
@@ -133,7 +119,6 @@ function setSfxEnabled(value) {
 function startTerminalHum() {
   const ctx = getAudioContext();
   if (!ctx || state.humNodes) return;
-
   const brownFilter = ctx.createBiquadFilter();
   const lowpass = ctx.createBiquadFilter();
   const bass = ctx.createOscillator();
@@ -141,18 +126,15 @@ function startTerminalHum() {
   const noise = ctx.createBufferSource();
   const noiseGain = ctx.createGain();
   const master = ctx.createGain();
-
   bass.type = "sine";
   bass.frequency.value = 53;
   bassGain.gain.value = 0.0012;
-
   brownFilter.type = "lowshelf";
   brownFilter.frequency.value = 190;
   brownFilter.gain.value = 9;
   lowpass.type = "lowpass";
   lowpass.frequency.value = 520;
   lowpass.Q.value = 0.6;
-
   const bufferSize = ctx.sampleRate * 0.5;
   const buffer = ctx.createBuffer(1, bufferSize, ctx.sampleRate);
   const data = buffer.getChannelData(0);
@@ -164,10 +146,8 @@ function startTerminalHum() {
   }
   noise.buffer = buffer;
   noise.loop = true;
-
   noiseGain.gain.value = 0.0042;
   master.gain.value = AUDIO_TUNING.humMasterGain * state.masterVolume;
-
   bass.connect(bassGain);
   bassGain.connect(master);
   noise.connect(noiseGain);
@@ -175,7 +155,6 @@ function startTerminalHum() {
   brownFilter.connect(lowpass);
   lowpass.connect(master);
   master.connect(ctx.destination);
-
   bass.start();
   noise.start();
   state.humNodes = { noise, bass, master };
@@ -203,18 +182,14 @@ async function ensureSectionLoaded(sectionId) {
 
 function renderOwnMusic() {
   const grid = document.getElementById("ownMusicGrid");
-  
   if (!ownMusicReleases.length) {
     grid.innerHTML = `<p class="empty">No releases yet. Add your music in script.js</p>`;
     return;
   }
-
   grid.innerHTML = "";
-  
   ownMusicReleases.forEach((release) => {
     const card = document.createElement("article");
     card.className = "own-music-card";
-    
     card.innerHTML = `
       <div class="own-music-cover">
         <img src="${release.cover}" alt="${release.title}" loading="lazy">
@@ -224,7 +199,6 @@ function renderOwnMusic() {
         <a class="release-link streaming" href="${release.streamingUrl}" target="_blank" rel="noopener noreferrer">STREAMINGS</a>
       </div>
     `;
-    
     grid.appendChild(card);
   });
 }
@@ -238,8 +212,6 @@ function setTab(sectionId) {
   });
   statusLine.textContent = `STATUS: ONLINE // SECTION: ${sectionId.toUpperCase()}`;
   playUiClick();
-
-  // Показываем подтабы для Music
   if (sectionId === "music") {
     musicSubTabs.style.display = "flex";
     renderSoundtrackDropdowns();
@@ -248,7 +220,6 @@ function setTab(sectionId) {
     musicSubTabs.style.display = "none";
     document.getElementById("soundtrackCategoryList").innerHTML = "";
   }
-
   if (sectionId === "logs" && !state.typedSections.logs) {
     state.typedSections.logs = true;
     startTypewriter("logsTypewriter");
@@ -257,12 +228,10 @@ function setTab(sectionId) {
     state.typedSections.contacts = true;
     startTypewriter("contactsTypewriter");
   }
-
   if (sectionId === "visuals" && !state.loadedSections.visuals) {
     state.loadedSections.visuals = true;
     renderVisuals();
   }
-
   ensureSectionLoaded(sectionId).catch(() => {
     statusLine.textContent = "LOAD ERROR";
   });
@@ -270,7 +239,6 @@ function setTab(sectionId) {
 
 function loadMusicCategory(category) {
   state.currentMusicCategory = category;
-  
   if (category === "soundtracks") {
     document.getElementById("soundtracksSection").style.display = "block";
     document.getElementById("ownMusicSection").style.display = "none";
@@ -284,29 +252,22 @@ function loadMusicCategory(category) {
 
 function renderSoundtrackDropdowns() {
   soundtrackDropdowns.innerHTML = "";
-  
   Object.entries(soundtrackCategories).forEach(([key, { name, folder }]) => {
     const dropdown = document.createElement("div");
     dropdown.className = "soundtrack-dropdown";
     dropdown.dataset.category = key;
-    
     const header = document.createElement("button");
     header.className = "dropdown-header";
-    header.innerHTML = `<span>[ ${name} ]</span>`;
-    
+    header.innerHTML = `<span>[ ▶ ${name} ]</span>`;
     const content = document.createElement("div");
     content.className = "dropdown-content";
     const contentInner = document.createElement("div");
     contentInner.className = "dropdown-content-inner";
     contentInner.id = `tracks-${key}`;
     content.appendChild(contentInner);
-    
     header.addEventListener("click", async () => {
       playUiClick();
       const isOpen = header.classList.contains("active");
-      const categoryName = name;
-      
-      // Закрыть все остальные
       document.querySelectorAll(".dropdown-header").forEach(h => {
         h.classList.remove("active");
         const textSpan = h.querySelector("span");
@@ -316,22 +277,17 @@ function renderSoundtrackDropdowns() {
       document.querySelectorAll(".dropdown-content").forEach(c => {
         c.classList.remove("open");
       });
-      
       if (!isOpen) {
         header.classList.add("active");
-        header.innerHTML = `<span>[ ▼ ${categoryName} ]</span>`;
+        header.innerHTML = `<span>[ ▼ ${name} ]</span>`;
         content.classList.add("open");
-        
-        // Загрузить треки если ещё не загружены
         if (!contentInner.dataset.loaded) {
           const files = await resolveFiles(folder);
-          
           if (!files.length) {
             contentInner.innerHTML = `<p class="empty">No tracks found.</p>`;
           } else {
             contentInner.innerHTML = "";
             const target = contentInner;
-            
             files.forEach((file, index) => {
               const card = document.createElement("article");
               card.className = "track";
@@ -350,24 +306,18 @@ function renderSoundtrackDropdowns() {
                 </div>
                 <audio preload="metadata" controlslist="nodownload noplaybackrate" crossorigin="anonymous"></audio>
               `;
-              
               const audio = card.querySelector("audio");
               const playButton = card.querySelector(".play-btn");
               const stopButton = card.querySelector(".stop-btn");
               const seek = card.querySelector(".seek");
               const progress = card.querySelector(".seek-progress");
-              
               audio.src = file.url;
               audio.volume = state.masterVolume;
-              
               playButton.addEventListener("click", async () => {
                 playUiClick();
                 if (audio.paused) {
-                  // Остановить все треки во всех dropdown
                   document.querySelectorAll(".play-btn").forEach(btn => {
-                    if (btn !== playButton) {
-                      btn.classList.remove("is-playing");
-                    }
+                    if (btn !== playButton) btn.classList.remove("is-playing");
                   });
                   document.querySelectorAll("audio").forEach(aud => {
                     if (aud !== audio) {
@@ -386,7 +336,6 @@ function renderSoundtrackDropdowns() {
                   playButton.classList.remove("is-playing");
                 }
               });
-              
               stopButton.addEventListener("click", () => {
                 playUiClick();
                 audio.pause();
@@ -395,34 +344,27 @@ function renderSoundtrackDropdowns() {
                 progress.style.width = "0%";
                 seek.value = "0";
               });
-              
               seek.addEventListener("input", () => {
                 if (!Number.isFinite(audio.duration) || audio.duration <= 0) return;
                 audio.currentTime = Number(seek.value);
                 updateSeekVisual(seek, progress, audio);
               });
-              
               audio.addEventListener("timeupdate", () => {
                 updateSeekDebounced(seek, progress, audio);
               });
-              
               audio.addEventListener("play", () => {
                 playButton.classList.add("is-playing");
               });
-              
               audio.addEventListener("pause", () => {
                 playButton.classList.remove("is-playing");
               });
-              
               target.appendChild(card);
             });
-            
             contentInner.dataset.loaded = "true";
           }
         }
       }
     });
-    
     dropdown.appendChild(header);
     dropdown.appendChild(content);
     soundtrackDropdowns.appendChild(dropdown);
@@ -431,30 +373,23 @@ function renderSoundtrackDropdowns() {
 
 function loadSoundtrackCategory(category) {
   state.currentSoundtrackCategory = category;
-  
-  // Открыть соответствующий dropdown
   const header = document.querySelector(`.dropdown-header[data-category="${category}"]`);
-  if (header) {
-    header.click();
-  }
+  if (header) header.click();
 }
 
 function enhanceInteractiveText(target) {
   const plain = target.textContent || "";
-  
   const withLinks = plain.replace(
-    /(https?:\/\/[^\s]+|(?:github\.com|t\.me|instagram\.com|band\.link)\/[^\s]+)/gi,
+    /(https?:\/\/[^\s]+|(?:github.com|t.me|instagram.com|band.link)\/[^\s]+)/gi,
     (match) => {
       const href = match.startsWith("http") ? match : `https://${match}`;
       return `<a class="inline-link" target="_blank" rel="noopener noreferrer" href="${href}">${match}</a>`;
     }
   );
-  
   const withEmail = withLinks.replace(
     /([a-zA-Z0-9._-]+@[a-zA-Z0-9._-]+\.[a-zA-Z0-9._-]+)/g,
     (match) => `<button type="button" class="copy-mention" data-copy="${match}">${match}</button>`
   );
-  
   const withMentions = withEmail.replace(
     /(^|[\s(])(@[a-zA-Z0-9_.-]+)/g,
     (full, prefix, mention) =>
@@ -466,16 +401,12 @@ function enhanceInteractiveText(target) {
 function startTypewriter(targetId) {
   const target = document.getElementById(targetId);
   if (!target) return;
-
   const section = targetId === "logsTypewriter" ? "logs" : "contacts";
   currentTyping[section].text = 0;
-
   const text = section === "logs" ? logsContent : contactsContent;
-
   const cursor = document.createElement('span');
   cursor.className = 'cursor';
   target.appendChild(cursor);
-  
   const write = () => {
     if (currentTyping[section].text < text.length) {
       const currentCursor = target.querySelector('.cursor');
@@ -489,7 +420,6 @@ function startTypewriter(targetId) {
       if (finalCursor) finalCursor.style.display = 'none';
     }
   };
-
   write();
 }
 
@@ -514,9 +444,8 @@ async function listRepoFolderByApi(folder) {
 
 async function resolveFiles(folder) {
   const files = await listRepoFolderByApi(folder);
-  // Для папок visuals используем визуальные расширения, для остальных - аудио
-  const allowedExtensions = folder.startsWith("visuals") 
-    ? mediaExtensions.visuals 
+  const allowedExtensions = folder.startsWith("visuals")
+    ? mediaExtensions.visuals
     : mediaExtensions.audio;
   return files.filter((file) => extensionMatch(file.name, allowedExtensions));
 }
@@ -574,14 +503,12 @@ function configureLightbox() {
   const lightbox = document.getElementById("lightbox");
   const lightboxImage = document.getElementById("lightboxImage");
   const closeButton = document.getElementById("closeLightbox");
-
   const close = () => {
     lightbox.classList.remove("active");
     lightbox.setAttribute("aria-hidden", "true");
     lightboxImage.src = "";
     document.body.style.overflow = "";
   };
-
   closeButton.addEventListener("click", close);
   lightbox.addEventListener("click", (event) => {
     if (event.target === lightbox) close();
@@ -589,7 +516,6 @@ function configureLightbox() {
   document.addEventListener("keydown", (event) => {
     if (event.key === "Escape") close();
   });
-
   return (imageUrl) => {
     lightboxImage.src = imageUrl;
     lightbox.classList.add("active");
@@ -602,16 +528,13 @@ async function renderVisuals() {
   const visualGrid = document.getElementById("visualGrid");
   const files = await resolveFiles("visuals");
   const openLightbox = configureLightbox();
-
   if (!files.length) {
     renderEmpty(visualGrid, "Images not found in visuals folder.");
     return;
   }
-
   visualGrid.innerHTML = "";
   let cursor = 0;
   const batchSize = state.liteMode ? 8 : 16;
-
   const appendBatch = () => {
     const slice = files.slice(cursor, cursor + batchSize);
     slice.forEach((file) => {
@@ -624,17 +547,13 @@ async function renderVisuals() {
       visualGrid.appendChild(button);
     });
     cursor += slice.length;
-    if (cursor >= files.length) {
-      loadMoreButton.remove();
-    }
+    if (cursor >= files.length) loadMoreButton.remove();
   };
-
   const loadMoreButton = document.createElement("button");
   loadMoreButton.className = "load-more-visuals";
   loadMoreButton.type = "button";
   loadMoreButton.textContent = "[ LOAD MORE ]";
   loadMoreButton.addEventListener("click", appendBatch);
-
   appendBatch();
   if (cursor < files.length) {
     visualGrid.after(loadMoreButton);
@@ -643,7 +562,6 @@ async function renderVisuals() {
 
 function setupLazyImageLoading() {
   if (!("IntersectionObserver" in window)) return;
-  
   const imageObserver = new IntersectionObserver((entries) => {
     entries.forEach((entry) => {
       if (entry.isIntersecting) {
@@ -655,7 +573,6 @@ function setupLazyImageLoading() {
       }
     });
   }, { rootMargin: "200px" });
-
   document.querySelectorAll(".visual-item img[data-src]").forEach((img) => {
     imageObserver.observe(img);
   });
@@ -679,45 +596,17 @@ function setupClipboardMentions() {
   });
 }
 
-function setupEasterEggs() {
-  document.addEventListener("keydown", (event) => {
-    if (event.key.length !== 1) return;
-    state.keyBuffer = (state.keyBuffer + event.key.toLowerCase()).slice(-18);
-    if (state.keyBuffer.includes("sever")) {
-      document.body.classList.add("easter-sever");
-      statusLine.textContent = "EASTER MODE: SEVER";
-      state.rerenderAscii?.();
-      playUiClick();
-    }
-    if (state.keyBuffer.includes("lotus")) {
-      document.body.classList.remove("easter-sever");
-      statusLine.textContent = "EASTER MODE: LOTUS";
-      state.rerenderAscii?.();
-      playUiClick();
-    }
-  });
-}
-
 function setupAsciiVines() {
   const backdrop = document.getElementById("asciiVines");
   if (!backdrop) return;
-
-  const motifs = {
-    lotus: " --=<❀>=-- ",
-    buttercup: " --‹( ✿ )›-- "
-  };
-
+  const motif = " --=<❀>=-- ";
   const renderPattern = () => {
-    const motif = document.body.classList.contains("easter-sever") ? motifs.buttercup : motifs.lotus;
-    
     const fontPx = Math.max(14, Math.min(18, window.innerWidth * 0.022));
     const charWidth = fontPx * 0.6;
     const charHeight = fontPx * 1.35;
     const patternWidth = motif.length * charWidth;
-    
     const columns = Math.ceil(window.innerWidth / patternWidth) + 2;
     const rows = Math.ceil(window.innerHeight / charHeight) + 2;
-    
     let result = "";
     for (let y = 0; y < rows; y += 1) {
       const offset = y % 2 === 0 ? "" : " ".repeat(3);
@@ -726,16 +615,12 @@ function setupAsciiVines() {
     }
     backdrop.textContent = result;
   };
-
-  state.rerenderAscii = renderPattern;
   renderPattern();
-
   let resizeRaf = null;
   let resizeTimeout = null;
   window.addEventListener("resize", () => {
     if (resizeTimeout) clearTimeout(resizeTimeout);
     if (resizeRaf) cancelAnimationFrame(resizeRaf);
-    
     resizeTimeout = setTimeout(() => {
       resizeRaf = requestAnimationFrame(() => {
         renderPattern();
@@ -749,7 +634,6 @@ tabButtons.forEach((button) => {
   button.addEventListener("click", () => setTab(button.dataset.section));
 });
 
-// Music sub-tabs
 if (musicSubTabs) {
   musicSubTabs.querySelectorAll(".music-tab").forEach(tab => {
     tab.addEventListener("click", () => {
@@ -766,11 +650,9 @@ sfxToggle.addEventListener("click", () => {
   playUiClick();
 });
 
-// Volume slider with persistent display
 if (masterVolumeRange) {
   const initialValue = Number(masterVolumeRange.value) * 100;
   masterVolumeRange.style.setProperty('--progress', `${initialValue}%`);
-  
   masterVolumeRange.addEventListener("input", () => {
     const value = Number(masterVolumeRange.value);
     updateSfxVolume(value);
@@ -779,139 +661,38 @@ if (masterVolumeRange) {
   });
 }
 
-// Volume pop hover with delay
+// Volume pop hover with smooth CSS transition
 const volumeShell = document.querySelector(".master-volume-shell");
 const volumePop = document.querySelector(".master-volume-pop");
 let volumeHideTimer = null;
 
 if (volumeShell && volumePop) {
-  volumeShell.addEventListener("mouseenter", () => {
-    if (volumeHideTimer) {
-      clearTimeout(volumeHideTimer);
-      volumeHideTimer = null;
-    }
-    volumePop.style.display = "block";
-    volumePop.style.opacity = "1";
-    volumePop.style.visibility = "visible";
-  });
-  
-  volumeShell.addEventListener("mouseleave", () => {
+  const showPop = () => {
+    if (volumeHideTimer) clearTimeout(volumeHideTimer);
+    volumePop.classList.add("active");
+  };
+  const hidePop = () => {
     volumeHideTimer = setTimeout(() => {
-      volumePop.style.opacity = "0";
-      volumePop.style.visibility = "hidden";
-      setTimeout(() => {
-        volumePop.style.display = "none";
-      }, 300);
-    }, 1000); // 1 second delay
-  });
-  
-  volumePop.addEventListener("mouseenter", () => {
-    if (volumeHideTimer) {
-      clearTimeout(volumeHideTimer);
-      volumeHideTimer = null;
-    }
-  });
-  
-  volumePop.addEventListener("mouseleave", () => {
-    volumeHideTimer = setTimeout(() => {
-      volumePop.style.opacity = "0";
-      volumePop.style.visibility = "hidden";
-      setTimeout(() => {
-        volumePop.style.display = "none";
-      }, 300);
-    }, 1000); // 1 second delay
-  });
+      volumePop.classList.remove("active");
+    }, 1000);
+  };
+  volumeShell.addEventListener("mouseenter", showPop);
+  volumeShell.addEventListener("mouseleave", hidePop);
+  volumePop.addEventListener("mouseenter", showPop);
+  volumePop.addEventListener("mouseleave", hidePop);
 }
 
 async function init() {
   state.liteMode = detectLiteMode();
   document.body.classList.toggle("lite-mode", state.liteMode);
-
   if (masterVolumeRange) {
     masterVolumeRange.value = String(AUDIO_TUNING.masterDefault);
   }
   updateSfxVolume(AUDIO_TUNING.masterDefault);
-  
   setTab("logs");
   setupClipboardMentions();
-  setupEasterEggs();
   setupAsciiVines();
   setupLazyImageLoading();
 }
 
 init();
-
-/*
-================================================================================
-                          USER GUIDE / ИНСТРУКЦИЯ
-================================================================================
-
-HOW TO ADD NEW SOUNDTRACK CATEGORIES / КАК ДОБАВИТЬ НОВУЮ КАТЕГОРИЮ ТРЕКОВ:
-
-1. Open script.js and find this section (around line 16):
-   const soundtrackCategories = {
-     kletka: { name: "KLETKA", folder: "soundtracks/kletka" },
-     privet: { name: "PRIVET", folder: "soundtracks/privet" },
-     lights: { name: "AS THE LIGHTS FADE AWAY", folder: "soundtracks/lights" },
-     mystuff: { name: "MY STUFF", folder: "soundtracks/mystuff" }
-   };
-
-2. Add a new line following this format:
-   categoryKey: { name: "DISPLAY NAME", folder: "soundtracks/folder-name" },
-
-3. Create the folder in your GitHub repository:
-   soundtracks/
-   └── your-folder-name/
-
-4. Upload your .mp3, .ogg, .wav, or .m4a files to that folder
-
-5. Commit and push to GitHub - site will auto-update
-
-
-HOW TO ADD TRACKS TO "MY OWN MUSIC" / КАК ДОБАВИТЬ РЕЛИЗ:
-
-1. Create a "covers" folder in your repository root (separate from visuals)
-   covers/
-   └── your-cover-art.jpg
-
-2. Open script.js and find this section (around line 25):
-   const ownMusicReleases = [
-     {
-       title: "Release Title Example",
-       cover: "covers/cover1.jpg",
-       streamingUrl: "https://..."
-     }
-   ];
-
-3. Add a new release following this format:
-   {
-     title: "Your Track/Album Name",
-     cover: "covers/your-cover.jpg",
-     streamingUrl: "https://open.spotify.com/..." (or any streaming link)
-   },
-
-4. Upload your cover art (square image recommended) to the covers folder
-
-5. Commit and push to GitHub - site will auto-update
-
-
-FOLDER STRUCTURE / СТРУКТУРА ПАПОК:
-
-sever4user/
-├── soundtracks/
-│   ├── kletka/
-│   │   ├── track1.mp3
-│   │   └── track2.mp3
-│   ├── privet/
-│   ├── lights/
-│   └── mystuff/
-├── covers/                    (NEW - for release covers)
-│   ├── cover1.jpg
-│   └── cover2.jpg
-├── visuals/                   (for artwork/images)
-│   └── ...
-└── audio/                     (legacy - not used now)
-    └── ...
-
-================================================================================
-*/
