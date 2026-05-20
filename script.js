@@ -24,7 +24,6 @@ const soundtrackCategories = {
 };
 
 // ДАННЫЕ ПРОЕКТОВ
-// Ты можешь добавлять новые проекты, копируя блок {...}, и вставлять ссылки/картинки.
 const projectsData = [
   {
     id: "kletka",
@@ -170,7 +169,6 @@ function stopTerminalHum() {
   state.humNodes = null;
 }
 
-// Логика переключения вкладок внутри LOGS (About Me / Projects)
 function loadLogsTab(tabId) {
   logsTabBtns.forEach(btn => btn.classList.toggle("active", btn.dataset.logsubtab === tabId));
   document.getElementById("aboutContent").classList.toggle("active", tabId === "about");
@@ -185,10 +183,9 @@ function loadLogsTab(tabId) {
   }
 }
 
-// Рендер проектов
 function renderProjects() {
   const grid = document.getElementById("projectsGrid");
-  if (projectsRendered) return; // Рендерим только один раз
+  if (projectsRendered) return;
   grid.innerHTML = "";
 
   projectsData.forEach((project, index) => {
@@ -215,7 +212,6 @@ function renderProjects() {
   projectsRendered = true;
 }
 
-// Логика переключения главных вкладок
 function setTab(sectionId) {
   tabButtons.forEach((btn) => btn.classList.toggle("active", btn.dataset.section === sectionId));
   panels.forEach((panel) => panel.classList.toggle("active", panel.id === sectionId));
