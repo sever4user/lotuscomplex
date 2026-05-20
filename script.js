@@ -28,7 +28,7 @@ const soundtrackCategories = {
 const projectsData = [
   {
     title: "Project Name Example",
-    cover: "https://via.placeholder.com/600x338.png?text=Project+Cover",
+    cover: "projects/kletka.webp",
     year: "2024",
     role: "Composer & Sound Designer",
     tags: ["Game", "Horror", "Ambient"],
