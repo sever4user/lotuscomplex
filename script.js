@@ -23,6 +23,7 @@ const soundtrackCategories = {
   mystuff: { name: "MY STUFF", folder: "soundtracks/mystuff" }
 };
 
+// Обновлённые данные релиза (используй этот формат в будущем)
 const ownMusicReleases = [
   {
     title: "sever4user / Sib The Maid - cigarettes after cigarettes",
@@ -157,9 +158,10 @@ function renderOwnMusic() {
   ownMusicReleases.forEach((release) => {
     const card = document.createElement("article");
     card.className = "own-music-card";
+    // Кодируем путь к изображению для корректной работы с пробелами
     const coverSrc = encodeURI(release.cover);
     card.innerHTML = `
-      <div class="own-music-cover"><img src="${coverSrc}" alt="${release.title}" loading="lazy" onerror="this.parentElement.innerHTML='<div style=\\'width:100%;height:100%;background:#1f2937;display:flex;align-items:center;justify-content:center;color:#58a6ff;font-size:10px\\'>NO COVER</div>'"></div>
+      <div class="own-music-cover"><img src="${coverSrc}" alt="${release.title}" loading="lazy" onerror="this.src='data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 width=%22200%22 height=%22200%22 viewBox=%220 0 200 200%22%3E%3Crect fill=%22%231f2937%22 width=%22200%22 height=%22200%22/%3E%3Ctext x=%2250%25%22 y=%2250%25%22 dominant-baseline=%22middle%22 text-anchor=%22middle%22 fill=%22%2358a6ff%22 font-size=%2212%22 font-family=%22monospace%22%3ENO COVER%3C/text%3E%3C/svg%3E'"></div>
       <div class="own-music-info"><h3 class="own-music-title">${release.title}</h3><a class="release-link streaming" href="${release.streamingUrl}" target="_blank" rel="noopener noreferrer">STREAMINGS</a></div>`;
     grid.appendChild(card);
   });
@@ -185,16 +187,9 @@ function setTab(sectionId) {
 
 function loadMusicCategory(category) {
   state.currentMusicCategory = category;
-  const soundtracksSection = document.getElementById("soundtracksSection");
-  const ownMusicSection = document.getElementById("ownMusicSection");
-  if (category === "soundtracks") {
-    soundtracksSection.style.display = "block";
-    ownMusicSection.style.display = "none";
-  } else {
-    soundtracksSection.style.display = "none";
-    ownMusicSection.style.display = "block";
-    renderOwnMusic();
-  }
+  document.getElementById("soundtracksSection").style.display = category === "soundtracks" ? "block" : "none";
+  document.getElementById("ownMusicSection").style.display = category === "ownmusic" ? "block" : "none";
+  if (category === "ownmusic") renderOwnMusic();
 }
 
 function formatTime(seconds) {
@@ -456,6 +451,7 @@ function setupAsciiVines() {
   window.addEventListener("resize", () => { clearTimeout(t); if (raf) cancelAnimationFrame(raf); t = setTimeout(() => { raf = requestAnimationFrame(() => { render(); raf = null; }); }, 300); });
 }
 
+// Инициализация событий
 tabButtons.forEach(btn => btn.addEventListener("click", () => setTab(btn.dataset.section)));
 if (musicSubTabs) {
   musicSubTabs.querySelectorAll(".music-tab").forEach(tab => {
