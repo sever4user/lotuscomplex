@@ -24,8 +24,7 @@ const soundtrackCategories = {
 };
 
 // ДАННЫЕ ПРОЕКТОВ
-// cover: Путь к картинке (лучше всего хранить в папке projects/ в репозитории)
-// links: Можно добавить несколько кнопок
+// Ты можешь добавлять новые проекты, копируя блок {...}, и вставлять ссылки/картинки.
 const projectsData = [
   {
     id: "kletka",
@@ -73,7 +72,6 @@ const logsSubTabs = document.getElementById("logsSubTabs");
 const logsTabBtns = logsSubTabs ? [...logsSubTabs.querySelectorAll(".music-tab")] : [];
 
 let currentTyping = { logs: { text: 0, animId: null }, contacts: { text: 0, animId: null } };
-let currentLogsTab = "about";
 let projectsRendered = false;
 
 const AUDIO_TUNING = { masterDefault: 0.62, clickPeak: 0.044, humMasterGain: 2.88 };
@@ -172,8 +170,8 @@ function stopTerminalHum() {
   state.humNodes = null;
 }
 
+// Логика переключения вкладок внутри LOGS (About Me / Projects)
 function loadLogsTab(tabId) {
-  currentLogsTab = tabId;
   logsTabBtns.forEach(btn => btn.classList.toggle("active", btn.dataset.logsubtab === tabId));
   document.getElementById("aboutContent").classList.toggle("active", tabId === "about");
   document.getElementById("projectsContent").classList.toggle("active", tabId === "projects");
@@ -187,16 +185,16 @@ function loadLogsTab(tabId) {
   }
 }
 
+// Рендер проектов
 function renderProjects() {
   const grid = document.getElementById("projectsGrid");
-  if (projectsRendered) return;
+  if (projectsRendered) return; // Рендерим только один раз
   grid.innerHTML = "";
 
   projectsData.forEach((project, index) => {
     const card = document.createElement("article");
     card.className = "own-music-card soundtrack-dropdown visible";
-    card.style.animationDelay = `${index * 0.1}s`;
-
+    
     let linksHtml = project.links.map(l => 
       `<a class="release-link" href="${l.url}" target="_blank" rel="noopener">${l.label}</a>`
     ).join('');
@@ -217,13 +215,12 @@ function renderProjects() {
   projectsRendered = true;
 }
 
+// Логика переключения главных вкладок
 function setTab(sectionId) {
   tabButtons.forEach((btn) => btn.classList.toggle("active", btn.dataset.section === sectionId));
   panels.forEach((panel) => panel.classList.toggle("active", panel.id === sectionId));
   
-  // Удаляем "Panel" для статуса (logsPanel -> LOGS)
-  const statusName = sectionId.replace("Panel", "").toUpperCase();
-  statusLine.textContent = `STATUS: ONLINE // SECTION: ${statusName}`;
+  statusLine.textContent = `STATUS: ONLINE // SECTION: ${sectionId.replace("Panel", "").toUpperCase()}`;
   playUiClick();
 
   if (sectionId === "logsPanel") {
@@ -528,7 +525,7 @@ function setupClipboardMentions() {
   });
 }
 
-// Init
+// Инициализация событий
 tabButtons.forEach(btn => btn.addEventListener("click", () => setTab(btn.dataset.section)));
 logsTabBtns.forEach(btn => btn.addEventListener("click", () => { playUiClick(); loadLogsTab(btn.dataset.logsubtab); }));
 if (musicSubTabs) {
