@@ -3,16 +3,18 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="sever4user - artist, experimental electronics">
+  <meta name="theme-color" content="#14171a">
   <title>sever4user</title>
-  <link rel="stylesheet" href="style.css">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
 </head>
 <body>
-  <div class="ascii-vines" id="asciiVines"></div>
-  <div class="scan-overlay"></div>
-  <div class="pulse-noise"></div>
+  <div class="scan-overlay" aria-hidden="true"></div>
+  <div class="pulse-noise" aria-hidden="true"></div>
+  <pre id="asciiVines" class="ascii-vines" aria-hidden="true"></pre>
 
   <div class="page">
     <header class="project-header">
@@ -20,7 +22,7 @@
       <p class="subtitle">ARTIST // EXPERIMENTAL ELECTRONICS</p>
     </header>
 
-    <nav class="tabs">
+    <nav class="tabs" aria-label="Sections">
       <button class="tab active" data-section="logs">[ LOGS ]</button>
       <button class="tab" data-section="music">[ MUSIC ]</button>
       <button class="tab" data-section="visuals">[ VISUALS ]</button>
@@ -30,59 +32,57 @@
     <div class="status-wrap">
       <p id="statusLine" class="status-line">STATUS: ONLINE // SECTION: LOGS</p>
       <div class="audio-controls">
-        <button id="sfxToggle" class="sfx-toggle" aria-pressed="false">SFX: OFF</button>
         <div class="master-volume-shell">
-          <button class="tab master-volume-btn" aria-label="Volume Control">VOLUME</button>
+          <button id="masterVolumeBtn" class="sfx-toggle master-volume-btn" type="button" aria-label="Master SFX volume">
+            VOLUME
+          </button>
           <div class="master-volume-pop">
-            <input id="masterVolumeRange" class="volume-range" type="range" min="0" max="1" step="0.01" value="0.62">
+            <input id="masterVolumeRange" class="volume-range" type="range" min="0" max="1" step="0.01" value="0.6" aria-label="Master SFX volume">
           </div>
         </div>
+        <button id="sfxToggle" class="sfx-toggle" type="button" aria-pressed="false">SFX: OFF</button>
       </div>
     </div>
 
-    <!-- LOGS PANEL -->
-    <section id="logsPanel" class="panel active">
-      <div id="logsSubTabs" class="music-sub-tabs" style="display:none;">
-        <button class="music-tab active" data-logs-tab="about">ABOUT ME</button>
-        <button class="music-tab" data-logs-tab="projects">PROJECTS</button>
-      </div>
-      <div id="aboutContent" class="logs-tab-content active">
-        <p id="logsTypewriter" class="terminal-text"></p>
-      </div>
-      <div id="projectsContent" class="logs-tab-content" style="display:none;">
-        <div id="projectsGrid" class="own-music-grid"></div>
-      </div>
-    </section>
+    <!-- Music Sub-tabs (под STATUS) -->
+    <nav id="musicTabs" class="music-sub-tabs" aria-label="Music categories" style="display: none;">
+      <button class="music-tab active" data-category="soundtracks">[ SOUNDTRACKS ]</button>
+      <button class="music-tab" data-category="own">[ MY OWN MUSIC ]</button>
+    </nav>
 
-    <!-- MUSIC PANEL -->
-    <section id="musicPanel" class="panel">
-      <div id="musicTabs" class="music-sub-tabs">
-        <button class="music-tab active" data-category="soundtracks">SOUNDTRACKS</button>
-        <button class="music-tab" data-category="ownmusic">MY OWN MUSIC</button>
-      </div>
-      <div id="soundtracksSection">
-        <div id="soundtrackDropdowns"></div>
-      </div>
-      <div id="ownMusicSection" style="display:none;">
-        <div id="ownMusicGrid" class="own-music-grid"></div>
-      </div>
-    </section>
+    <main>
+      <section id="logs" class="panel active" aria-live="polite">
+        <div id="logsTypewriter" class="terminal-text"></div>
+      </section>
 
-    <!-- VISUALS PANEL -->
-    <section id="visualsPanel" class="panel">
-      <div id="visualGrid" class="visual-grid"></div>
-    </section>
+      <section id="music" class="panel">
+        <div id="musicTabsContainer">
+          <!-- Soundtracks Section -->
+          <div id="soundtracksSection">
+            <div id="soundtrackDropdowns"></div>
+            <div id="soundtrackCategoryList" class="music-list"></div>
+          </div>
+          
+          <!-- My Own Music Section -->
+          <div id="ownMusicSection" style="display: none;">
+            <div id="ownMusicGrid" class="own-music-grid"></div>
+          </div>
+        </div>
+      </section>
 
-    <!-- CONTACTS PANEL -->
-    <section id="contactsPanel" class="panel">
-      <p id="contactsTypewriter" class="terminal-text"></p>
-    </section>
+      <section id="visuals" class="panel">
+        <div id="visualGrid" class="visual-grid"></div>
+      </section>
+
+      <section id="contacts" class="panel">
+        <div id="contactsTypewriter" class="terminal-text"></div>
+      </section>
+    </main>
   </div>
 
-  <!-- Lightbox -->
   <div id="lightbox" class="lightbox" aria-hidden="true">
-    <button id="closeLightbox" class="close-lightbox">[ CLOSE ]</button>
-    <img id="lightboxImage" src="" alt="Preview">
+    <button id="closeLightbox" class="close-lightbox" aria-label="Close">[X]</button>
+    <img id="lightboxImage" alt="Fullscreen artwork">
   </div>
 
   <script src="script.js"></script>
