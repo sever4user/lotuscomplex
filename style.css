@@ -343,6 +343,21 @@ body {
 .master-volume-btn {
   margin-right: 0;
   width: 100%;
+  background: transparent;
+  border: 1px solid var(--border);
+  color: var(--text);
+  padding: 0.5rem 1rem;
+  cursor: pointer;
+  font-family: inherit;
+  font-size: 0.8rem;
+  transition: all 0.2s ease;
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+
+.master-volume-btn:hover {
+  border-color: var(--primary);
+  color: var(--primary);
 }
 
 .master-volume-pop {
