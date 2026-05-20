@@ -60,11 +60,7 @@ body {
   height: 100%;
   pointer-events: none;
   z-index: 1;
-  background: linear-gradient(
-    to bottom,
-    transparent 50%,
-    rgba(0, 0, 0, 0.1) 50%
-  );
+  background: linear-gradient(to bottom, transparent 50%, rgba(0, 0, 0, 0.1) 50%);
   background-size: 100% 4px;
   opacity: 0.3;
 }
