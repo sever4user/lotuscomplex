@@ -6,7 +6,7 @@ I create audio-visual worlds at the intersection of music, 3D and narrative aest
 sever4user is a personal archive of sounds and experimental electronic artifacts.
 All information on the site is for informational purposes only
 Other projects:
-sever4user // artsit, experimental electronics
+sever4user // artist, experimental electronics
 https://band.link/sever4user
 LOG STREAM READY`;
 
@@ -16,12 +16,30 @@ INST: @sever4user
 TG: @sever4user
 AWAITING NEW CONNECTION...`;
 
+// Soundtrack categories
 const soundtrackCategories = {
   kletka: { name: "KLETKA", folder: "soundtracks/kletka" },
   privet: { name: "PRIVET", folder: "soundtracks/privet" },
   lights: { name: "AS THE LIGHTS FADE AWAY", folder: "soundtracks/lights" },
   mystuff: { name: "MY STUFF", folder: "soundtracks/mystuff" }
 };
+
+// Projects data
+const projectsData = [
+  {
+    title: "Project Name Example",
+    cover: "https://via.placeholder.com/600x338.png?text=Project+Cover",
+    year: "2024",
+    role: "Composer & Sound Designer",
+    tags: ["Game", "Horror", "Ambient"],
+    desc: "A brief description of the project and your contribution. Describe the aesthetic and sound design approach here.",
+    links: [
+      { label: "GitHub", url: "https://github.com" },
+      { label: "Itch.io", url: "https://itch.io" }
+    ]
+  }
+  // Add more projects here
+];
 
 const ownMusicReleases = [
   {
@@ -31,18 +49,17 @@ const ownMusicReleases = [
   }
 ];
 
-const tabButtons = [...document.querySelectorAll(".tab")];
+const tabButtons = [...document.querySelectorAll(".tab[data-section]")];
 const panels = [...document.querySelectorAll(".panel")];
 const statusLine = document.getElementById("statusLine");
 const sfxToggle = document.getElementById("sfxToggle");
 const masterVolumeRange = document.getElementById("masterVolumeRange");
 const musicSubTabs = document.getElementById("musicTabs");
 const soundtrackDropdowns = document.getElementById("soundtrackDropdowns");
+const logsSubTabs = document.getElementById("logsSubTabs");
+const logsTabBtns = logsSubTabs ? [...logsSubTabs.querySelectorAll(".music-tab")] : [];
 
-let currentTyping = {
-  logs: { text: 0, animId: null },
-  contacts: { text: 0, animId: null }
-};
+let currentTyping = { logs: { text: 0, animId: null }, contacts: { text: 0, animId: null } };
 
 const AUDIO_TUNING = { masterDefault: 0.62, clickPeak: 0.044, humMasterGain: 2.88 };
 const mediaExtensions = {
@@ -51,7 +68,7 @@ const mediaExtensions = {
 };
 
 const state = {
-  sfxEnabled: false, audioCtx: null, humNodes: null, activeMusicCount: 0,
+  sfxEnabled: false, audioCtx: null, humNodes: null,
   masterVolume: AUDIO_TUNING.masterDefault, liteMode: false,
   loadedSections: { music: false, visuals: false },
   typedSections: { logs: false, contacts: false },
@@ -97,7 +114,7 @@ function setSfxEnabled(value) {
   state.sfxEnabled = value;
   sfxToggle.textContent = value ? "SFX: ON" : "SFX: OFF";
   sfxToggle.setAttribute("aria-pressed", value ? "true" : "false");
-  if (value && state.activeMusicCount === 0) startTerminalHum();
+  if (value) startTerminalHum();
   else stopTerminalHum();
 }
 
@@ -165,36 +182,85 @@ function renderOwnMusic() {
   });
 }
 
+function renderProjects() {
+  const grid = document.getElementById("projectsGrid");
+  if (grid.children.length > 0) return;
+  grid.innerHTML = "";
+
+  projectsData.forEach((project, index) => {
+    const card = document.createElement("article");
+    card.className = "project-card";
+    card.style.opacity = "0";
+    card.style.transform = "translateY(10px)";
+    
+    const tagsHtml = project.tags.map(tag => `<span class="tag">${tag}</span>`).join('');
+    const linksHtml = project.links.map(link => `<a class="project-link" href="${link.url}" target="_blank" rel="noopener noreferrer">${link.label}</a>`).join('');
+
+    card.innerHTML = `
+      <div class="project-card-cover"><img src="${project.cover}" alt="${project.title}" loading="lazy" onerror="this.style.display='none'"></div>
+      <div class="project-info">
+        <h3 class="project-title">${project.title}</h3>
+        <div class="project-meta"><span>${project.year}</span><span>|</span><span>${project.role}</span></div>
+        <div class="project-tags">${tagsHtml}</div>
+        <p class="project-desc">${project.desc}</p>
+        <div class="project-links">${linksHtml}</div>
+      </div>
+    `;
+    grid.appendChild(card);
+    
+    setTimeout(() => {
+      card.style.transition = "opacity 0.4s ease, transform 0.4s ease";
+      card.style.opacity = "1";
+      card.style.transform = "translateY(0)";
+    }, index * 100);
+  });
+}
+
 function setTab(sectionId) {
   tabButtons.forEach((btn) => btn.classList.toggle("active", btn.dataset.section === sectionId));
-  panels.forEach((panel) => panel.classList.toggle("active", panel.id === sectionId));
+  panels.forEach((panel) => panel.classList.toggle("active", panel.id === `${sectionId}Panel`));
   statusLine.textContent = `STATUS: ONLINE // SECTION: ${sectionId.toUpperCase()}`;
   playUiClick();
-  if (sectionId === "music") {
+
+  if (sectionId === "logs") {
+    logsSubTabs.style.display = "flex";
+    musicSubTabs.style.display = "none";
+    loadLogsTab("about");
+  } else if (sectionId === "music") {
+    logsSubTabs.style.display = "none";
     musicSubTabs.style.display = "flex";
     renderSoundtrackDropdowns();
+    loadMusicCategory("soundtracks");
   } else {
+    logsSubTabs.style.display = "none";
     musicSubTabs.style.display = "none";
-    soundtrackDropdowns.innerHTML = "";
   }
+
   if (sectionId === "logs" && !state.typedSections.logs) { state.typedSections.logs = true; startTypewriter("logsTypewriter"); }
   if (sectionId === "contacts" && !state.typedSections.contacts) { state.typedSections.contacts = true; startTypewriter("contactsTypewriter"); }
   if (sectionId === "visuals" && !state.loadedSections.visuals) { state.loadedSections.visuals = true; renderVisuals(); }
+  
   ensureSectionLoaded(sectionId).catch(() => { statusLine.textContent = "LOAD ERROR"; });
+}
+
+function loadLogsTab(tab) {
+  logsTabBtns.forEach(btn => btn.classList.toggle("active", btn.dataset.logTab === tab));
+  document.getElementById("aboutContent").classList.toggle("active", tab === "about");
+  document.getElementById("projectsContent").classList.toggle("active", tab === "projects");
+  
+  if (tab === "about" && !state.typedSections.logs) {
+    state.typedSections.logs = true;
+    startTypewriter("logsTypewriter");
+  } else if (tab === "projects") {
+    renderProjects();
+  }
 }
 
 function loadMusicCategory(category) {
   state.currentMusicCategory = category;
-  const soundtracksSection = document.getElementById("soundtracksSection");
-  const ownMusicSection = document.getElementById("ownMusicSection");
-  if (category === "soundtracks") {
-    soundtracksSection.style.display = "block";
-    ownMusicSection.style.display = "none";
-  } else {
-    soundtracksSection.style.display = "none";
-    ownMusicSection.style.display = "block";
-    renderOwnMusic();
-  }
+  document.getElementById("soundtracksSection").style.display = category === "soundtracks" ? "block" : "none";
+  document.getElementById("ownMusicSection").style.display = category === "ownmusic" ? "block" : "none";
+  if (category === "ownmusic") renderOwnMusic();
 }
 
 function formatTime(seconds) {
@@ -205,7 +271,7 @@ function formatTime(seconds) {
 }
 
 async function renderSoundtrackDropdowns() {
-  soundtrackDropdowns.innerHTML = "";
+  if (soundtrackDropdowns.children.length > 0) return;
   const categoryPromises = Object.entries(soundtrackCategories).map(async ([key, { name, folder }]) => {
     const files = await resolveFiles(folder);
     return { key, name, files };
@@ -456,17 +522,21 @@ function setupAsciiVines() {
   window.addEventListener("resize", () => { clearTimeout(t); if (raf) cancelAnimationFrame(raf); t = setTimeout(() => { raf = requestAnimationFrame(() => { render(); raf = null; }); }, 300); });
 }
 
+// Инициализация событий
 tabButtons.forEach(btn => btn.addEventListener("click", () => setTab(btn.dataset.section)));
+logsTabBtns.forEach(btn => btn.addEventListener("click", () => { playUiClick(); loadLogsTab(btn.dataset.logTab); }));
+
 if (musicSubTabs) {
   musicSubTabs.querySelectorAll(".music-tab").forEach(tab => {
     tab.addEventListener("click", () => {
       playUiClick();
-      document.querySelectorAll(".music-tab").forEach(t => t.classList.remove("active"));
+      document.querySelectorAll("#musicTabs .music-tab").forEach(t => t.classList.remove("active"));
       tab.classList.add("active");
       loadMusicCategory(tab.dataset.category);
     });
   });
 }
+
 sfxToggle.addEventListener("click", () => { setSfxEnabled(!state.sfxEnabled); playUiClick(); });
 
 if (masterVolumeRange) {
