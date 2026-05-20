@@ -21,10 +21,10 @@
     </header>
 
     <nav class="tabs">
-      <button class="tab active" data-section="logsPanel">[ LOGS ]</button>
-      <button class="tab" data-section="musicPanel">[ MUSIC ]</button>
-      <button class="tab" data-section="visualsPanel">[ VISUALS ]</button>
-      <button class="tab" data-section="contactsPanel">[ CONTACTS ]</button>
+      <button class="tab active" data-section="logs">[ LOGS ]</button>
+      <button class="tab" data-section="music">[ MUSIC ]</button>
+      <button class="tab" data-section="visuals">[ VISUALS ]</button>
+      <button class="tab" data-section="contacts">[ CONTACTS ]</button>
     </nav>
 
     <div class="status-wrap">
@@ -42,16 +42,14 @@
 
     <!-- LOGS PANEL -->
     <section id="logsPanel" class="panel active">
-      <div id="logsSubTabs" class="music-sub-tabs">
-        <button class="music-tab active" data-logsubtab="about">ABOUT ME</button>
-        <button class="music-tab" data-logsubtab="projects">PROJECTS</button>
+      <div id="logsSubTabs" class="music-sub-tabs" style="display:none;">
+        <button class="music-tab active" data-logs-tab="about">ABOUT ME</button>
+        <button class="music-tab" data-logs-tab="projects">PROJECTS</button>
       </div>
-      
-      <div id="aboutContent" class="log-sub-content active">
+      <div id="aboutContent" class="logs-tab-content active">
         <p id="logsTypewriter" class="terminal-text"></p>
       </div>
-      
-      <div id="projectsContent" class="log-sub-content" style="display:none;">
+      <div id="projectsContent" class="logs-tab-content" style="display:none;">
         <div id="projectsGrid" class="own-music-grid"></div>
       </div>
     </section>
@@ -81,6 +79,7 @@
     </section>
   </div>
 
+  <!-- Lightbox -->
   <div id="lightbox" class="lightbox" aria-hidden="true">
     <button id="closeLightbox" class="close-lightbox">[ CLOSE ]</button>
     <img id="lightboxImage" src="" alt="Preview">
