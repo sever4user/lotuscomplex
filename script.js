@@ -24,24 +24,26 @@ const soundtrackCategories = {
 };
 
 // ДАННЫЕ ПРОЕКТОВ
+// Ты можешь добавлять новые проекты, копируя блок {...}, и вставлять ссылки/картинки.
 const projectsData = [
   {
     id: "kletka",
     name: "KLETKA",
     cover: "https://via.placeholder.com/300/58a6ff/0d1117?text=KLETKA",
-    desc: "Atmospheric horror game set in an abandoned facility. Sound design focuses on ambient tension.",
+    desc: "Atmospheric horror game set in an abandoned facility. Sound design focuses on ambient tension, industrial drones and psychological unease.",
     year: "2024",
     role: "Sound Design / Composition",
     tags: ["Horror", "Game", "Ambient"],
     links: [
-      { label: "Play on Itch", url: "https://itch.io" }
+      { label: "Play on Itch", url: "https://itch.io" },
+      { label: "GitHub", url: "https://github.com" }
     ]
   },
   {
     id: "privet",
     name: "PRIVET",
     cover: "https://via.placeholder.com/300/79c0ff/0d1117?text=PRIVET",
-    desc: "Experimental narrative project exploring digital isolation.",
+    desc: "Experimental narrative project exploring digital isolation. Score combines glitch textures, field recordings with evolving melodic motifs.",
     year: "2023",
     role: "Audio Direction",
     tags: ["Experimental", "Narrative"],
@@ -59,7 +61,7 @@ const ownMusicReleases = [
   }
 ];
 
-const tabButtons = [...document.querySelectorAll(".tab")];
+const tabButtons = [...document.querySelectorAll(".tabs .tab")];
 const panels = [...document.querySelectorAll(".panel")];
 const statusLine = document.getElementById("statusLine");
 const sfxToggle = document.getElementById("sfxToggle");
@@ -69,10 +71,7 @@ const soundtrackDropdowns = document.getElementById("soundtrackDropdowns");
 const logsSubTabs = document.getElementById("logsSubTabs");
 const logsTabBtns = logsSubTabs ? [...logsSubTabs.querySelectorAll(".music-tab")] : [];
 
-let currentTyping = {
-  logs: { text: 0, animId: null },
-  contacts: { text: 0, animId: null }
-};
+let currentTyping = { logs: { text: 0, animId: null }, contacts: { text: 0, animId: null } };
 let projectsRendered = false;
 
 const AUDIO_TUNING = { masterDefault: 0.62, clickPeak: 0.044, humMasterGain: 2.88 };
@@ -82,7 +81,7 @@ const mediaExtensions = {
 };
 
 const state = {
-  sfxEnabled: false, audioCtx: null, humNodes: null,
+  sfxEnabled: false, audioCtx: null, humNodes: null, activeMusicCount: 0,
   masterVolume: AUDIO_TUNING.masterDefault, liteMode: false,
   loadedSections: { music: false, visuals: false },
   typedSections: { logs: false, contacts: false },
@@ -128,7 +127,7 @@ function setSfxEnabled(value) {
   state.sfxEnabled = value;
   sfxToggle.textContent = value ? "SFX: ON" : "SFX: OFF";
   sfxToggle.setAttribute("aria-pressed", value ? "true" : "false");
-  if (value) startTerminalHum();
+  if (value && state.activeMusicCount === 0) startTerminalHum();
   else stopTerminalHum();
 }
 
@@ -171,7 +170,7 @@ function stopTerminalHum() {
   state.humNodes = null;
 }
 
-// Логика переключения подтабов LOGS
+// Логика переключения вкладок внутри LOGS (About Me / Projects)
 function loadLogsTab(tabId) {
   logsTabBtns.forEach(btn => btn.classList.toggle("active", btn.dataset.logsubtab === tabId));
   document.getElementById("aboutContent").classList.toggle("active", tabId === "about");
@@ -189,12 +188,12 @@ function loadLogsTab(tabId) {
 // Рендер проектов
 function renderProjects() {
   const grid = document.getElementById("projectsGrid");
-  if (projectsRendered) return;
+  if (projectsRendered) return; // Рендерим только один раз
   grid.innerHTML = "";
 
   projectsData.forEach((project, index) => {
     const card = document.createElement("article");
-    card.className = "own-music-card";
+    card.className = "own-music-card soundtrack-dropdown visible";
     
     let linksHtml = project.links.map(l => 
       `<a class="release-link" href="${l.url}" target="_blank" rel="noopener">${l.label}</a>`
@@ -216,18 +215,19 @@ function renderProjects() {
   projectsRendered = true;
 }
 
+// Логика переключения главных вкладок
 function setTab(sectionId) {
   tabButtons.forEach((btn) => btn.classList.toggle("active", btn.dataset.section === sectionId));
-  panels.forEach((panel) => panel.classList.toggle("active", panel.id === `${sectionId}Panel`));
+  panels.forEach((panel) => panel.classList.toggle("active", panel.id === sectionId));
   
-  statusLine.textContent = `STATUS: ONLINE // SECTION: ${sectionId.toUpperCase()}`;
+  statusLine.textContent = `STATUS: ONLINE // SECTION: ${sectionId.replace("Panel", "").toUpperCase()}`;
   playUiClick();
 
-  if (sectionId === "logs") {
+  if (sectionId === "logsPanel") {
     logsSubTabs.style.display = "flex";
     musicSubTabs.style.display = "none";
     loadLogsTab("about");
-  } else if (sectionId === "music") {
+  } else if (sectionId === "musicPanel") {
     logsSubTabs.style.display = "none";
     musicSubTabs.style.display = "flex";
     renderSoundtrackDropdowns();
@@ -237,11 +237,11 @@ function setTab(sectionId) {
     musicSubTabs.style.display = "none";
   }
 
-  if (sectionId === "visuals" && !state.loadedSections.visuals) {
+  if (sectionId === "visualsPanel" && !state.loadedSections.visuals) {
     state.loadedSections.visuals = true;
     renderVisuals();
   }
-  if (sectionId === "contacts" && !state.typedSections.contacts) {
+  if (sectionId === "contactsPanel" && !state.typedSections.contacts) {
     state.typedSections.contacts = true;
     startTypewriter("contactsTypewriter");
   }
@@ -308,9 +308,8 @@ async function renderSoundtrackDropdowns() {
               <button type="button" class="track-btn stop-btn" aria-label="Stop"></button>
             </div>
             <div class="seek-wrap">
-              <div class="seek-base"></div>
-              <div class="seek-progress"></div>
               <input class="seek" type="range" min="0" max="100" step="0.01" value="0" aria-label="Seek">
+              <span class="track-time">0:00 / 0:00</span>
             </div>
           </div>
           <audio preload="metadata" controlslist="nodownload noplaybackrate" crossorigin="anonymous"></audio>`;
@@ -319,7 +318,7 @@ async function renderSoundtrackDropdowns() {
         const playBtn = card.querySelector(".play-btn");
         const stopBtn = card.querySelector(".stop-btn");
         const seek = card.querySelector(".seek");
-        const progress = card.querySelector(".seek-progress");
+        const timeEl = card.querySelector(".track-time");
 
         audio.src = file.url;
         audio.volume = state.masterVolume;
@@ -346,7 +345,7 @@ async function renderSoundtrackDropdowns() {
           audio.currentTime = 0;
           playBtn.classList.remove("is-playing");
           seek.value = "0";
-          progress.style.width = "0%";
+          timeEl.textContent = "0:00 / 0:00";
         });
 
         seek.addEventListener("input", () => {
@@ -359,8 +358,7 @@ async function renderSoundtrackDropdowns() {
           if (!Number.isFinite(audio.duration) || audio.duration <= 0) return;
           seek.max = String(audio.duration);
           seek.value = String(audio.currentTime);
-          const ratio = (audio.currentTime / audio.duration) * 100;
-          progress.style.width = `${Math.min(100, ratio)}%`;
+          timeEl.textContent = `${formatTime(audio.currentTime)} / ${formatTime(audio.duration)}`;
         };
 
         audio.addEventListener("timeupdate", updateUI);
@@ -383,7 +381,15 @@ async function renderSoundtrackDropdowns() {
     dropdown.appendChild(header);
     dropdown.appendChild(content);
     soundtrackDropdowns.appendChild(dropdown);
+    setTimeout(() => dropdown.classList.add("visible"), index * 80);
   });
+}
+
+function formatTime(seconds) {
+  if (!Number.isFinite(seconds)) return "0:00";
+  const m = Math.floor(seconds / 60);
+  const s = Math.floor(seconds % 60);
+  return `${m}:${s.toString().padStart(2, "0")}`;
 }
 
 function enhanceInteractiveText(target) {
@@ -514,7 +520,7 @@ function setupClipboardMentions() {
     try {
       await navigator.clipboard.writeText(val);
       statusLine.textContent = `COPIED TO CLIPBOARD: ${val}`;
-      setTimeout(() => { const a = document.querySelector(".tab.active")?.dataset.section || "logs"; statusLine.textContent = `STATUS: ONLINE // SECTION: ${a.toUpperCase()}`; }, 1200);
+      setTimeout(() => { const a = document.querySelector(".tab.active")?.dataset.section || "logs"; statusLine.textContent = `STATUS: ONLINE // SECTION: ${a}`; }, 1200);
     } catch { statusLine.textContent = "CLIPBOARD ACCESS BLOCKED"; }
   });
 }
@@ -557,7 +563,7 @@ async function init() {
   document.body.classList.toggle("lite-mode", state.liteMode);
   if (masterVolumeRange) masterVolumeRange.value = String(AUDIO_TUNING.masterDefault);
   updateSfxVolume(AUDIO_TUNING.masterDefault);
-  setTab("logs");
+  setTab("logsPanel");
   setupClipboardMentions();
   setupAsciiVines();
 }
