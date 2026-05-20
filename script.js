@@ -23,29 +23,36 @@ const soundtrackCategories = {
   mystuff: { name: "MY STUFF", folder: "soundtracks/mystuff" }
 };
 
-// Данные для вкладки PROJECTS
-const projectsData = {
-  kletka: {
+// ДАННЫЕ ПРОЕКТОВ
+// cover: Путь к картинке (лучше всего хранить в папке projects/ в репозитории)
+// links: Можно добавить несколько кнопок
+const projectsData = [
+  {
+    id: "kletka",
     name: "KLETKA",
+    cover: "https://via.placeholder.com/300/58a6ff/0d1117?text=KLETKA",
     desc: "Atmospheric horror game set in an abandoned facility. Sound design focuses on ambient tension, industrial drones and psychological unease.",
-    link: "https://github.com/sever4user/kletka"
+    year: "2024",
+    role: "Sound Design / Composition",
+    tags: ["Horror", "Game", "Ambient"],
+    links: [
+      { label: "Play on Itch", url: "https://itch.io" },
+      { label: "GitHub", url: "https://github.com" }
+    ]
   },
-  privet: {
+  {
+    id: "privet",
     name: "PRIVET",
+    cover: "https://via.placeholder.com/300/79c0ff/0d1117?text=PRIVET",
     desc: "Experimental narrative project exploring digital isolation. Score combines glitch textures, field recordings with evolving melodic motifs.",
-    link: "https://github.com/sever4user/privet"
-  },
-  lights: {
-    name: "AS THE LIGHTS FADE AWAY",
-    desc: "Cinematic short film about memory and light. Minimalist electronic score with warm synth pads and sparse percussion.",
-    link: "https://github.com/sever4user/lights"
-  },
-  mystuff: {
-    name: "MY STUFF",
-    desc: "Personal experimental archive. Unreleased drafts, sound experiments and early concept tracks.",
-    link: "https://github.com/sever4user/mystuff"
+    year: "2023",
+    role: "Audio Direction",
+    tags: ["Experimental", "Narrative"],
+    links: [
+      { label: "Watch Video", url: "https://youtube.com" }
+    ]
   }
-};
+];
 
 const ownMusicReleases = [
   {
@@ -55,7 +62,7 @@ const ownMusicReleases = [
   }
 ];
 
-const tabButtons = [...document.querySelectorAll(".tab[data-section]")];
+const tabButtons = [...document.querySelectorAll(".tabs .tab")];
 const panels = [...document.querySelectorAll(".panel")];
 const statusLine = document.getElementById("statusLine");
 const sfxToggle = document.getElementById("sfxToggle");
@@ -67,6 +74,7 @@ const logsTabBtns = logsSubTabs ? [...logsSubTabs.querySelectorAll(".music-tab")
 
 let currentTyping = { logs: { text: 0, animId: null }, contacts: { text: 0, animId: null } };
 let currentLogsTab = "about";
+let projectsRendered = false;
 
 const AUDIO_TUNING = { masterDefault: 0.62, clickPeak: 0.044, humMasterGain: 2.88 };
 const mediaExtensions = {
@@ -75,7 +83,7 @@ const mediaExtensions = {
 };
 
 const state = {
-  sfxEnabled: false, audioCtx: null, humNodes: null,
+  sfxEnabled: false, audioCtx: null, humNodes: null, activeMusicCount: 0,
   masterVolume: AUDIO_TUNING.masterDefault, liteMode: false,
   loadedSections: { music: false, visuals: false },
   typedSections: { logs: false, contacts: false },
@@ -121,7 +129,7 @@ function setSfxEnabled(value) {
   state.sfxEnabled = value;
   sfxToggle.textContent = value ? "SFX: ON" : "SFX: OFF";
   sfxToggle.setAttribute("aria-pressed", value ? "true" : "false");
-  if (value) startTerminalHum();
+  if (value && state.activeMusicCount === 0) startTerminalHum();
   else stopTerminalHum();
 }
 
@@ -164,11 +172,89 @@ function stopTerminalHum() {
   state.humNodes = null;
 }
 
-async function ensureSectionLoaded(sectionId) {
-  if (sectionId === "visuals" && !state.loadedSections.visuals) {
-    state.loadedSections.visuals = true;
-    await renderVisuals();
+function loadLogsTab(tabId) {
+  currentLogsTab = tabId;
+  logsTabBtns.forEach(btn => btn.classList.toggle("active", btn.dataset.logsubtab === tabId));
+  document.getElementById("aboutContent").classList.toggle("active", tabId === "about");
+  document.getElementById("projectsContent").classList.toggle("active", tabId === "projects");
+
+  if (tabId === "about" && !state.typedSections.logs) {
+    state.typedSections.logs = true;
+    startTypewriter("logsTypewriter");
   }
+  if (tabId === "projects") {
+    renderProjects();
+  }
+}
+
+function renderProjects() {
+  const grid = document.getElementById("projectsGrid");
+  if (projectsRendered) return;
+  grid.innerHTML = "";
+
+  projectsData.forEach((project, index) => {
+    const card = document.createElement("article");
+    card.className = "own-music-card soundtrack-dropdown visible";
+    card.style.animationDelay = `${index * 0.1}s`;
+
+    let linksHtml = project.links.map(l => 
+      `<a class="release-link" href="${l.url}" target="_blank" rel="noopener">${l.label}</a>`
+    ).join('');
+
+    let tagsHtml = project.tags.map(t => `<span class="tag">${t}</span>`).join('');
+
+    card.innerHTML = `
+      <div class="own-music-cover"><img src="${project.cover}" alt="${project.name}" loading="lazy"></div>
+      <div class="own-music-info">
+        <h3 class="own-music-title">${project.name}</h3>
+        <p class="project-meta">${project.year} — ${project.role}</p>
+        <div class="project-tags">${tagsHtml}</div>
+        <p class="project-desc">${project.desc}</p>
+        <div class="own-music-links">${linksHtml}</div>
+      </div>`;
+    grid.appendChild(card);
+  });
+  projectsRendered = true;
+}
+
+function setTab(sectionId) {
+  tabButtons.forEach((btn) => btn.classList.toggle("active", btn.dataset.section === sectionId));
+  panels.forEach((panel) => panel.classList.toggle("active", panel.id === sectionId));
+  
+  // Удаляем "Panel" для статуса (logsPanel -> LOGS)
+  const statusName = sectionId.replace("Panel", "").toUpperCase();
+  statusLine.textContent = `STATUS: ONLINE // SECTION: ${statusName}`;
+  playUiClick();
+
+  if (sectionId === "logsPanel") {
+    logsSubTabs.style.display = "flex";
+    musicSubTabs.style.display = "none";
+    loadLogsTab("about");
+  } else if (sectionId === "musicPanel") {
+    logsSubTabs.style.display = "none";
+    musicSubTabs.style.display = "flex";
+    renderSoundtrackDropdowns();
+    loadMusicCategory("soundtracks");
+  } else {
+    logsSubTabs.style.display = "none";
+    musicSubTabs.style.display = "none";
+  }
+
+  if (sectionId === "visualsPanel" && !state.loadedSections.visuals) {
+    state.loadedSections.visuals = true;
+    renderVisuals();
+  }
+  if (sectionId === "contactsPanel" && !state.typedSections.contacts) {
+    state.typedSections.contacts = true;
+    startTypewriter("contactsTypewriter");
+  }
+}
+
+function loadMusicCategory(category) {
+  state.currentMusicCategory = category;
+  document.getElementById("soundtracksSection").style.display = category === "soundtracks" ? "block" : "none";
+  document.getElementById("ownMusicSection").style.display = category === "ownmusic" ? "block" : "none";
+  if (category === "ownmusic") renderOwnMusic();
 }
 
 function renderOwnMusic() {
@@ -183,84 +269,10 @@ function renderOwnMusic() {
     card.className = "own-music-card";
     const coverSrc = encodeURI(release.cover);
     card.innerHTML = `
-      <div class="own-music-cover"><img src="${coverSrc}" alt="${release.title}" loading="lazy" onerror="this.parentElement.innerHTML='<div style=\\'width:100%;height:100%;background:#1f2937;display:flex;align-items:center;justify-content:center;color:#58a6ff;font-size:10px\\'>NO COVER</div>'"></div>
+      <div class="own-music-cover"><img src="${coverSrc}" alt="${release.title}" loading="lazy"></div>
       <div class="own-music-info"><h3 class="own-music-title">${release.title}</h3><a class="release-link streaming" href="${release.streamingUrl}" target="_blank" rel="noopener noreferrer">STREAMINGS</a></div>`;
     grid.appendChild(card);
   });
-}
-
-function setTab(sectionId) {
-  tabButtons.forEach((btn) => btn.classList.toggle("active", btn.dataset.section === sectionId));
-  panels.forEach((panel) => panel.classList.toggle("active", panel.id === `${sectionId}Panel`));
-  statusLine.textContent = `STATUS: ONLINE // SECTION: ${sectionId.toUpperCase()}`;
-  playUiClick();
-
-  if (sectionId === "logs") {
-    logsSubTabs.style.display = "flex";
-    musicSubTabs.style.display = "none";
-    loadLogsTab("about");
-  } else if (sectionId === "music") {
-    logsSubTabs.style.display = "none";
-    musicSubTabs.style.display = "flex";
-    renderSoundtrackDropdowns();
-    loadMusicCategory("soundtracks");
-  } else {
-    logsSubTabs.style.display = "none";
-    musicSubTabs.style.display = "none";
-  }
-
-  if (sectionId === "logs" && !state.typedSections.logs) { state.typedSections.logs = true; startTypewriter("logsTypewriter"); }
-  if (sectionId === "contacts" && !state.typedSections.contacts) { state.typedSections.contacts = true; startTypewriter("contactsTypewriter"); }
-  if (sectionId === "visuals" && !state.loadedSections.visuals) { state.loadedSections.visuals = true; renderVisuals(); }
-  
-  ensureSectionLoaded(sectionId).catch(() => { statusLine.textContent = "LOAD ERROR"; });
-}
-
-function loadLogsTab(tab) {
-  currentLogsTab = tab;
-  logsTabBtns.forEach(btn => btn.classList.toggle("active", btn.dataset.logsTab === tab));
-  document.getElementById("aboutContent").classList.toggle("active", tab === "about");
-  document.getElementById("projectsContent").classList.toggle("active", tab === "projects");
-  
-  if (tab === "about" && !state.typedSections.logs) {
-    state.typedSections.logs = true;
-    startTypewriter("logsTypewriter");
-  } else if (tab === "projects") {
-    renderProjects();
-  }
-}
-
-function renderProjects() {
-  const grid = document.getElementById("projectsGrid");
-  if (grid.children.length > 0) return; // Already rendered
-  grid.innerHTML = "";
-  
-  Object.entries(projectsData).forEach(([key, project], index) => {
-    const card = document.createElement("article");
-    card.className = "own-music-card soundtrack-dropdown visible";
-    card.style.transitionDelay = `${index * 80}ms`;
-    card.innerHTML = `
-      <div class="own-music-info" style="padding: 1.5rem;">
-        <h3 class="own-music-title">${project.name}</h3>
-        <p style="font-size: 0.85rem; color: var(--text); line-height: 1.5; margin-bottom: 1rem; opacity: 0.9;">${project.desc}</p>
-        <a class="release-link" href="${project.link}" target="_blank" rel="noopener noreferrer">VIEW PROJECT</a>
-      </div>`;
-    grid.appendChild(card);
-  });
-}
-
-function loadMusicCategory(category) {
-  state.currentMusicCategory = category;
-  document.getElementById("soundtracksSection").style.display = category === "soundtracks" ? "block" : "none";
-  document.getElementById("ownMusicSection").style.display = category === "ownmusic" ? "block" : "none";
-  if (category === "ownmusic") renderOwnMusic();
-}
-
-function formatTime(seconds) {
-  if (!Number.isFinite(seconds)) return "0:00";
-  const m = Math.floor(seconds / 60);
-  const s = Math.floor(seconds % 60);
-  return `${m}:${s.toString().padStart(2, "0")}`;
 }
 
 async function renderSoundtrackDropdowns() {
@@ -376,6 +388,13 @@ async function renderSoundtrackDropdowns() {
   });
 }
 
+function formatTime(seconds) {
+  if (!Number.isFinite(seconds)) return "0:00";
+  const m = Math.floor(seconds / 60);
+  const s = Math.floor(seconds % 60);
+  return `${m}:${s.toString().padStart(2, "0")}`;
+}
+
 function enhanceInteractiveText(target) {
   const plain = target.textContent || "";
   const withLinks = plain.replace(
@@ -479,25 +498,6 @@ async function renderVisuals() {
   if (cursor < files.length) grid.after(loadMore);
 }
 
-function setupLazyImageLoading() {
-  if (!("IntersectionObserver" in window)) return;
-  const obs = new IntersectionObserver(entries => entries.forEach(e => { if (e.isIntersecting) { e.target.src = e.target.dataset.src; obs.unobserve(e.target); } }), { rootMargin: "200px" });
-  document.querySelectorAll(".visual-item img[data-src]").forEach(img => obs.observe(img));
-}
-
-function setupClipboardMentions() {
-  document.addEventListener("click", async (e) => {
-    const t = e.target.closest(".copy-mention");
-    if (!t) return;
-    const val = t.getAttribute("data-copy");
-    try {
-      await navigator.clipboard.writeText(val);
-      statusLine.textContent = `COPIED TO CLIPBOARD: ${val}`;
-      setTimeout(() => { const a = document.querySelector(".tab.active")?.dataset.section || "logs"; statusLine.textContent = `STATUS: ONLINE // SECTION: ${a.toUpperCase()}`; }, 1200);
-    } catch { statusLine.textContent = "CLIPBOARD ACCESS BLOCKED"; }
-  });
-}
-
 function setupAsciiVines() {
   const backdrop = document.getElementById("asciiVines");
   if (!backdrop) return;
@@ -515,10 +515,22 @@ function setupAsciiVines() {
   window.addEventListener("resize", () => { clearTimeout(t); if (raf) cancelAnimationFrame(raf); t = setTimeout(() => { raf = requestAnimationFrame(() => { render(); raf = null; }); }, 300); });
 }
 
-// Инициализация событий
-tabButtons.forEach(btn => btn.addEventListener("click", () => setTab(btn.dataset.section)));
-logsTabBtns.forEach(btn => btn.addEventListener("click", () => { playUiClick(); loadLogsTab(btn.dataset.logsTab); }));
+function setupClipboardMentions() {
+  document.addEventListener("click", async (e) => {
+    const t = e.target.closest(".copy-mention");
+    if (!t) return;
+    const val = t.getAttribute("data-copy");
+    try {
+      await navigator.clipboard.writeText(val);
+      statusLine.textContent = `COPIED TO CLIPBOARD: ${val}`;
+      setTimeout(() => { const a = document.querySelector(".tab.active")?.dataset.section || "logs"; statusLine.textContent = `STATUS: ONLINE // SECTION: ${a}`; }, 1200);
+    } catch { statusLine.textContent = "CLIPBOARD ACCESS BLOCKED"; }
+  });
+}
 
+// Init
+tabButtons.forEach(btn => btn.addEventListener("click", () => setTab(btn.dataset.section)));
+logsTabBtns.forEach(btn => btn.addEventListener("click", () => { playUiClick(); loadLogsTab(btn.dataset.logsubtab); }));
 if (musicSubTabs) {
   musicSubTabs.querySelectorAll(".music-tab").forEach(tab => {
     tab.addEventListener("click", () => {
@@ -529,7 +541,6 @@ if (musicSubTabs) {
     });
   });
 }
-
 sfxToggle.addEventListener("click", () => { setSfxEnabled(!state.sfxEnabled); playUiClick(); });
 
 if (masterVolumeRange) {
@@ -555,10 +566,9 @@ async function init() {
   document.body.classList.toggle("lite-mode", state.liteMode);
   if (masterVolumeRange) masterVolumeRange.value = String(AUDIO_TUNING.masterDefault);
   updateSfxVolume(AUDIO_TUNING.masterDefault);
-  setTab("logs");
+  setTab("logsPanel");
   setupClipboardMentions();
   setupAsciiVines();
-  setupLazyImageLoading();
 }
 
 init();
