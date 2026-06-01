@@ -19,7 +19,7 @@ AWAITING NEW CONNECTION...`;
 // Soundtrack categories
 const soundtrackCategories = {
   kletka: { name: "KLETKA", folder: "soundtracks/kletka" },
-  privet: { name: "PRIVET", folder: "soundtracks/privet" },
+  privet: { name: "PRIVET. ETO NE BOL'NO.", folder: "soundtracks/privet" },
   lights: { name: "AS THE LIGHTS FADE AWAY", folder: "soundtracks/lights" },
   mystuff: { name: "MY STUFF", folder: "soundtracks/mystuff" }
 };
@@ -50,7 +50,7 @@ const projectsData = [
     ]
   },
   {
-    title: "PRIVET ETO NE BOL'NO",
+    title: "PRIVET. ETO NE BOL'NO.",
     cover: "projects/PRIVET.png",
     year: "2025",
     role: "composer",
