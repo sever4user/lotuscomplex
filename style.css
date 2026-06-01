@@ -739,7 +739,7 @@ body {
 
 .project-card-cover {
   width: 100%;
-  aspect-ratio: 16/9;
+  aspect-ratio: 1;
   overflow: hidden;
   background: var(--highlight);
   display: flex;
