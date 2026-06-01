@@ -201,7 +201,7 @@ function renderProjects() {
         <h3 class="project-title">${project.title}</h3>
         <div class="project-meta"><span>${project.year}</span><span>|</span><span>${project.role}</span></div>
         <div class="project-tags">${tagsHtml}</div>
-        <p class="project-desc">${project.desc}</p>
+        <div class="project-desc">${project.desc}</div>
         <div class="project-links">${linksHtml}</div>
       </div>
     `;
