@@ -27,15 +27,16 @@ const soundtrackCategories = {
 // Projects data
 const projectsData = [
   {
-    title: "Project Name Example",
-    cover: "projects/cover1.png",
+    title: "KLETKA",
+    cover: "projects/KLETKA.png",
     year: "2024",
-    role: "Composer & Sound Designer",
-    tags: ["Game", "Horror", "Ambient"],
-    desc: "A brief description of the project and your contribution. Describe the aesthetic and sound design approach here.",
+    role: "composer",
+    tags: ["game", "horror", "ambient"],
+    desc: "kletka is a popular indie co-op horror set in a universe of samosbor, a russian internet myth about a world made up of one giant, endless panel high-rise buildin.
+      " + "kletka received strong praise from players, reaching 6000+ steam reviews with 90% positive ratings, 400k copies sold and millions of views across youtube"
+      " + "i have created two soundtracks for the main menu and one of the game's locations. i'm currently actively collaborating with the developers",
     links: [
-      { label: "GitHub", url: "https://github.com" },
-      { label: "Itch.io", url: "https://itch.io" }
+      { label: "steam", url: "https://store.steampowered.com/app/1699480/KLET/" }
     ]
   }
   // Add more projects here
