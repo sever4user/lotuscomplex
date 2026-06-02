@@ -16,14 +16,6 @@ INST: @sever4user
 TG: @sever4user
 AWAITING NEW CONNECTION...`;
 
-// Soundtrack categories
-const soundtrackCategories = {
-  kletka: { name: "KLETKA", folder: "soundtracks/kletka" },
-  lights: { name: "AS THE LIGHTS FADE AWAY", folder: "soundtracks/lights" },
-  privet: { name: "PRIVET. ETO NE BOL'NO.", folder: "soundtracks/privet" },
-  mystuff: { name: "MY STUFF", folder: "soundtracks/mystuff" }
-};
-
 const tabButtons = [...document.querySelectorAll(".tab[data-section]")];
 const panels = [...document.querySelectorAll(".panel")];
 const statusLine = document.getElementById("statusLine");
