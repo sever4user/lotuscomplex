@@ -14,7 +14,7 @@ const projectsData = [
   // Add more projects here
   {
     title: "AS THE LIGHTS FADE AWAY",
-    cover: "projects/LIGHTSS.png",
+    cover: "projects/LIGHTS.png",
     year: "2026",
     role: "composer",
     tags: ["visual novel", "atmospheric", "ambient"],
