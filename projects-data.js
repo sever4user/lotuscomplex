@@ -14,11 +14,11 @@ const projectsData = [
   // Add more projects here
   {
     title: "AS THE LIGHTS FADE AWAY",
-    cover: "projects/WHEN.png",
+    cover: "projects/LIGHTSS.png",
     year: "2026",
     role: "composer",
     tags: ["visual novel", "atmospheric", "ambient"],
-    desc: "no description yet",
+    desc: "poignant visual novel set in a ruined world where beauty of life is forgotten.<br /><br />the protagonist builds a mechanical butterfly from scrap to bring a smile to the only soul beside him. a unique narrative about finding meaning in decay through creativity and fragile hope.<br /><br />i created most of the soundtrack, and we're working on new chapters.",
     links: [
       { label: "vk games", url: "https://vkplay.ru/play/game/kogda-gasnut-ogni/" }
     ]
