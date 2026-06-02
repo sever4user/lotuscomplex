@@ -24,14 +24,6 @@ const soundtrackCategories = {
   mystuff: { name: "MY STUFF", folder: "soundtracks/mystuff" }
 };
 
-const ownMusicReleases = [
-  {
-    title: "sever4user / Sib The Maid - cigarettes after cigarettes",
-    cover: "covers/cigarettes after cigarettes.png",
-    streamingUrl: "https://bandlink.com/"
-  }
-];
-
 const tabButtons = [...document.querySelectorAll(".tab[data-section]")];
 const panels = [...document.querySelectorAll(".panel")];
 const statusLine = document.getElementById("statusLine");
