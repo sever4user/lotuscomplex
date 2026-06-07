@@ -22,7 +22,7 @@ const ownMusicReleases = [
   {
     title: "KLETKA - ORIGINAL SOUNDTRACK (Cassette Mix)",
     cover: "covers/kletkacassette.png",
-    streamingUrl: "https://www.youtube.com/watch?v=FkekGW28JiM"
+    streamingUrl: "https://youtu.be/FkekGW28JiM?si=mR6Y1oLFbena6Em6"
   },    
   {
     title: "sever4user - voices of etl",
