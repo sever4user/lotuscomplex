@@ -19,7 +19,7 @@
 body {
   background-color: var(--bg);
   color: var(--text);
-  font-family: 'IBM Plex Mono', monospace;
+  font-family: 'Share Tech Mono', monospace; /* Было: 'IBM Plex Mono' */
   min-height: 100vh;
   overflow-x: hidden;
   position: relative;
