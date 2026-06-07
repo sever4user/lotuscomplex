@@ -1,14 +1,13 @@
 const GH_USER = "sever4user";
 const GH_REPO = "sever4user";
 
-const logsContent = `> BOOT SEQUENCE: sever4user // NODE: ARTIST PROFILE INITIALIZED
-I create audio-visual worlds at the intersection of music, 3D and narrative aesthetics.
+const logsContent = `welcome to the world of my creations!
+
+i'm a composer, sound designer and visual artist working at the edge of technology and emotion. 
+i create bespoke audio experiences for indie projects, transforming abstract concepts into tangible sonic landscapes. 
 sever4user is a personal archive of sounds and experimental electronic artifacts.
-All information on the site is for informational purposes only
-Other projects:
-sever4user // artist, experimental electronics
-https://band.link/sever4user
-LOG STREAM READY`;
+
+all content on this website is intended for informational purposes only.`;
 
 const contactsContent = `> SECURE CHANNEL OPEN
 MAIL: sever4user@gmail.com
