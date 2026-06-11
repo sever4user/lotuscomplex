@@ -96,7 +96,7 @@ body {
   text-align: left;
   margin-bottom: 2rem;
   /* Уменьшен нижний отступ с 3rem до 1.5rem, чтобы подтянуть кнопки ближе */
-  padding: 2rem 0 1.5rem 0; 
+  padding: 2rem 0 0.5rem 0; 
   /* Убрана линия border-bottom */
   position: relative;
 }
