@@ -366,14 +366,12 @@ function startTypewriter(targetId) {
   const target = document.getElementById(targetId);
   if (!target) return;
   
-  // Очищаем контейнер перед началом, чтобы убрать старые артефакты
   target.innerHTML = "";
   
   const section = targetId === "logsTypewriter" ? "logs" : "contacts";
   currentTyping[section].text = 0;
   const text = section === "logs" ? logsContent : contactsContent;
   
-  // Создаем постоянный мерцающий курсор
   const cursor = document.createElement('span');
   cursor.className = 'cursor';
   target.appendChild(cursor);
@@ -382,24 +380,20 @@ function startTypewriter(targetId) {
     if (currentTyping[section].text < text.length) {
       const char = text[currentTyping[section].text];
       
-      // Вставляем символ ПЕРЕД курсором
       cursor.insertAdjacentText('beforebegin', char);
       currentTyping[section].text += 1;
       
-      // Неравномерная скорость печати (20мс - 90мс)
-      // Делаем паузы чуть длиннее после знаков препинания для реалистичности
-      let delay = Math.random() * 70 + 20; 
-      if (['.', '!', '?', '\n'].includes(char)) delay += 150;
-      if ([',', ';', ':'].includes(char)) delay += 80;
+      // Увеличенная скорость: 10мс - 45мс (в 2 раза быстрее предыдущей версии)
+      let delay = Math.random() * 35 + 10; 
+      
+      // Естественные паузы для реалистичности
+      if (['.', '!', '?', '\n'].includes(char)) delay += 120;
+      if ([',', ';', ':'].includes(char)) delay += 60;
       
       currentTyping[section].animId = setTimeout(typeChar, delay);
-    } else {
-      // Когда текст допечатан, просто оставляем курсор мерцать
-      // Можно добавить логику пост-обработки ссылок здесь, если нужно
     }
   };
 
-  // Запускаем печать
   typeChar();
 }
 
