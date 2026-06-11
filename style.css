@@ -669,7 +669,22 @@ body {
 }
 
 .play-btn.is-playing::before {
-  content: '||' !important; /* U+23F8 + U+FE0E */
+  content: '' !important;
+  display: inline-block;
+  
+  /* Размеры иконки теперь зависят от размера шрифта самой кнопки */
+  width: 0.8em !important;
+  height: 1em !important;
+  
+  /* Толщина палочек тоже высчитывается пропорционально */
+  border-left: 0.25em solid currentColor !important;
+  border-right: 0.25em solid currentColor !important;
+  
+  background: transparent !important;
+  box-sizing: border-box !important;
+  
+  /* Выравнивание по центру относительно текста */
+  vertical-align: middle; 
 }
 
 .stop-btn::before {
