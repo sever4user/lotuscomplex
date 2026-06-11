@@ -672,9 +672,9 @@ body {
   content: '' !important;
   display: inline-block;
   
-  /* Размеры иконки теперь зависят от размера шрифта самой кнопки */
-  width: 0.8em !important;
-  height: 1em !important;
+/* Чуть-чуть уменьшили габариты (было 0.8em на 1em) */
+  width: 0.65em !important;
+  height: 0.85em !important;
   
   /* Толщина палочек тоже высчитывается пропорционально */
   border-left: 0.25em solid currentColor !important;
@@ -1109,7 +1109,12 @@ body {
     padding: 0.75rem 1rem; margin-bottom: 0; 
     background: rgba(13, 17, 23, 0.95); /* Сплошной фон без blur */
   }
-  .status-line { font-size: 0.65rem; flex: 1; }
+  .status-line {
+    font-size: 0.65rem;
+    flex: 1;
+    white-space: pre-line; /* Заставляет текст переноситься там, где в коде стоит знак переноса \n */
+    line-height: 1.4;      /* Делаем аккуратный отступ между двумя строчками */
+  }
   
   .audio-controls { gap: 0.5rem; }
   .sfx-toggle, .master-volume-btn { padding: 0.4rem 0.75rem; font-size: 0.7rem; }
@@ -1124,10 +1129,15 @@ body {
     padding: 4.5rem 0 1rem 0 !important; 
   }
   .project-header h1 {
-    font-size: 3.5rem; /* Возвращаем крупный, внушительный размер */
+    font-size: 3.5rem; 
     line-height: 1;
     margin-bottom: 0.4rem;
-    letter-spacing: -0.03em; /* Чуть сблизим буквы для плотности */
+    letter-spacing: -0.03em;
+    
+    /* Густой, многослойный неоновый свет без анимации мигания */
+    text-shadow: 0 0 4px var(--accent), 
+                 0 0 12px var(--primary), 
+                 0 0 20px rgba(88, 166, 255, 0.4) !important;
   }
   
   .project-header .subtitle {
@@ -1190,4 +1200,12 @@ body {
     animation-name: none !important;
     text-shadow: 0 0 8px rgba(121, 192, 255, 0.4) !important; /* Мягкое статичное свечение (цвет --accent) */
   }
+}
+
+.panel, 
+.terminal-text, 
+#contactsPanel {
+  user-select: text !important;
+  -webkit-user-select: text !important;
+  pointer-events: auto !important; /* Гарантирует, что слой реагирует на мышь/тач */
 }
