@@ -365,26 +365,42 @@ function enhanceInteractiveText(target) {
 function startTypewriter(targetId) {
   const target = document.getElementById(targetId);
   if (!target) return;
+  
+  // Очищаем контейнер перед началом, чтобы убрать старые артефакты
+  target.innerHTML = "";
+  
   const section = targetId === "logsTypewriter" ? "logs" : "contacts";
   currentTyping[section].text = 0;
   const text = section === "logs" ? logsContent : contactsContent;
+  
+  // Создаем постоянный мерцающий курсор
   const cursor = document.createElement('span');
   cursor.className = 'cursor';
   target.appendChild(cursor);
-  const write = () => {
+
+  const typeChar = () => {
     if (currentTyping[section].text < text.length) {
-      const c = target.querySelector('.cursor');
-      target.textContent = text.slice(0, currentTyping[section].text + 1);
-      target.appendChild(c);
+      const char = text[currentTyping[section].text];
+      
+      // Вставляем символ ПЕРЕД курсором
+      cursor.insertAdjacentText('beforebegin', char);
       currentTyping[section].text += 1;
-      currentTyping[section].animId = requestAnimationFrame(write);
+      
+      // Неравномерная скорость печати (20мс - 90мс)
+      // Делаем паузы чуть длиннее после знаков препинания для реалистичности
+      let delay = Math.random() * 70 + 20; 
+      if (['.', '!', '?', '\n'].includes(char)) delay += 150;
+      if ([',', ';', ':'].includes(char)) delay += 80;
+      
+      currentTyping[section].animId = setTimeout(typeChar, delay);
     } else {
-      enhanceInteractiveText(target);
-      const fc = target.querySelector('.cursor');
-      if (fc) fc.style.display = 'none';
+      // Когда текст допечатан, просто оставляем курсор мерцать
+      // Можно добавить логику пост-обработки ссылок здесь, если нужно
     }
   };
-  write();
+
+  // Запускаем печать
+  typeChar();
 }
 
 function extensionMatch(fileName, allowed) {
