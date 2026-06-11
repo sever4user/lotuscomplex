@@ -95,11 +95,14 @@ body {
 .project-header {
   text-align: left;
   margin-bottom: 2rem;
-  padding: 2rem 0 3rem 0;
-  border-bottom: 1px solid var(--border);
+  /* Уменьшен нижний отступ с 3rem до 1.5rem, чтобы подтянуть кнопки ближе */
+  padding: 2rem 0 1.5rem 0; 
+  /* Убрана линия border-bottom */
   position: relative;
 }
 
+/* Полностью удаляем или комментируем этот блок, чтобы исчезла синяя полоска */
+/* 
 .project-header::after {
   content: '';
   position: absolute;
@@ -108,23 +111,19 @@ body {
   width: 100px;
   height: 1px;
   background: linear-gradient(90deg, var(--primary), transparent);
-}
+} 
+*/
 
 .project-header h1 {
   font-family: "Rubik 80s Fade", system-ui;
   font-weight: 400;
   font-style: normal;
   font-size: clamp(3rem, 7vw, 5.5rem);
-  
-  /* Меняем синий на яркий бело-голубой для максимального контраста */
-  color: #f0f6fc; 
-  
-  /* Усиленное многослойное свечение */
+  color: #f0f6fc;
   text-shadow: 
-    0 0 10px rgba(240, 246, 252, 0.9),   /* Яркое ядро */
-    0 0 30px rgba(88, 166, 255, 0.6),     /* Синий ореол */
-    0 0 60px rgba(88, 166, 255, 0.3);     /* Дальнее рассеивание */
-    
+    0 0 10px rgba(240, 246, 252, 0.9),
+    0 0 30px rgba(88, 166, 255, 0.6),
+    0 0 60px rgba(88, 166, 255, 0.3);
   margin-bottom: 0.5rem;
   letter-spacing: 0.05em;
   text-align: left;
@@ -137,6 +136,8 @@ body {
   letter-spacing: 0.2em;
   text-transform: uppercase;
   text-align: left;
+  /* Добавлен небольшой отступ снизу от подзаголовка до кнопок */
+  margin-bottom: 1.5rem; 
 }
 
 /* Tabs Navigation */
