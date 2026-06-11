@@ -478,7 +478,33 @@ body {
   white-space: pre-wrap;
   line-height: 1.65;
   color: var(--text);
+  /* Базовое свечение текста */
   text-shadow: 0 0 8px rgba(var(--primary-rgb), 0.4), 0 0 12px rgba(var(--accent-rgb), 0.2);
+  /* Анимация мерцания: 4 секунды, бесконечно, плавная синусоида */
+  animation: textFlicker 4s ease-in-out infinite alternate;
+}
+
+@keyframes textFlicker {
+  0% {
+    opacity: 0.95;
+    text-shadow: 0 0 8px rgba(var(--primary-rgb), 0.4), 0 0 12px rgba(var(--accent-rgb), 0.2);
+  }
+  25% {
+    opacity: 0.85;
+    text-shadow: 0 0 6px rgba(var(--primary-rgb), 0.3), 0 0 10px rgba(var(--accent-rgb), 0.15);
+  }
+  50% {
+    opacity: 0.98;
+    text-shadow: 0 0 10px rgba(var(--primary-rgb), 0.5), 0 0 14px rgba(var(--accent-rgb), 0.25);
+  }
+  75% {
+    opacity: 0.9;
+    text-shadow: 0 0 7px rgba(var(--primary-rgb), 0.35), 0 0 11px rgba(var(--accent-rgb), 0.18);
+  }
+  100% {
+    opacity: 0.96;
+    text-shadow: 0 0 9px rgba(var(--primary-rgb), 0.45), 0 0 13px rgba(var(--accent-rgb), 0.22);
+  }
 }
 
 .cursor {
