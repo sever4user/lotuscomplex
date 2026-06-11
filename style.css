@@ -510,10 +510,10 @@ body {
 .cursor {
   display: inline-block;
   width: 6px; /* В 2 раза тоньше */
-  height: 1em;
+  height: 1.1rem;
   background: var(--primary);
   margin-left: 2px;
-  opacity: 0.7; /* Полупрозрачный */
+  opacity: 0.8; /* Полупрозрачный */
   animation: blink 1s step-end infinite; /* В 2 раза быстрее */
   vertical-align: text-bottom;
   box-shadow: 0 0 8px rgba(var(--primary-rgb), 0.8);
