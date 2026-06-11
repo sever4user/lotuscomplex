@@ -1,13 +1,13 @@
 const GH_USER = "sever4user";
 const GH_REPO = "sever4user";
 
-const logsContent = `welcome to the world of my creations!
+const logsContent = `> welcome to the world of my creations!
 
-i'm a composer, sound designer and visual artist working at the edge of technology and emotion. 
-i create bespoke audio experiences for indie projects, transforming abstract concepts into tangible sonic landscapes. 
-sever4user is a personal archive of sounds and experimental electronic artifacts.
+i am a composer, sound designer, and visual artist who works at the intersection of technology and emotion. 
+i have been creating music for over five years and am currently working on soundtracks for games (KLETKA, visual novels, and more), as well as learning 3D modeling.
+here you can find my works and contact information.
 
-all content on this website is intended for informational purposes only.`;
+> all content on this website is intended for informational purposes only.`;
 
 const contactsContent = `> SECURE CHANNEL OPEN
 MAIL: sever4user@gmail.com
