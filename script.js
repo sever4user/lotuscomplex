@@ -13,7 +13,7 @@ const contactsContent = `> SECURE CHANNEL OPEN
 MAIL: sever4user@gmail.com
 INST: @sever4user
 TG: @sever4user
-AWAITING NEW CONNECTION...`;
+> AWAITING NEW CONNECTION...`;
 
 const tabButtons = [...document.querySelectorAll(".tab[data-section]")];
 const panels = [...document.querySelectorAll(".panel")];
