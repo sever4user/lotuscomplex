@@ -114,14 +114,17 @@ body {
   font-family: "Rubik 80s Fade", system-ui;
   font-weight: 400;
   font-style: normal;
-  /* Увеличен максимальный размер с 4rem до 5.5rem */
-  font-size: clamp(3rem, 7vw, 5.5rem); 
-  color: var(--primary);
-  /* Усилено свечение: добавлены более широкие слои тени и увеличена интенсивность */
+  font-size: clamp(3rem, 7vw, 5.5rem);
+  
+  /* Меняем синий на яркий бело-голубой для максимального контраста */
+  color: #f0f6fc; 
+  
+  /* Усиленное многослойное свечение */
   text-shadow: 
-    0 0 25px rgba(var(--primary-rgb), 0.8), 
-    0 0 50px rgba(var(--primary-rgb), 0.5), 
-    0 0 80px rgba(var(--accent-rgb), 0.3);
+    0 0 10px rgba(240, 246, 252, 0.9),   /* Яркое ядро */
+    0 0 30px rgba(88, 166, 255, 0.6),     /* Синий ореол */
+    0 0 60px rgba(88, 166, 255, 0.3);     /* Дальнее рассеивание */
+    
   margin-bottom: 0.5rem;
   letter-spacing: 0.05em;
   text-align: left;
