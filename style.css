@@ -289,9 +289,9 @@ body {
   gap: 0.6rem;
 }
 
-/* Status Line */
+/* Status Line - Единый стиль для ПК и Mobile */
 .status-wrap {
-  position: sticky;
+  position: sticky; /* На ПК липкий, на мобильном станет фиксированным */
   top: 0;
   z-index: 100;
   display: flex;
@@ -300,10 +300,13 @@ body {
   margin-bottom: 1.5rem;
   flex-wrap: wrap;
   gap: 1rem;
-  background: rgba(13, 17, 23, 0.95);
-  backdrop-filter: blur(10px);
+  
+  /* Прозрачность как у .panel (rgba(13, 17, 23, 0.85)) */
+  background: rgba(13, 17, 23, 0.85); 
+  backdrop-filter: blur(5px); /* Размытие как у .panel */
   padding: 1rem;
   border-bottom: 1px solid var(--border);
+  box-shadow: 0 4px 30px rgba(0, 0, 0, 0.4); /* Тень как у .panel */
 }
 
 .status-line {
@@ -644,10 +647,36 @@ body {
   color: var(--primary);
 }
 
-.play-btn::before { content: '▶\fe0e'; font-size: 0.55rem !important; }
-.play-btn.is-playing::before { content: '⏸\fe0e' !important; }
-.stop-btn::before { content: '■\fe0e'; font-size: 0.55rem !important; }
-.stop-btn:hover { border-color: #ff4444; color: #ff4444; }
+/* Принудительный текстовый режим для иконок плеера */
+.play-btn::before,
+.play-btn.is-playing::before,
+.stop-btn::before {
+  /* Сбрасываем системные шрифты эмодзи */
+  font-family: 'Share Tech Mono', monospace, sans-serif !important;
+  
+  /* Принудительно задаем цвет, чтобы перебить нативный рендеринг эмодзи */
+  -webkit-text-fill-color: var(--text) !important; 
+  color: var(--text) !important;
+  
+  /* Фиксируем размер в px для стабильности на мобильных */
+  font-size: 14px !important; 
+  
+  /* Убираем возможное масштабирование */
+  transform: scale(1);
+}
+
+/* Специфично для кнопки паузы */
+.play-btn.is-playing::before {
+  content: '⏸\fe0e';
+}
+
+.play-btn::before {
+  content: '▶\fe0e';
+}
+
+.stop-btn::before {
+  content: '■\fe0e';
+}
 
 .seek-wrap {
   flex: 1;
@@ -1022,20 +1051,57 @@ body {
 /* Mobile */
 @media (max-width: 640px) {
   .page { padding: 1rem; }
-  .tabs { gap: 0.25rem; justify-content: flex-start; }
-  .tab { padding: 0.5rem 1rem; font-size: 0.8rem; }
+  
+  /* Вкладки: оставляем grid-структуру для ровных кнопок, но убираем лишние отступы */
+  .tabs { 
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 0.25rem; 
+    margin-bottom: 0.75rem; 
+    width: 100%;
+  }
+  
+  .tab { 
+    padding: 0.5rem 0.25rem; 
+    font-size: 0.7rem;       
+    line-height: 1.3;        
+    text-align: center;      
+    white-space: normal;     
+    word-break: break-word;  
+    min-height: 3.2em;       
+    display: flex;           
+    align-items: center;     
+    justify-content: center; 
+  }
+  
   .logs-sub-tabs,
   .music-sub-tabs { gap: 0.25rem; margin-bottom: 0.75rem; justify-content: flex-start; }
   .music-tab { padding: 0.4rem 0.75rem; font-size: 0.7rem; }
   .dropdown-header { padding: 0.6rem 0.85rem; font-size: 0.75rem; }
-  .status-wrap { position: fixed; top: 0; left: 0; right: 0; z-index: 1000; flex-direction: row; align-items: center; padding: 0.75rem 1rem; margin-bottom: 0; }
+  
+  /* Статус-бар: только позиционирование и размеры, эффекты берем из основного стиля */
+  .status-wrap { 
+    position: fixed; /* Фиксируем сверху на мобильном */
+    top: 0; left: 0; right: 0; 
+    z-index: 1000; 
+    flex-direction: row; 
+    align-items: center; 
+    padding: 0.75rem 1rem; 
+    margin-bottom: 0; 
+    /* Убираем здесь background и backdrop-filter, чтобы они не перебивали основной стиль */
+  }
+  
   .status-line { font-size: 0.65rem; flex: 1; }
+  
   .audio-controls { gap: 0.5rem; }
   .sfx-toggle, .master-volume-btn { padding: 0.4rem 0.75rem; font-size: 0.7rem; }
   .master-volume-shell { min-width: 75px; }
+  
+  /* Панели: отступ сверху нужен, чтобы контент не заезжал под фиксированный статус-бар */
   .panel { padding: 1rem; margin-top: 3.5rem; }
+  
   .visual-grid { grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); }
   .projects-grid { grid-template-columns: 1fr; }
   .own-music-grid { grid-template-columns: 1fr; }
-  .project-header { padding: 3rem 0 2rem 0; }
+  .project-header { padding: 2rem 0 1rem 0; }
 }
