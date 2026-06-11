@@ -101,19 +101,6 @@ body {
   position: relative;
 }
 
-/* Полностью удаляем или комментируем этот блок, чтобы исчезла синяя полоска */
-/* 
-.project-header::after {
-  content: '';
-  position: absolute;
-  bottom: -1px;
-  left: 0;
-  width: 100px;
-  height: 1px;
-  background: linear-gradient(90deg, var(--primary), transparent);
-} 
-*/
-
 .project-header h1 {
   font-family: "Rubik 80s Fade", system-ui;
   font-weight: 400;
@@ -137,7 +124,7 @@ body {
   text-transform: uppercase;
   text-align: left;
   /* Добавлен небольшой отступ снизу от подзаголовка до кнопок */
-  margin-bottom: 1.5rem; 
+  margin-bottom: 0.5rem; 
 }
 
 /* Tabs Navigation */
@@ -734,6 +721,9 @@ body {
 }
 
 .project-card {
+  display: flex;            /* Включаем флекс */
+  flex-direction: column;   /* Вертикальное направление */
+  height: 100%;             /* Занимаем всю высоту ячейки сетки */
   background: rgba(13, 17, 23, 0.85);
   backdrop-filter: blur(5px);
   border: 1px solid var(--border);
@@ -772,6 +762,9 @@ body {
 
 .project-info {
   padding: 1.25rem;
+  flex: 1;                  /* Растягиваем блок информации, толкая кнопку вниз */
+  display: flex;
+  flex-direction: column;
 }
 
 .project-title {
@@ -817,6 +810,7 @@ body {
 }
 
 .project-links {
+  margin-top: auto;         /* Дополнительная страховка для прижатия к низу */
   display: flex;
   gap: 0.5rem;
   flex-wrap: wrap;
@@ -856,6 +850,9 @@ body {
 }
 
 .own-music-card {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
   background: rgba(13, 17, 23, 0.85);
   backdrop-filter: blur(5px);
   border: 1px solid var(--border);
@@ -891,6 +888,9 @@ body {
 
 .own-music-info {
   padding: 1.25rem;
+  flex: 1;                  /* Растягиваем контент */
+  display: flex;
+  flex-direction: column;
 }
 
 .own-music-title {
@@ -902,6 +902,7 @@ body {
 }
 
 .release-link {
+  margin-top: auto;         /* Прижимаем кнопку к низу */
   display: inline-flex;
   align-items: center;
   justify-content: center;
@@ -917,7 +918,6 @@ body {
   letter-spacing: 0.1em;
   transition: all 0.2s ease;
   width: 100%;
-  margin-top: 0.5rem;
 }
 
 .release-link:hover {
