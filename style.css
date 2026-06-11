@@ -1100,13 +1100,13 @@ body {
   .sfx-toggle, .master-volume-btn { padding: 0.4rem 0.75rem; font-size: 0.7rem; }
   .master-volume-shell { min-width: 75px; }
   
-  .panel { padding: 1rem; margin-top: 3.5rem; }
+  .panel { padding: 1rem; margin-top: 0 !important; }
   .visual-grid { grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); }
   .projects-grid { grid-template-columns: 1fr; }
   .own-music-grid { grid-template-columns: 1fr; }
   .project-header { 
-    /* Добавляем padding-top 4.5rem, чтобы вытащить заголовок из-под статус-бара */
-    padding: 4.5rem 0 1rem 0; 
+    /* 4.5rem сверху (чтобы не наезжал статус-бар), 1.2rem снизу (до вкладок) */
+    padding: 4.5rem 0 1rem 0 !important; 
   }
   .project-header h1 {
     font-size: 3.5rem; /* Возвращаем крупный, внушительный размер */
@@ -1130,8 +1130,7 @@ body {
   
   /* 1. Замораживаем скан-линии, фоновый шум и курсор терминала */
   .scan-overlay,
-  .pulse-noise,
-  .cursor {
+  .pulse-noise {
     animation: none !important;
   }
 
@@ -1170,5 +1169,10 @@ body {
   /* Отключаем зум картинок в разделе VISUALS */
   .visual-item:hover {
     transform: none !important;
+  }
+
+  h1, .subtitle, .terminal-text, .interactive, p, span {
+    animation-name: none !important;
+    text-shadow: 0 0 8px rgba(121, 192, 255, 0.4) !important; /* Мягкое статичное свечение (цвет --accent) */
   }
 }
