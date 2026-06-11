@@ -5,7 +5,7 @@ const projectsData = [
     cover: "projects/KLETKA.png",
     year: "2026",
     role: "composer",
-    tags: ["game", "horror", "ambient"],
+    tags: ["indie game", "co-op horror", "ambient"],
     desc: "kletka received strong praise from players, reaching 6000+ steam reviews with 90% positive ratings, 400k copies sold and millions of views across youtube.<br /><br />i created two soundtracks for the main menu and one of the game's locations. i'm currently actively collaborating with the developer",
     links: [
       { label: "steam", url: "https://store.steampowered.com/app/1699480/KLET/" }
