@@ -317,16 +317,23 @@ async function renderSoundtrackDropdowns() {
         seek.addEventListener("input", () => {
           if (Number.isFinite(audio.duration) && audio.duration > 0) {
             audio.currentTime = Number(seek.value);
+            // Добавляем расчет и передачу процентов
+            const progressPercent = (seek.value / audio.duration) * 100;
+            seek.style.setProperty('--progress', `${progressPercent}%`);
           }
         });
-
+        
         const updateUI = () => {
           if (!Number.isFinite(audio.duration) || audio.duration <= 0) return;
           seek.max = String(audio.duration);
           seek.value = String(audio.currentTime);
           timeEl.textContent = `${formatTime(audio.currentTime)} / ${formatTime(audio.duration)}`;
+          
+          // Добавляем расчет и передачу процентов при проигрывании
+          const progressPercent = (audio.currentTime / audio.duration) * 100;
+          seek.style.setProperty('--progress', `${progressPercent}%`);
         };
-
+        
         audio.addEventListener("timeupdate", updateUI);
         audio.addEventListener("loadedmetadata", updateUI);
         audio.addEventListener("play", () => playBtn.classList.add("is-playing"));
