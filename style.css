@@ -1109,12 +1109,16 @@ body {
     padding: 4.5rem 0 1rem 0; 
   }
   .project-header h1 {
-    font-size: 2.2rem; /* Чуть уменьшаем для компактности */
+    font-size: 3.5rem; /* Возвращаем крупный, внушительный размер */
+    line-height: 1;
+    margin-bottom: 0.4rem;
+    letter-spacing: -0.03em; /* Чуть сблизим буквы для плотности */
   }
+  
   .project-header .subtitle {
-    font-size: 0.65rem; /* Уменьшаем размер букв */
-    letter-spacing: 0.08em; /* Сжимаем межбуквенный интервал */
-    white-space: nowrap; /* Принудительно запрещаем перенос строки */
+    font-size: 0.68rem; /* Слегка приподнимем размер подзаголовка для читаемости */
+    letter-spacing: 0.08em; 
+    white-space: nowrap; 
     overflow: hidden;
   }
   .ascii-vines {
@@ -1149,5 +1153,22 @@ body {
   .tab.active,
   .music-tab.active {
     text-shadow: none !important;
+  }
+  
+  /* Отключаем зум картинок внутри проектов и релизов */
+  .project-card:hover .project-card-cover img,
+  .own-music-card:hover .own-music-cover img {
+    transform: none !important;
+  }
+
+  /* Отключаем подпрыгивание самих карточек вверх */
+  .project-card:hover,
+  .own-music-card:hover {
+    transform: none !important;
+  }
+
+  /* Отключаем зум картинок в разделе VISUALS */
+  .visual-item:hover {
+    transform: none !important;
   }
 }
