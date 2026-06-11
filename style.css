@@ -1104,29 +1104,28 @@ body {
   .dropdown-header { padding: 0.6rem 0.85rem; font-size: 0.75rem; }
   
   .status-wrap {
-    position: fixed;
-    top: 0;
-    left: 0;
-    right: 0;
-    z-index: 1000;
+    position: static !important;
     display: flex;
-    align-items: center;
+    flex-direction: column; /* Кнопки под статус-строкой */
+    gap: 0.5rem;
+    margin-bottom: 1rem;
     padding: 0.5rem 1rem;
-    height: 3.5rem; /* ЖЕСТКАЯ ФИКСАЦИЯ высоты */
-    background: rgba(13, 17, 23, 0.95);
-    overflow: hidden; /* Обрезаем всё, что не влезает */
+    width: 100%;
   }
 
   .status-line {
-    font-size: 0.75rem !important; /* Умеренный шрифт */
-    line-height: 1.1;
-    white-space: pre-line;       /* Позволяет перенос по \n */
-    flex: 1;
-    text-align: left;
-    margin: 0 !important;
+    font-size: 0.68rem !important; /* Тот же размер, что и у подзаголовка */
+    white-space: nowrap;          /* Запрещаем перенос */
+    overflow: hidden;
+    text-overflow: ellipsis;      /* Обрезаем точкой, если не влезло */
+    width: 100%;
   }
-  
-  .audio-controls { gap: 0.5rem; }
+
+  .audio-controls {
+    display: flex;
+    gap: 0.5rem;
+    width: 100%;
+  }
   .sfx-toggle, .master-volume-btn { padding: 0.4rem 0.75rem; font-size: 0.7rem; }
   .master-volume-shell { min-width: 75px; }
   
