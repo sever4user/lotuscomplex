@@ -1110,10 +1110,11 @@ body {
     background: rgba(13, 17, 23, 0.95); /* Сплошной фон без blur */
   }
   .status-line {
-    font-size: 0.65rem;
-    flex: 1;
-    white-space: pre-line; /* Заставляет текст переноситься там, где в коде стоит знак переноса \n */
-    line-height: 1.4;      /* Делаем аккуратный отступ между двумя строчками */
+    font-size: 0.95rem !important; /* Увеличили шрифт с 0.65rem до 0.95rem */
+    line-height: 1.2;
+    padding: 1rem !important;      /* Добавили "воздуха" */
+    text-align: center;            /* Чтобы выглядело сбалансировано */
+    white-space: normal !important; /* Разрешаем перенос автоматически */
   }
   
   .audio-controls { gap: 0.5rem; }
@@ -1150,18 +1151,11 @@ body {
     text-shadow: none !important;
     opacity: 0.15; /* Делаем чуть бледнее без теней */
   }
-
-  /* === УЛЬТРА-ОПТИМИЗАЦИЯ: ОТКЛЮЧЕНИЕ ВСЕХ АНИМАЦИЙ === */
   
   /* 1. Замораживаем скан-линии, фоновый шум и курсор терминала */
   .scan-overlay,
   .pulse-noise {
     animation: none !important;
-  }
-
-  /* Чтобы замороженный курсор случайно не остался невидимым на кадре мигания */
-  .cursor {
-    opacity: 1 !important; 
   }
 
   /* 2. Отключаем плавные переходы (hover-эффекты и свечения) для интерактивного текста */
@@ -1200,6 +1194,12 @@ body {
     animation-name: none !important;
     text-shadow: 0 0 8px rgba(121, 192, 255, 0.4) !important; /* Мягкое статичное свечение (цвет --accent) */
   }
+  /* Убиваем курсор везде, где он есть, на узких экранах */
+  .cursor, 
+  .terminal-text::after,
+  #contactsTypewriter::after {
+    display: none !important;
+  }
 }
 
 .panel, 
@@ -1208,4 +1208,17 @@ body {
   user-select: text !important;
   -webkit-user-select: text !important;
   pointer-events: auto !important; /* Гарантирует, что слой реагирует на мышь/тач */
+}
+/* Декоративные слои не должны перекрывать текст */
+.scan-overlay, 
+.pulse-noise, 
+.ascii-vines {
+  pointer-events: none !important;
+}
+
+/* А контакты — должны быть "прозрачны" для выделения */
+#contactsPanel {
+  user-select: text !important;
+  -webkit-user-select: text !important;
+  pointer-events: auto !important; /* Разрешаем клики */
 }
