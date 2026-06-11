@@ -627,9 +627,9 @@ body {
   color: var(--primary);
 }
 
-.play-btn::before { content: '▶'; font-size: 0.55rem; }
-.play-btn.is-playing::before { content: '⏸'; }
-.stop-btn::before { content: '■'; font-size: 0.55rem; }
+.play-btn::before { content: '▶\fe0e'; font-size: 0.55rem; }
+.play-btn.is-playing::before { content: '⏸\fe0e'; }
+.stop-btn::before { content: '■\fe0e'; font-size: 0.55rem; }
 .stop-btn:hover { border-color: #ff4444; color: #ff4444; }
 
 .seek-wrap {
