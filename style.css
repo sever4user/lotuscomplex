@@ -669,7 +669,7 @@ body {
 }
 
 .play-btn.is-playing::before {
-  content: '⏸︎' !important; /* U+23F8 + U+FE0E */
+  content: '||' !important; /* U+23F8 + U+FE0E */
 }
 
 .stop-btn::before {
@@ -688,7 +688,8 @@ body {
   appearance: none;
   width: 100%;
   height: 2px;
-  background: var(--border);
+  /* Вот здесь мы меняем статический фон на динамический градиент */
+  background: linear-gradient(to right, var(--primary) var(--progress, 0%), var(--border) var(--progress, 0%));
   cursor: pointer;
   outline: none;
   border: none;
@@ -1120,5 +1121,33 @@ body {
     text-shadow: none !important;
     opacity: 0.15; /* Делаем чуть бледнее без теней */
   }
-}
 
+  /* === УЛЬТРА-ОПТИМИЗАЦИЯ: ОТКЛЮЧЕНИЕ ВСЕХ АНИМАЦИЙ === */
+  
+  /* 1. Замораживаем скан-линии, фоновый шум и курсор терминала */
+  .scan-overlay,
+  .pulse-noise,
+  .cursor {
+    animation: none !important;
+  }
+
+  /* Чтобы замороженный курсор случайно не остался невидимым на кадре мигания */
+  .cursor {
+    opacity: 1 !important; 
+  }
+
+  /* 2. Отключаем плавные переходы (hover-эффекты и свечения) для интерактивного текста */
+  .terminal-text .interactive,
+  .tab,
+  .music-tab,
+  .play-btn {
+    transition: none !important; 
+  }
+  
+  /* 3. Убираем остаточные тяжелые тени текста у активных кнопок и ссылок */
+  .terminal-text .interactive:hover,
+  .tab.active,
+  .music-tab.active {
+    text-shadow: none !important;
+  }
+}
