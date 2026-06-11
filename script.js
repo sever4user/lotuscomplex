@@ -10,9 +10,11 @@ here you can find my works and contact information.
 > all content on this website is intended for informational purposes only.`;
 
 const contactsContent = `> SECURE CHANNEL OPEN
+
 MAIL: sever4user@gmail.com
 INST: @sever4user
 TG: @sever4user
+
 > AWAITING NEW CONNECTION...`;
 
 const tabButtons = [...document.querySelectorAll(".tab[data-section]")];
