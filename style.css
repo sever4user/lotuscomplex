@@ -647,35 +647,32 @@ body {
   color: var(--primary);
 }
 
-/* Принудительный текстовый режим для иконок плеера */
+/* Принудительное текстовое отображение иконок на всех устройствах */
 .play-btn::before,
 .play-btn.is-playing::before,
 .stop-btn::before {
-  /* Сбрасываем системные шрифты эмодзи */
-  font-family: 'Share Tech Mono', monospace, sans-serif !important;
+  /* Явно указываем моноширинный шрифт сайта, чтобы избежать системных эмодзи-шрифтов */
+  font-family: 'IBM Plex Mono', monospace !important; 
   
-  /* Принудительно задаем цвет, чтобы перебить нативный рендеринг эмодзи */
-  -webkit-text-fill-color: var(--text) !important; 
+  /* Сбрасываем нативную раскраску эмодзи в WebKit-браузерах (iOS/Android Chrome) */
+  -webkit-text-fill-color: var(--text) !important;
   color: var(--text) !important;
   
-  /* Фиксируем размер в px для стабильности на мобильных */
+  /* Фиксируем размер в px для стабильности рендеринга */
   font-size: 14px !important; 
-  
-  /* Убираем возможное масштабирование */
-  transform: scale(1);
 }
 
-/* Специфично для кнопки паузы */
-.play-btn.is-playing::before {
-  content: '⏸\fe0e';
-}
-
+/* Специфичные символы с встроенным модификатором текста */
 .play-btn::before {
-  content: '▶\fe0e';
+  content: '▶︎'; /* U+25B6 + U+FE0E */
+}
+
+.play-btn.is-playing::before {
+  content: '⏸︎'; /* U+23F8 + U+FE0E */
 }
 
 .stop-btn::before {
-  content: '■\fe0e';
+  content: '■︎'; /* U+25A0 + U+FE0E */
 }
 
 .seek-wrap {
@@ -1048,58 +1045,60 @@ body {
   color: var(--primary);
 }
 
-/* Mobile */
+/* Mobile Optimizations */
 @media (max-width: 640px) {
+  /* Отключаем тяжелые эффекты для производительности */
+  .panel, 
+  .track, 
+  .own-music-card, 
+  .project-card, 
+  .status-wrap {
+    backdrop-filter: none !important; /* Убирает размытие фона - главный источник лагов */
+    box-shadow: none !important;      /* Убирает тени */
+  }
+
   .page { padding: 1rem; }
-  
-  /* Вкладки: оставляем grid-структуру для ровных кнопок, но убираем лишние отступы */
+
+  /* Вкладки в 2 ряда по 2 кнопки */
   .tabs { 
     display: grid;
-    grid-template-columns: repeat(4, 1fr);
-    gap: 0.25rem; 
-    margin-bottom: 0.75rem; 
+    grid-template-columns: repeat(2, 1fr); /* Ровно 2 колонки */
+    gap: 0.5rem; 
+    margin-bottom: 1rem;
     width: 100%;
   }
   
   .tab { 
-    padding: 0.5rem 0.25rem; 
-    font-size: 0.7rem;       
-    line-height: 1.3;        
-    text-align: center;      
-    white-space: normal;     
-    word-break: break-word;  
-    min-height: 3.2em;       
-    display: flex;           
-    align-items: center;     
-    justify-content: center; 
+    padding: 0.6rem 0.5rem; /* Компактные отступы */
+    font-size: 0.75rem;     /* Оптимальный размер шрифта */
+    text-align: center;     
+    white-space: normal;    /* Разрешаем перенос текста */
+    line-height: 1.3;       /* Высота строки для двух строк */
+    min-height: 3.4em;      /* Фиксированная высота ~2 строки */
+    display: flex;          
+    align-items: center;    
+    justify-content: center;
   }
   
+  /* Остальные мобильные настройки */
   .logs-sub-tabs,
   .music-sub-tabs { gap: 0.25rem; margin-bottom: 0.75rem; justify-content: flex-start; }
   .music-tab { padding: 0.4rem 0.75rem; font-size: 0.7rem; }
   .dropdown-header { padding: 0.6rem 0.85rem; font-size: 0.75rem; }
   
-  /* Статус-бар: только позиционирование и размеры, эффекты берем из основного стиля */
   .status-wrap { 
-    position: fixed; /* Фиксируем сверху на мобильном */
-    top: 0; left: 0; right: 0; 
-    z-index: 1000; 
-    flex-direction: row; 
-    align-items: center; 
-    padding: 0.75rem 1rem; 
-    margin-bottom: 0; 
-    /* Убираем здесь background и backdrop-filter, чтобы они не перебивали основной стиль */
+    position: fixed; top: 0; left: 0; right: 0; z-index: 1000; 
+    flex-direction: row; align-items: center; 
+    padding: 0.75rem 1rem; margin-bottom: 0; 
+    background: rgba(13, 17, 23, 0.95); /* Сплошной фон без blur */
   }
-  
   .status-line { font-size: 0.65rem; flex: 1; }
   
   .audio-controls { gap: 0.5rem; }
   .sfx-toggle, .master-volume-btn { padding: 0.4rem 0.75rem; font-size: 0.7rem; }
   .master-volume-shell { min-width: 75px; }
   
-  /* Панели: отступ сверху нужен, чтобы контент не заезжал под фиксированный статус-бар */
   .panel { padding: 1rem; margin-top: 3.5rem; }
-  
   .visual-grid { grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); }
   .projects-grid { grid-template-columns: 1fr; }
   .own-music-grid { grid-template-columns: 1fr; }
