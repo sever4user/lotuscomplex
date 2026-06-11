@@ -1103,18 +1103,27 @@ body {
   .music-tab { padding: 0.4rem 0.75rem; font-size: 0.7rem; }
   .dropdown-header { padding: 0.6rem 0.85rem; font-size: 0.75rem; }
   
-  .status-wrap { 
-    position: fixed; top: 0; left: 0; right: 0; z-index: 1000; 
-    flex-direction: row; align-items: center; 
-    padding: 0.75rem 1rem; margin-bottom: 0; 
-    background: rgba(13, 17, 23, 0.95); /* Сплошной фон без blur */
+  .status-wrap {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    z-index: 1000;
+    display: flex;
+    align-items: center;
+    padding: 0.5rem 1rem;
+    height: 3.5rem; /* ЖЕСТКАЯ ФИКСАЦИЯ высоты */
+    background: rgba(13, 17, 23, 0.95);
+    overflow: hidden; /* Обрезаем всё, что не влезает */
   }
+
   .status-line {
-    font-size: 0.95rem !important; /* Увеличили шрифт с 0.65rem до 0.95rem */
-    line-height: 1.2;
-    padding: 1rem !important;      /* Добавили "воздуха" */
-    text-align: center;            /* Чтобы выглядело сбалансировано */
-    white-space: normal !important; /* Разрешаем перенос автоматически */
+    font-size: 0.75rem !important; /* Умеренный шрифт */
+    line-height: 1.1;
+    white-space: pre-line;       /* Позволяет перенос по \n */
+    flex: 1;
+    text-align: left;
+    margin: 0 !important;
   }
   
   .audio-controls { gap: 0.5rem; }
@@ -1204,21 +1213,16 @@ body {
 
 .panel, 
 .terminal-text, 
+/* Выводим раздел контактов на самый верх и разрешаем всё */
 #contactsPanel {
+  position: relative;
+  z-index: 100;
+  pointer-events: auto !important;
   user-select: text !important;
   -webkit-user-select: text !important;
-  pointer-events: auto !important; /* Гарантирует, что слой реагирует на мышь/тач */
-}
-/* Декоративные слои не должны перекрывать текст */
-.scan-overlay, 
-.pulse-noise, 
-.ascii-vines {
-  pointer-events: none !important;
 }
 
-/* А контакты — должны быть "прозрачны" для выделения */
-#contactsPanel {
-  user-select: text !important;
-  -webkit-user-select: text !important;
-  pointer-events: auto !important; /* Разрешаем клики */
+/* Гарантируем, что фильтры не перехватывают касания */
+.scan-overlay, .pulse-noise, .ascii-vines {
+  pointer-events: none !important;
 }
