@@ -1066,14 +1066,22 @@ body {
 @media (max-width: 640px) {
   
   .status-wrap {
-    order: -1; /* Если используешь flex/grid для контейнера, это поднимет блок наверх */
+    position: fixed !important;
+    top: 0 !important;
+    left: 0 !important;
+    right: 0 !important;
+    z-index: 1000 !important;
+    order: unset !important; /* Убираем неработающий order */
+    
     display: flex;
-    flex-direction: column; 
+    flex-direction: column;
     gap: 0.5rem;
     padding: 0.5rem 1rem;
     width: 100%;
-    margin-bottom: 0.5rem; /* Небольшой отступ до заголовка */
-    background: transparent; /* Убираем фон, чтобы выглядело чисто */
+    margin-bottom: 0;
+    background: rgba(13, 17, 23, 0.95) !important; /* Сплошной фон для читаемости */
+    backdrop-filter: none !important;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.5);
   }
 
   .status-line {
@@ -1100,7 +1108,10 @@ body {
     box-shadow: none !important;      /* Убирает тени */
   }
 
-  .page { padding: 1rem; }
+  .page { 
+    padding: 1rem; 
+    position: relative; /* Важно для позиционирования дочерних элементов */
+  }
 
   /* Вкладки в 2 ряда по 2 кнопки */
   .tabs { 
@@ -1131,14 +1142,11 @@ body {
   .sfx-toggle, .master-volume-btn { padding: 0.4rem 0.75rem; font-size: 0.7rem; }
   .master-volume-shell { min-width: 75px; }
   
-  .panel { padding: 1rem; margin-top: 0 !important; }
+  .panel { padding: 1rem; margin-top: 4.5rem !important; /* Отступ под фиксированный статус-бар */ }
   .visual-grid { grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); }
   .projects-grid { grid-template-columns: 1fr; }
   .own-music-grid { grid-template-columns: 1fr; }
-  .project-header { 
-    /* 4.5rem сверху (чтобы не наезжал статус-бар), 1.2rem снизу (до вкладок) */
-    padding: 4.5rem 0 1rem 0 !important; 
-  }
+  .project-header { padding: 4.5rem 0 1rem 0 !important; }
   .project-header h1 {
     font-size: 3.5rem; 
     line-height: 1;
