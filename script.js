@@ -479,14 +479,39 @@ function setupLazyImageLoading() {
 
 function setupClipboardMentions() {
   document.addEventListener("click", async (e) => {
-    const t = e.target.closest(".copy-mention");
-    if (!t) return;
-    const val = t.getAttribute("data-copy");
+    // Ищем ближайший элемент с классом copy-mention
+    const target = e.target.closest(".copy-mention");
+    if (!target) return;
+    
+    // Предотвращаем всплытие, чтобы не триггерить другие клики
+    e.stopPropagation();
+    e.preventDefault(); // На всякий случай предотвращаем стандартное поведение
+    
+    const val = target.getAttribute("data-copy");
+    if (!val) return;
+
     try {
       await navigator.clipboard.writeText(val);
+      
+      // Визуальная обратная связь прямо на кнопке
+      const originalText = target.textContent;
+      const originalColor = target.style.color;
+      
+      target.textContent = "[COPIED]";
+      target.style.color = "var(--primary)";
+      
       statusLine.textContent = `COPIED TO CLIPBOARD: ${val}`;
-      setTimeout(() => { const a = document.querySelector(".tab.active")?.dataset.section || "logs"; statusLine.textContent = `STATUS: ONLINE // SECTION: ${a.toUpperCase()}`; }, 1200);
-    } catch { statusLine.textContent = "CLIPBOARD ACCESS BLOCKED"; }
+      
+      setTimeout(() => {
+        target.textContent = originalText;
+        target.style.color = originalColor;
+        const activeSection = document.querySelector(".tab.active")?.dataset.section || "logs";
+        statusLine.textContent = `STATUS: ONLINE // SECTION: ${activeSection.toUpperCase()}`;
+      }, 1200);
+    } catch (err) {
+      console.error("Copy failed:", err);
+      statusLine.textContent = "CLIPBOARD ACCESS BLOCKED";
+    }
   });
 }
 
