@@ -1218,6 +1218,43 @@ body {
   #contactsTypewriter::after {
     display: none !important;
   }
+    /* ЗАЩИТА КНОПОК КОПИРОВАНИЯ ОТ МОБИЛЬНЫХ ОПТИМИЗАЦИЙ */
+  .copy-mention {
+    color: var(--accent) !important;
+    cursor: pointer !important;
+    pointer-events: auto !important;
+    user-select: text !important;
+    -webkit-user-select: text !important;
+    background: transparent !important;
+    border: none !important;
+    padding: 0 !important;
+    font-family: inherit !important;
+    font-size: inherit !important;
+    /* Возвращаем плавность именно для кнопок копирования */
+    transition: color 0.2s ease, text-shadow 0.2s ease !important; 
+  }
+
+  .copy-mention:hover {
+    color: var(--primary) !important;
+    text-shadow: 0 0 8px rgba(var(--primary-rgb), 0.6) !important;
+  }
+
+  /* Гарантируем, что оверлеи не перекрывают контент */
+  .scan-overlay, 
+  .pulse-noise, 
+  .ascii-vines {
+    pointer-events: none !important;
+  }
+
+  /* Разрешаем выделение и клики в панели контактов */
+  #contactsPanel, 
+  #contactsTypewriter {
+    position: relative !important;
+    z-index: 100 !important;
+    pointer-events: auto !important;
+    user-select: text !important;
+    -webkit-user-select: text !important;
+  }
 }
 
 .panel, 
