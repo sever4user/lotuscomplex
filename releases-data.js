@@ -51,8 +51,8 @@ const ownMusicReleases = [
   },  
   {
     title: "sever4user - cigarettes after cigarettes /w Sib The Maid",
-    cover: "covers/5.png",
-    streamingUrl: "https://band.link/oboretamichi"
+    cover: "covers/9.png",
+    streamingUrl: "https://band.link/cigaftercig"
   },  
   {
     title: "sever4user - take me to the stratosphere /w white background, r1naq",
