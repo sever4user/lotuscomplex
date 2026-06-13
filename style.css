@@ -1064,22 +1064,21 @@ body {
 
 /* Mobile Optimizations */
 @media (max-width: 640px) {
-  
+  .page { padding: 1rem; }
+
+  /* Фиксация статус-бара строго вверху */
   .status-wrap {
     position: fixed !important;
     top: 0 !important;
     left: 0 !important;
     right: 0 !important;
     z-index: 1000 !important;
-    order: unset !important; /* Убираем неработающий order */
-    
     display: flex;
     flex-direction: column;
     gap: 0.5rem;
     padding: 0.5rem 1rem;
-    width: 100%;
     margin-bottom: 0;
-    background: rgba(13, 17, 23, 0.95) !important; /* Сплошной фон для читаемости */
+    background: rgba(13, 17, 23, 0.95) !important;
     backdrop-filter: none !important;
     box-shadow: 0 2px 10px rgba(0,0,0,0.5);
   }
@@ -1092,133 +1091,62 @@ body {
     width: 100%;
   }
 
-  /* Кнопки теперь идут ПОД статус-строкой, но все еще в этом блоке */
   .audio-controls {
     display: flex;
     gap: 0.5rem;
     width: 100%;
-  }
-  /* Отключаем тяжелые эффекты для производительности */
-  .panel, 
-  .track, 
-  .own-music-card, 
-  .project-card, 
-  .status-wrap {
-    backdrop-filter: none !important; /* Убирает размытие фона - главный источник лагов */
-    box-shadow: none !important;      /* Убирает тени */
+    justify-content: flex-end;
   }
 
-  .page { 
-    padding: 1rem; 
-    position: relative; /* Важно для позиционирования дочерних элементов */
+  /* Отключаем тяжелые эффекты ТОЛЬКО для тяжелых элементов */
+  .panel, .track, .own-music-card, .project-card {
+    backdrop-filter: none !important;
+    box-shadow: none !important;
   }
 
   /* Вкладки в 2 ряда по 2 кнопки */
-  .tabs { 
+  .tabs {
     display: grid;
-    grid-template-columns: repeat(2, 1fr); /* Ровно 2 колонки */
-    gap: 0.5rem; 
+    grid-template-columns: repeat(2, 1fr);
+    gap: 0.5rem;
     margin-bottom: 1rem;
     width: 100%;
   }
   
-  .tab { 
-    padding: 0.6rem 0.5rem; /* Компактные отступы */
-    font-size: 0.75rem;     /* Оптимальный размер шрифта */
-    text-align: center;     
-    white-space: normal;    /* Разрешаем перенос текста */
-    line-height: 1.3;       /* Высота строки для двух строк */
-    min-height: 3.4em;      /* Фиксированная высота ~2 строки */
-    display: flex;          
-    align-items: center;    
+  .tab {
+    padding: 0.6rem 0.5rem;
+    font-size: 0.75rem;
+    text-align: center;
+    white-space: normal;
+    line-height: 1.3;
+    min-height: 3.4em;
+    display: flex;
+    align-items: center;
     justify-content: center;
   }
-  
-  /* Остальные мобильные настройки */
+
   .logs-sub-tabs,
   .music-sub-tabs { gap: 0.25rem; margin-bottom: 0.75rem; justify-content: flex-start; }
   .music-tab { padding: 0.4rem 0.75rem; font-size: 0.7rem; }
   .dropdown-header { padding: 0.6rem 0.85rem; font-size: 0.75rem; }
+  
   .sfx-toggle, .master-volume-btn { padding: 0.4rem 0.75rem; font-size: 0.7rem; }
   .master-volume-shell { min-width: 75px; }
   
-  .panel { padding: 1rem; margin-top: 4.5rem !important; /* Отступ под фиксированный статус-бар */ }
+  .panel { padding: 1rem; margin-top: 4.5rem !important; }
   .visual-grid { grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); }
   .projects-grid { grid-template-columns: 1fr; }
   .own-music-grid { grid-template-columns: 1fr; }
   .project-header { padding: 4.5rem 0 1rem 0 !important; }
-  .project-header h1 {
-    font-size: 3.5rem; 
-    line-height: 1;
-    margin-bottom: 0.4rem;
-    letter-spacing: -0.03em;
-    
-    /* Густой, многослойный неоновый свет без анимации мигания */
-    text-shadow: 0 0 4px var(--accent), 
-                 0 0 12px var(--primary), 
-                 0 0 20px rgba(88, 166, 255, 0.4) !important;
-  }
   
-  .project-header .subtitle {
-    font-size: 0.68rem; /* Слегка приподнимем размер подзаголовка для читаемости */
-    letter-spacing: 0.08em; 
-    white-space: nowrap; 
-    overflow: hidden;
-  }
-  .ascii-vines {
-    text-shadow: none !important;
-    opacity: 0.15; /* Делаем чуть бледнее без теней */
-  }
-  
-  /* 1. Замораживаем скан-линии, фоновый шум и курсор терминала */
-  .scan-overlay,
-  .pulse-noise {
-    animation: none !important;
-  }
+  /* Оптимизации производительности (без убийства стилей текста) */
+  .scan-overlay, .pulse-noise { animation: none !important; }
+  .tab, .music-tab, .play-btn { transition: none !important; }
+  .project-card:hover, .own-music-card:hover, .visual-item:hover { transform: none !important; }
+  .project-card-cover img, .own-music-cover img { transform: none !important; }
+  .cursor { display: none !important; }
 
-  /* 2. Отключаем плавные переходы (hover-эффекты и свечения) для интерактивного текста */
-  .terminal-text .interactive,
-  .tab,
-  .music-tab,
-  .play-btn {
-    transition: none !important; 
-  }
-  
-  /* 3. Убираем остаточные тяжелые тени текста у активных кнопок и ссылок */
-  .terminal-text .interactive:hover,
-  .tab.active,
-  .music-tab.active {
-    text-shadow: none !important;
-  }
-  
-  /* Отключаем зум картинок внутри проектов и релизов */
-  .project-card:hover .project-card-cover img,
-  .own-music-card:hover .own-music-cover img {
-    transform: none !important;
-  }
-
-  /* Отключаем подпрыгивание самих карточек вверх */
-  .project-card:hover,
-  .own-music-card:hover {
-    transform: none !important;
-  }
-
-  /* Отключаем зум картинок в разделе VISUALS */
-  .visual-item:hover {
-    transform: none !important;
-  }
-
-  /*h1, .subtitle, .terminal-text, .interactive, p, span {
-    animation-name: none !important;
-    text-shadow: 0 0 8px rgba(121, 192, 255, 0.4) !important;
-  }*/
-  /* Убиваем курсор везде, где он есть, на узких экранах */
-  .cursor, 
-  .terminal-text::after,
-  #contactsTypewriter::after {
-    display: none !important;
-  }
-    /* ЗАЩИТА КНОПОК КОПИРОВАНИЯ ОТ МОБИЛЬНЫХ ОПТИМИЗАЦИЙ */
+  /* ЗАЩИТА КНОПОК КОПИРОВАНИЯ ОТ ГЛОБАЛЬНЫХ СБРОСОВ */
   .copy-mention {
     color: var(--accent) !important;
     cursor: pointer !important;
@@ -1230,30 +1158,13 @@ body {
     padding: 0 !important;
     font-family: inherit !important;
     font-size: inherit !important;
-    /* Возвращаем плавность именно для кнопок копирования */
-    transition: color 0.2s ease, text-shadow 0.2s ease !important; 
+    transition: color 0.2s ease, text-shadow 0.2s ease !important;
+    text-shadow: none !important; /* Убираем навязанное свечение */
   }
 
   .copy-mention:hover {
     color: var(--primary) !important;
     text-shadow: 0 0 8px rgba(var(--primary-rgb), 0.6) !important;
-  }
-
-  /* Гарантируем, что оверлеи не перекрывают контент */
-  .scan-overlay, 
-  .pulse-noise, 
-  .ascii-vines {
-    pointer-events: none !important;
-  }
-
-  /* Разрешаем выделение и клики в панели контактов */
-  #contactsPanel, 
-  #contactsTypewriter {
-    position: relative !important;
-    z-index: 100 !important;
-    pointer-events: auto !important;
-    user-select: text !important;
-    -webkit-user-select: text !important;
   }
 }
 
