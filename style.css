@@ -1091,11 +1091,11 @@ body {
     width: 100%;
   }
 
-  .audio-controls {
+.audio-controls {
     display: flex;
+    justify-content: flex-start !important; /* ВАЖНО: выстраиваем кнопки слева направо */
     gap: 0.5rem;
     width: 100%;
-    justify-content: flex-end;
   }
 
   /* Отключаем тяжелые эффекты ТОЛЬКО для тяжелых элементов */
@@ -1179,3 +1179,4 @@ body {
   user-select: text !important;
   -webkit-user-select: text !important;
 }
+
