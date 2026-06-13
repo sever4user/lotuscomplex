@@ -1208,10 +1208,10 @@ body {
     transform: none !important;
   }
 
-  h1, .subtitle, .terminal-text, .interactive, p, span {
-    /*animation-name: none !important;*/
-    text-shadow: 0 0 8px rgba(121, 192, 255, 0.4) !important; /* Мягкое статичное свечение (цвет --accent) */
-  }
+  /*h1, .subtitle, .terminal-text, .interactive, p, span {
+    animation-name: none !important;
+    text-shadow: 0 0 8px rgba(121, 192, 255, 0.4) !important;
+  }*/
   /* Убиваем курсор везде, где он есть, на узких экранах */
   .cursor, 
   .terminal-text::after,
