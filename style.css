@@ -45,7 +45,7 @@ body {
 
 @media (max-width: 640px) {
   .ascii-vines {
-    font-size: clamp(1rem, 2vw, 1.4rem) !important;
+    font-size: clamp(1.2rem, 2vw, 1.8rem) !important;
     opacity: 0.2;
     text-shadow: 0 0 5px rgba(var(--ascii-rgb), 0.3) !important;
   }
@@ -1135,7 +1135,7 @@ body {
   .sfx-toggle, .master-volume-btn { padding: 0.4rem 0.75rem; font-size: 0.7rem; }
   .master-volume-shell { min-width: 75px; }
   
-  .panel { padding: 1rem; margin-top: 0rem !important; }
+  .panel { padding: 1rem; margin-top: 1rem !important; }
   .visual-grid { grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); }
   .projects-grid { grid-template-columns: 1fr; }
   .own-music-grid { grid-template-columns: 1fr; }
