@@ -487,7 +487,7 @@ function setupClipboardMentions() {
     
     // Предотвращаем всплытие, чтобы не триггерить другие клики
     e.stopPropagation();
-    e.preventDefault(); // На всякий случай предотвращаем стандартное поведение
+    e.preventDefault();
     
     const val = target.getAttribute("data-copy");
     if (!val) return;
@@ -495,21 +495,23 @@ function setupClipboardMentions() {
     try {
       await navigator.clipboard.writeText(val);
       
-      // Визуальная обратная связь прямо на кнопке
-      const originalText = target.textContent;
-      const originalColor = target.style.color;
+      // 1. Добавляем класс для красивой вспышки текста
+      target.classList.add("copied-flash");
       
-      target.textContent = "[COPIED]";
-      target.style.color = "var(--primary)";
-      
+      // 2. Меняем текст в статус-баре
       statusLine.textContent = `COPIED TO CLIPBOARD: ${val}`;
       
+      // 3. Убираем вспышку через полсекунды
       setTimeout(() => {
-        target.textContent = originalText;
-        target.style.color = originalColor;
+        target.classList.remove("copied-flash");
+      }, 500);
+
+      // 4. Возвращаем обычный статус в статус-бар через 1.2 секунды
+      setTimeout(() => {
         const activeSection = document.querySelector(".tab.active")?.dataset.section || "logs";
         statusLine.textContent = `STATUS: ONLINE // SECTION: ${activeSection.toUpperCase()}`;
       }, 1200);
+
     } catch (err) {
       console.error("Copy failed:", err);
       statusLine.textContent = "CLIPBOARD ACCESS BLOCKED";
