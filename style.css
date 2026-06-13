@@ -1093,7 +1093,7 @@ body {
 
 .audio-controls {
     display: flex;
-    justify-content: flex-start !important; /* ВАЖНО: выстраиваем кнопки слева направо */
+    justify-content: flex-end !important; /* ВАЖНО: выстраиваем кнопки слева направо */
     gap: 0.5rem;
     width: 100%;
   }
@@ -1109,12 +1109,12 @@ body {
     display: grid;
     grid-template-columns: repeat(2, 1fr);
     gap: 0.5rem;
-    margin-bottom: 1rem;
+    margin-bottom: 0rem;
     width: 100%;
   }
   
   .tab {
-    padding: 0.6rem 0.5rem;
+    padding: 0.5rem 0.5rem;
     font-size: 0.75rem;
     text-align: center;
     white-space: normal;
@@ -1167,6 +1167,13 @@ body {
   .copy-mention:hover {
     color: var(--primary) !important;
     text-shadow: 0 0 8px rgba(var(--primary-rgb), 0.6) !important;
+  }
+  
+  .project-header h1 {
+    color: #ffffff !important;
+    text-shadow: 0 0 10px rgba(88, 166, 255, 0.9), 
+                 0 0 25px rgba(88, 166, 255, 0.7), 
+                 0 0 45px rgba(88, 166, 255, 0.4) !important;
   }
 }
 
