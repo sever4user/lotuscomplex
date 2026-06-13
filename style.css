@@ -1146,20 +1146,22 @@ body {
   .project-card-cover img, .own-music-cover img { transform: none !important; }
   .cursor { display: none !important; }
 
-  /* ЗАЩИТА КНОПОК КОПИРОВАНИЯ ОТ ГЛОБАЛЬНЫХ СБРОСОВ */
+  /* ВАЖНО: Исключаем .copy-mention из глобального сброса теней и анимаций */
+  h1, .subtitle, .terminal-text, .interactive, p, span {
+    animation-name: none !important;
+    text-shadow: 0 0 8px rgba(121, 192, 255, 0.4) !important;
+  }
+  
+  /* Возвращаем кнопкам копирования их родные стили */
   .copy-mention {
+    animation-name: inherit !important;
+    text-shadow: none !important; /* Убираем навязанное серое свечение */
     color: var(--accent) !important;
     cursor: pointer !important;
     pointer-events: auto !important;
     user-select: text !important;
     -webkit-user-select: text !important;
-    background: transparent !important;
-    border: none !important;
-    padding: 0 !important;
-    font-family: inherit !important;
-    font-size: inherit !important;
     transition: color 0.2s ease, text-shadow 0.2s ease !important;
-    text-shadow: none !important; /* Убираем навязанное свечение */
   }
 
   .copy-mention:hover {
@@ -1168,60 +1170,7 @@ body {
   }
 }
 
-.panel, 
-.terminal-text, 
-/* Выводим раздел контактов на самый верх и разрешаем всё */
-#contactsPanel {
-  position: relative;
-  z-index: 100;
-  pointer-events: auto !important;
-  user-select: text !important;
-  -webkit-user-select: text !important;
-}
-
-/* Гарантируем, что фильтры не перехватывают касания */
-.scan-overlay, .pulse-noise, .ascii-vines {
-  pointer-events: none !important;
-}
-/* Принудительно разрешаем всё для этого конкретного элемента */
-p#contactsTypewriter {
-  -webkit-user-select: text !important; /* Safari/Chrome */
-  -moz-user-select: text !important;    /* Firefox */
-  -ms-user-select: text !important;     /* IE/Edge */
-  user-select: text !important;         /* Стандарт */
-  
-  pointer-events: auto !important;      /* Разрешаем клики */
-  cursor: text !important;              /* Показываем курсор выделения */
-}
-
-/* Принудительные стили для кнопок копирования (поверх всех медиа-запросов) */
-.copy-mention {
-  color: var(--accent) !important;
-  cursor: pointer !important;
-  pointer-events: auto !important;
-  user-select: text !important;
-  -webkit-user-select: text !important;
-  background: transparent !important;
-  border: none !important;
-  padding: 0 !important;
-  font-family: inherit !important;
-  font-size: inherit !important;
-  transition: color 0.2s ease, text-shadow 0.2s ease !important; /* Возвращаем плавность именно для кнопок */
-}
-
-.copy-mention:hover {
-  color: var(--primary) !important;
-  text-shadow: 0 0 8px rgba(var(--primary-rgb), 0.6) !important;
-}
-
-/* Гарантируем, что оверлеи не перекрывают контент */
-.scan-overlay, 
-.pulse-noise, 
-.ascii-vines {
-  pointer-events: none !important;
-}
-
-/* Разрешаем выделение и клики в панели контактов */
+/* Защита для панели контактов (оставляем как было) */
 #contactsPanel, 
 #contactsTypewriter {
   position: relative !important;
