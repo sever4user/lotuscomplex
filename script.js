@@ -392,9 +392,9 @@ function startTypewriter(targetId) {
       cursor.insertAdjacentText('beforebegin', char);
       currentTyping[section].text += 1;
       
-      let delay = Math.random() * 35 + 10; 
-      if (['.', '!', '?', '\n'].includes(char)) delay += 120;
-      if ([',', ';', ':'].includes(char)) delay += 60;
+      let delay = Math.random() * 15 + 5;
+      if (['.', '!', '?', '\n'].includes(char)) delay += 60;
+      if ([',', ';', ':'].includes(char)) delay += 30;
       
       currentTyping[section].animId = setTimeout(typeChar, delay);
     } else {
