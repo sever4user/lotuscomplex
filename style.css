@@ -45,9 +45,9 @@ body {
 
 @media (max-width: 640px) {
   .ascii-vines {
-    font-size: clamp(1.3rem, 2.2vw, 1.8rem) !important;
-    opacity: 0.55;
-    text-shadow: 0 0 12px rgba(var(--ascii-rgb), 0.7);
+    font-size: clamp(1rem, 2vw, 1.4rem) !important;
+    opacity: 0.2;
+    text-shadow: 0 0 5px rgba(var(--ascii-rgb), 0.3) !important;
   }
 }
 
@@ -155,8 +155,10 @@ body {
 }
 
 .tab {
-  background: transparent;
-  border: 1px solid var(--border);
+  background: rgba(13, 17, 23, 0.65) !important;
+  backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
+  border: 1px solid var(--border) !important;
   color: var(--text);
   padding: 0.75rem 1.5rem;
   cursor: pointer;
@@ -175,9 +177,9 @@ body {
 }
 
 .tab.active {
-  background: rgba(var(--primary-rgb), 0.1);
-  border-color: var(--primary);
-  color: var(--primary);
+  background: rgba(88, 166, 255, 0.1) !important;
+  border-color: var(--primary) !important;
+  color: #ffffff !important;
   text-shadow: 0 0 12px rgba(var(--primary-rgb), 0.6);
 }
 
@@ -1091,7 +1093,7 @@ body {
     width: 100%;
   }
 
-.audio-controls {
+  .audio-controls {
     display: flex;
     justify-content: flex-end !important; /* ВАЖНО: выстраиваем кнопки слева направо */
     gap: 0.5rem;
@@ -1133,7 +1135,7 @@ body {
   .sfx-toggle, .master-volume-btn { padding: 0.4rem 0.75rem; font-size: 0.7rem; }
   .master-volume-shell { min-width: 75px; }
   
-  .panel { padding: 1rem; margin-top: 4.5rem !important; }
+  .panel { padding: 1rem; margin-top: 0rem !important; }
   .visual-grid { grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); }
   .projects-grid { grid-template-columns: 1fr; }
   .own-music-grid { grid-template-columns: 1fr; }
