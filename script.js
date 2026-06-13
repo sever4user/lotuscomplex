@@ -392,14 +392,16 @@ function startTypewriter(targetId) {
       cursor.insertAdjacentText('beforebegin', char);
       currentTyping[section].text += 1;
       
-      // Увеличенная скорость: 10мс - 45мс (в 2 раза быстрее предыдущей версии)
       let delay = Math.random() * 35 + 10; 
-      
-      // Естественные паузы для реалистичности
       if (['.', '!', '?', '\n'].includes(char)) delay += 120;
       if ([',', ';', ':'].includes(char)) delay += 60;
       
       currentTyping[section].animId = setTimeout(typeChar, delay);
+    } else {
+      // ТЕКСТ НАПЕЧАТАН. Теперь превращаем обычные слова в интерактивные теги!
+      cursor.remove(); // Временно убираем курсор, чтобы он не стерся
+      enhanceInteractiveText(target); // Вызываем функцию подсветки
+      target.appendChild(cursor); // Возвращаем курсор обратно в конец строки
     }
   };
 
